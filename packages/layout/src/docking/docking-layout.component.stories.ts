@@ -59,7 +59,7 @@ export const DockingLayout: StoryFn<Story> = args => {
             </ng-template>
 
             <ng-template #content>
-                <div style="background:#333;flex:1">
+                <div style="background:#333;flex:1;overflow:auto;">
                     <div style="
                             display: grid;
                             grid-template-columns: max-content max-content max-content;
