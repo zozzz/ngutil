@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-dev.6](https://github.com/zozzz/ngutil/compare/0.0.3-dev.5...0.0.3-dev.6) (2024-02-24)
+
+
+### Other changes
+
+* **ci:** Fix publish ([5f714c6](https://github.com/zozzz/ngutil/commit/5f714c684c6d6535ba895d498b4151d21ff17016))
+
 ## [0.0.3-dev.5](https://github.com/zozzz/ngutil/compare/0.0.3-dev.4...0.0.3-dev.5) (2024-02-24)
 
 ## [0.0.3-dev.4](https://github.com/zozzz/ngutil/compare/0.0.3-dev.3...0.0.3-dev.4) (2024-02-24)
