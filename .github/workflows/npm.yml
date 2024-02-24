@@ -26,6 +26,7 @@ jobs:
         run: pnpm build:libs
 
       - name: Publish
-        run: for package in dist/packages/*; do pnpm publish "$package"; done
+        # run: for package in dist/packages/*; do pnpm publish "$package"; done
+        run: pnpm publish -r
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

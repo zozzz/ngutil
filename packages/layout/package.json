@@ -2,7 +2,8 @@
   "name": "@ngutil/layout",
   "version": "0.0.3-dev.3",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "../../dist/packages/layout/"
   },
   "peerDependencies": {
     "@angular/common": "^17.1.0",
