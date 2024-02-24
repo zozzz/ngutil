@@ -1,0 +1,73 @@
+{
+  "name": "layout",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/layout/src",
+  "prefix": "nu",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "packages/layout/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "packages/layout/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "packages/layout/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "packages/layout/.storybook",
+        "browserTarget": "layout:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/layout",
+        "configDir": "packages/layout/.storybook",
+        "browserTarget": "layout:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test-storybook -c packages/layout/.storybook --url=http://localhost:4400"
+      }
+    },
+    "static-storybook": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "layout:build-storybook",
+        "staticFilePath": "dist/storybook/layout"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "layout:build-storybook:ci"
+        }
+      }
+    }
+  }
+}
