@@ -2,8 +2,7 @@
   "name": "@ngutil/aria",
   "version": "0.0.3-dev.1",
   "publishConfig": {
-    "access": "public",
-    "directory": "../../dist/packages/aria"
+    "access": "public"
   },
   "peerDependencies": {
     "@angular/common": "^17.1.0",

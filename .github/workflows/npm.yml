@@ -22,7 +22,10 @@ jobs:
 
       - run: pnpm install
 
+      - name: Build libs
+        run: pnpm build:libs
+
       - name: Publish
-        run: pnpm publish:libs
+        run: for package in dist/packages/*; do pnpm publish "$package"; done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

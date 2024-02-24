@@ -4,13 +4,9 @@
   "license": "MIT",
   "scripts": {
     "release": "release-it --ci -V --preRelease=dev",
-    "build:libs": "nx run-many -t build --projects=packages/*",
-    "publish:libs": "pnpm build:libs && nx release publish -g lib --verbose"
+    "build:libs": "nx run-many -t build --projects=packages/*"
   },
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "dependencies": {
     "@angular/animations": "~17.1.0",
     "@angular/common": "~17.1.0",
