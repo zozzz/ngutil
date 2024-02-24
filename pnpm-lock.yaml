@@ -225,6 +225,7 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
+    publishDirectory: ../../dist/packages/aria/
 
   packages/layout:
     dependencies:
@@ -235,11 +236,12 @@ importers:
         specifier: ^17.1.0
         version: 17.1.3(rxjs@7.8.1)(zone.js@0.14.4)
       '@ngutil/aria':
-        specifier: ^0.0.3-dev.2
-        version: link:../aria
+        specifier: ^0.0.3-dev.3
+        version: link:../../dist/packages/aria
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
+    publishDirectory: ../../dist/packages/layout/
 
 packages:
 
