@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@ngutil/aria": ["packages/aria/src/index.ts"],
+      "@ngutil/common": ["packages/common/src/index.ts"],
       "@ngutil/layout": ["packages/layout/src/index.ts"]
     }
   },

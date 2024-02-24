@@ -75,9 +75,7 @@
   "release": {
     "groups": {
       "lib": {
-        "projects": [
-          "packages/*"
-        ]
+        "projects": ["packages/*"]
       }
     }
   }
