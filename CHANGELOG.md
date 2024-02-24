@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-dev.0](https://github.com/zozzz/ngutil/compare/0.0.2...0.0.3-dev.0) (2024-02-24)
+
+
+### Other changes
+
+* **tools:** Update release-it config ([5e068af](https://github.com/zozzz/ngutil/commit/5e068af80110752c219b11272cd7ecd63d7681bc))
+
 ## 0.0.2 (2024-02-24)
 
 

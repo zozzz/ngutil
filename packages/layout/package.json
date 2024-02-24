@@ -1,13 +1,13 @@
 {
   "name": "@ngutil/layout",
-  "version": "0.0.2",
+  "version": "0.0.3-dev.0",
   "publishConfig": {
     "access": "public"
   },
   "peerDependencies": {
     "@angular/common": "^17.1.0",
     "@angular/core": "^17.1.0",
-    "@ngutil/aria": "^0.0.2"
+    "@ngutil/aria": "^0.0.3-dev.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

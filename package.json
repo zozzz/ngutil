@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/source",
-  "version": "0.0.2",
+  "version": "0.0.3-dev.0",
   "license": "MIT",
   "scripts": {
     "release": "release-it --ci -V --preRelease=dev",
