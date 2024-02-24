@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "release": "release-it --ci -V --preRelease=dev",
-    "publish:libs": "nx release publish -g lib --verbose"
+    "build:libs": "nx run-many -t build --projects=packages/*",
+    "publish:libs": "pnpm build:libs && nx release publish -g lib --verbose"
   },
   "private": true,
   "workspaces": [
