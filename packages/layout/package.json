@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/layout",
-  "version": "0.0.3-dev.4",
+  "version": "0.0.3-dev.5",
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/layout/"
