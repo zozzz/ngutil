@@ -26,6 +26,21 @@ Add this to `package.json`
 }
 ```
 
+### Storybook
+
+#### Add
+
+```sh
+nx g @nx/angular:storybook-configuration --project="<package_name>"
+```
+
+#### Run
+
+```sh
+nx storybook "<package_name>"
+```
+
+
 ## Release process
 
 `pnpm release`
