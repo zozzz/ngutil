@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "license": "MIT",
   "scripts": {
-    "release": "release-it --ci -V",
+    "release": "release-it --ci -V --preRelease=dev",
     "publish:libs": "nx release publish -g lib --verbose"
   },
   "private": true,
