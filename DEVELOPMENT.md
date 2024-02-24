@@ -18,6 +18,14 @@ scopes:
 nx g @nx/angular:lib "<package_name>" --directory="packages/<package_name>" --importPath="@ngutil/<package_name>" -p nu --style=scss --inlineTemplate --strict --publishable
 ```
 
+Add this to `package.json`
+
+```json
+"publishConfig": {
+    "access": "public"
+}
+```
+
 ## Release process
 
 `pnpm release`
