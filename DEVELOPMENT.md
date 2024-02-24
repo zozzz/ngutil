@@ -22,7 +22,8 @@ Add this to `package.json`
 
 ```json
 "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "../../dist/packages/<package_name>/"
 }
 ```
 
