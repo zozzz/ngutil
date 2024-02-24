@@ -9,6 +9,7 @@ scopes:
 - **tools** - development tools, scripts, etc...
 - **ci** - CI/CD
 - **docs** - Documentations
+- **release** - Release version
 - **<package_name>** - package names under `packages` folder
 
 ## Add new package
