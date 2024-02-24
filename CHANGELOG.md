@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-dev.2](https://github.com/zozzz/ngutil/compare/0.0.3-dev.1...0.0.3-dev.2) (2024-02-24)
+
+
+### Other changes
+
+* **ci:** Update publish workflow ([5fca385](https://github.com/zozzz/ngutil/commit/5fca385c3f0fedae0cb9b20480516fa344d6d1eb))
+
 ## [0.0.3-dev.1](https://github.com/zozzz/ngutil/compare/0.0.3-dev.0...0.0.3-dev.1) (2024-02-24)
 
 
