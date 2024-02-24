@@ -71,5 +71,14 @@
         "cacheableOperations": ["build-storybook"]
       }
     }
+  },
+  "release": {
+    "groups": {
+      "lib": {
+        "projects": [
+          "packages/*"
+        ]
+      }
+    }
   }
 }
