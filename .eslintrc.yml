@@ -1,0 +1,82 @@
+# requirements: pnpm add -D -W eslint eslint-config-prettier eslint-plugin-unused-imports prettier eslint-plugin-prettier prettier-eslint-cli @trivago/prettier-plugin-sort-imports eslint-plugin-storybook @typescript-eslint/eslint-plugin @typescript-eslint/parser
+# package.json "pretty": "prettier-eslint --log-level=info --write \"{,!(node_modules)/**/}*.{js,cjs,mjs,ts}\""
+
+root: true
+extends:
+  - plugin:prettier/recommended
+  - plugin:storybook/recommended
+  - eslint:recommended
+
+ignorePatterns:
+  - node_modules
+  - "!.storybook"
+
+plugins:
+  - "@typescript-eslint"
+  - "prettier"
+  - "unused-imports"
+
+rules:
+  # ESLINT
+  max-len: ["error", { code: 120 }]
+  quote-props: ["error", "consistent-as-needed"]
+  eqeqeq: ["error", "always", { "null": "ignore" }]
+  no-alert: "error"
+  no-empty: "error"
+  yoda: ["error", "never", { exceptRange: true }]
+  arrow-body-style: ["error", "as-needed", { requireReturnForObjectLiteral: true }]
+  prefer-arrow-callback: 2
+
+  no-unused-vars: "off"
+  unused-imports/no-unused-imports: "error"
+  unused-imports/no-unused-vars:
+    - warn
+    - { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" }
+
+  # PRETTIER
+  prettier/prettier:
+    - "error"
+    - singleQuote: false
+      semi: false
+      trailingComma: none
+      endOfLine: auto
+      arrowParens: avoid
+
+      # SORT IMPORTS
+      plugins: ["@trivago/prettier-plugin-sort-imports"]
+      importOrderSeparation: true
+      importOrderSortSpecifiers: true
+      importOrderCaseInsensitive: true
+      importOrderParserPlugins: ["typescript", "decorators-legacy"]
+      importOrder:
+        - ^@angular/
+        - ^rxjs
+        - <THIRD_PARTY_MODULES>
+        - ^@ngutil
+        - ^[./]
+overrides:
+  - files: ["*.ts"]
+    parser: "@typescript-eslint/parser"
+    env:
+      browser: true
+    extends:
+      - "plugin:@typescript-eslint/recommended"
+    rules:
+      "@typescript-eslint/no-explicit-any": "off"
+      "@typescript-eslint/no-non-null-assertion": "off"
+      "@typescript-eslint/no-unused-vars": "off"
+      # require for type casts: (x as y).doSomething()
+      #   "@typescript-eslint/no-extra-semi": "off"s
+      "@typescript-eslint/no-for-in-array": "error"
+      #   "@typescript-eslint/explicit-member-accessibility": "no-public"
+
+  - files: ["*.js", "*.cjs", "*.mjs"]
+    parser: "@typescript-eslint/parser"
+    env:
+      es6: true
+      browser: true
+      node: true
+
+  - files: ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"]
+    env:
+      jest: true

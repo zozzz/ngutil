@@ -1,0 +1,20 @@
+# ! Keep it sync with .eslintrc.yml
+
+singleQuote: false
+semi: false
+trailingComma: none
+endOfLine: auto
+arrowParens: avoid
+
+# SORT IMPORTS
+plugins: ["@trivago/prettier-plugin-sort-imports"]
+importOrderSeparation: true
+importOrderSortSpecifiers: true
+importOrderCaseInsensitive: true
+importOrderParserPlugins: ["typescript", "decorators-legacy"]
+importOrder:
+  - ^@angular/
+  - ^rxjs
+  - <THIRD_PARTY_MODULES>
+  - ^@ngutil
+  - ^[./]
