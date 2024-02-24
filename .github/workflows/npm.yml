@@ -27,6 +27,6 @@ jobs:
 
       - name: Publish
         # run: for package in dist/packages/*; do pnpm publish "$package"; done
-        run: pnpm publish -r
+        run: pnpm publish -r --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
