@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ngutil/aria": ["packages/aria/src/index.ts"],
       "@ngutil/layout": ["packages/layout/src/index.ts"]
     }
   },
