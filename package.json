@@ -126,6 +126,7 @@
         "skipChecks": true,
         "publish": false,
         "additionalManifests": {
+          "versionUpdates": [],
           "dependencyUpdates": [
             "peerDependencies"
           ]
