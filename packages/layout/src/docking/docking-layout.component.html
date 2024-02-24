@@ -1,0 +1,9 @@
+<div #content class="content">
+    <ng-template [ngTemplateOutlet]="contentTpl"></ng-template>
+</div>
+
+<ng-template [ngIf]="!contentOnly">
+    <ng-template ngFor [ngForOf]="panels | async" let-ref>
+        <app-docked-panel-outlet [panel]="ref.panel" [ngStyle]="ref.style"></app-docked-panel-outlet>
+    </ng-template>
+</ng-template>

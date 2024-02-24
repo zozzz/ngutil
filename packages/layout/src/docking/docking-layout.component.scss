@@ -1,0 +1,19 @@
+:host {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+
+    position: relative;
+    overflow: hidden;
+
+    .content {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: stretch;
+
+        flex: 1;
+        z-index: 1;
+        max-height: 100%;
+        max-width: 100%,
+    }
+}

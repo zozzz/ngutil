@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing"
 
-import { LayoutComponent } from "./layout.component"
+import { DockingLayoutComponent } from "./docking-layout.component"
 
-describe("LayoutComponent", () => {
-    let component: LayoutComponent
-    let fixture: ComponentFixture<LayoutComponent>
+describe("DockingLayoutComponent", () => {
+    let component: DockingLayoutComponent
+    let fixture: ComponentFixture<DockingLayoutComponent>
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [LayoutComponent]
+            declarations: [DockingLayoutComponent]
         }).compileComponents()
 
-        fixture = TestBed.createComponent(LayoutComponent)
+        fixture = TestBed.createComponent(DockingLayoutComponent)
         component = fixture.componentInstance
         fixture.detectChanges()
     })

@@ -1,0 +1,50 @@
+:host {
+    --docking-panel-transition-duration: 250ms;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+
+    position: absolute;
+    transition: transform var(--docking-panel-transition-duration) ease-out, width var(--docking-panel-transition-duration) ease-out, height var(--docking-panel-transition-duration) ease-out;
+
+    &:not([state="mini"]) {
+        &[orient="horizontal"] {
+            height: var(--docking-panel-full-size);
+        }
+
+        &[orient="vertical"] {
+            width: var(--docking-panel-full-size);
+        }
+    }
+
+    &[state="mini"] {
+        &[orient="horizontal"] {
+            height: var(--docking-panel-mini-size);
+        }
+
+        &[orient="vertical"] {
+            width: var(--docking-panel-mini-size);
+        }
+    }
+
+    &[state="full"], &[state="mini"] {
+        &[orient="horizontal"] {
+            transform: translateY(var(--docking-panel-visible-translate));
+        }
+
+        &[orient="vertical"] {
+            transform: translateX(var(--docking-panel-visible-translate));
+        }
+    }
+
+    &[state="invisible"] {
+        &[orient="horizontal"] {
+            transform: translateY(var(--docking-panel-invisible-translate));
+        }
+
+        &[orient="vertical"] {
+            transform: translateX(var(--docking-panel-invisible-translate));
+        }
+    }
+}
