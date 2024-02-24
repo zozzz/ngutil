@@ -7,6 +7,9 @@
     "publish:libs": "nx release publish -g lib --verbose"
   },
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "@angular/animations": "~17.1.0",
     "@angular/common": "~17.1.0",
@@ -122,7 +125,6 @@
       "@release-it-plugins/workspaces": {
         "skipChecks": true,
         "publish": false,
-        "workspaces": ["packages/*"],
         "additionalManifests": {
           "versionUpdates": ["package.json"],
           "dependencyUpdates": ["peerDependencies"]
