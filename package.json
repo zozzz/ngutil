@@ -81,7 +81,7 @@
   },
   "release-it": {
     "hooks": {
-      "before:init": "pnpm install && git add . && git commit -m \"chore(tools): update pnpm-lock.yaml\" --allow-empty"
+      "before:init": "pnpm install && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): update pnpm-lock.yaml\")"
     },
     "npm": {
       "publish": false
