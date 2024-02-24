@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/source",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "release": "release-it --ci -V",
@@ -126,8 +126,12 @@
         "skipChecks": true,
         "publish": false,
         "additionalManifests": {
-          "versionUpdates": ["package.json"],
-          "dependencyUpdates": ["peerDependencies"]
+          "versionUpdates": [
+            "package.json"
+          ],
+          "dependencyUpdates": [
+            "peerDependencies"
+          ]
         }
       }
     }
