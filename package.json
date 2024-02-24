@@ -40,7 +40,7 @@
     "@nx/storybook": "18.0.5",
     "@nx/web": "18.0.5",
     "@nx/workspace": "18.0.5",
-    "@release-it-plugins/workspaces": "^4.2.0",
+    "@release-it/bumper": "^6.0.1",
     "@release-it/conventional-changelog": "^8.0.1",
     "@schematics/angular": "~17.1.0",
     "@storybook/addon-essentials": "^7.5.3",
@@ -122,14 +122,9 @@
         "infile": "CHANGELOG.md",
         "header": "# Changelog"
       },
-      "@release-it-plugins/workspaces": {
-        "skipChecks": true,
-        "publish": false,
-        "additionalManifests": {
-          "versionUpdates": [],
-          "dependencyUpdates": [
-            "peerDependencies"
-          ]
+      "@release-it/bumper": {
+        "out": {
+          "file": "packages/*/package.json"
         }
       }
     }
