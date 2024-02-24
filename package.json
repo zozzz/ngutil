@@ -3,7 +3,7 @@
   "version": "0.0.3-dev.2",
   "license": "MIT",
   "scripts": {
-    "release": "release-it --ci -V --preRelease=dev",
+    "release": "pnpm install && release-it --ci -V --preRelease=dev",
     "build:libs": "nx run-many -t build --projects=packages/*"
   },
   "private": true,
