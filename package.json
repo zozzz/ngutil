@@ -101,10 +101,7 @@
           ]
         },
         "infile": "CHANGELOG.md",
-        "header": "# Changelog",
-        "writerOpts": {
-          "groupBy": "scope"
-        }
+        "header": "# Changelog"
       },
       "@release-it/bumper": {
         "out": {
