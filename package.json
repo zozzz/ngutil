@@ -3,7 +3,7 @@
   "version": "0.0.3-dev.2",
   "license": "MIT",
   "scripts": {
-    "release": "pnpm install && release-it --ci -V --preRelease=dev",
+    "release": "release-it --ci -V --preRelease=dev",
     "build:libs": "nx run-many -t build --projects=packages/*"
   },
   "private": true,
@@ -80,6 +80,9 @@
     "typescript": "~5.3.2"
   },
   "release-it": {
+    "hooks": {
+      "before:init": "pnpm install && git add . && git commit -m 'chore(tools): update pnpm-lock.yaml'"
+    },
     "npm": {
       "publish": false
     },
