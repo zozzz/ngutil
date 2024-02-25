@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.0.3-dev.7](https://github.com/zozzz/ngutil/compare/0.0.3-dev.6...0.0.3-dev.7) (2024-02-25)
+
+
+### Features
+
+* **common:** Add coerceBoolAttr ([f2c5bc4](https://github.com/zozzz/ngutil/commit/f2c5bc4374b77d7d939a80abfb742e42cb253418))
+* **common:** Add NumberWithUnit ([12cffe9](https://github.com/zozzz/ngutil/commit/12cffe909623d179d0ca9f20718d080f90a08f76))
+* **common:** Add unngzone ([f86b91c](https://github.com/zozzz/ngutil/commit/f86b91cf9fa6c4451ff01b2d6cd089f8a3bed85c))
+* **layout:** Add dimension watcher ([097df62](https://github.com/zozzz/ngutil/commit/097df62542687ba6332db5f3be7c1cba21e0c1dc))
+* **layout:** Add FastDOM ([bf8d154](https://github.com/zozzz/ngutil/commit/bf8d154d2654a1e75c66553a93726d3da62db33b))
+* **layout:** Add l9 layout utils ([818dd4f](https://github.com/zozzz/ngutil/commit/818dd4f13c9488bb6d1b99d4e4d0328273f4bcc7))
+* **layout:** Add watchMedia ([a63d7d3](https://github.com/zozzz/ngutil/commit/a63d7d33f7c09c2145cd6d7488687219ecb09030))
+* **layout:** Docking layout rethink ([3fd5e8b](https://github.com/zozzz/ngutil/commit/3fd5e8bee0e03b02fc3e76be59639cc0609518b1))
+
+
+### Other changes
+
+* **common:** Add common package ([621734a](https://github.com/zozzz/ngutil/commit/621734adaecc4a714064d0dfc3acb1401a46d6f1))
+* **common:** Add destruct base class ([5e489e8](https://github.com/zozzz/ngutil/commit/5e489e8b84823c9d1c470b33e9d4661a6240e920))
+* **common:** Update package.json ([a453337](https://github.com/zozzz/ngutil/commit/a4533370fbf21712d3f488ac3aa968028c686454))
+* **docs:** Update DEVELOPMENT.md ([5ee07cb](https://github.com/zozzz/ngutil/commit/5ee07cb1510725d02fe9d29b774764c9a1f9ffdc))
+* **layout:** Add docking layout ([3ef27c9](https://github.com/zozzz/ngutil/commit/3ef27c9ad5fc0b2a1c546c4bb91c0af796f34a5d))
+* **layout:** Update storybook ([84715e5](https://github.com/zozzz/ngutil/commit/84715e5afea44355402dc3ad4588b1b112633ee0))
+* **layout:** Update storybook config ([be6fa7b](https://github.com/zozzz/ngutil/commit/be6fa7b3f45409b5fc819b03ceda86e44ca601ff))
+* **layout:** Update util public exports ([29b3867](https://github.com/zozzz/ngutil/commit/29b38676d00f703709bd4168a27d48a778fb6cca))
+* **tools:** update pnpm-lock.yaml ([f3fbbe4](https://github.com/zozzz/ngutil/commit/f3fbbe4cbde6a4325e251e9d63170157dc7e732f))
+
 ## [0.0.3-dev.6](https://github.com/zozzz/ngutil/compare/0.0.3-dev.5...0.0.3-dev.6) (2024-02-24)
 
 
