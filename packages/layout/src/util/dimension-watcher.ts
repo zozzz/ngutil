@@ -10,7 +10,7 @@ type Watches = Map<HTMLElement, Observable<Dimension>>
 export type WatchBox = ResizeObserverBoxOptions | "scroll-box"
 
 const RESIZE_WATCHES: Watches = new Map()
-const SCROLL_CONTENT_WATCHES: Watches = new Map()
+const SCROLL_WATCHES: Watches = new Map()
 
 export function watchDimension(el: HTMLElement, box: WatchBox = "border-box"): Observable<Dimension> {
     const zone = inject(NgZone)
@@ -22,7 +22,7 @@ function _watchResize(zone: NgZone, el: HTMLElement, box: WatchBox) {
 }
 
 function _watchScroll(zone: NgZone, el: HTMLElement) {
-    return _watch(zone, el, SCROLL_CONTENT_WATCHES, () => _createScollWatcher(zone, el))
+    return _watch(zone, el, SCROLL_WATCHES, () => _createScollWatcher(zone, el))
 }
 
 function _watch(zone: NgZone, el: HTMLElement, watches: Watches, factory: () => Observable<Dimension>) {
@@ -98,6 +98,7 @@ function _createScollWatcher(zone: NgZone, el: HTMLElement): Observable<Dimensio
             return () => {
                 dimSum.unsubscribe()
                 mutation.disconnect()
+                SCROLL_WATCHES.delete(el)
             }
         }).pipe(shareReplay(1))
     )
