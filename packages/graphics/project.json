@@ -1,0 +1,26 @@
+{
+  "name": "graphics",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/graphics/src",
+  "prefix": "nu",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "packages/graphics/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "packages/graphics/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "packages/graphics/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}
