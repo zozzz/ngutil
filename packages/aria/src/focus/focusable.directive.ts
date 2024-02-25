@@ -2,8 +2,7 @@ import { Directive, ElementRef, inject, NgZone } from "@angular/core"
 
 import { map, Observable, shareReplay } from "rxjs"
 
-import { Destructible } from "@ngutil/common"
-import { FastDOM } from "@ngutil/layout"
+import { Destructible, FastDOM } from "@ngutil/common"
 
 import { type FocusableEvent, type FocusOrigin, FocusService } from "./focus.service"
 
