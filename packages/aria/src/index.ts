@@ -1,1 +1,2 @@
-export * from "./lib/aria/aria.component"
+export * from "./activity"
+export * from "./focus"

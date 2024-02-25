@@ -7,9 +7,12 @@
   },
   "peerDependencies": {
     "@angular/common": "^17.1.0",
-    "@angular/core": "^17.1.0"
+    "@angular/core": "^17.1.0",
+    "@ngutil/common": "workspace:*",
+    "tabbable": "^6.2.0"
   },
   "dependencies": {
+
     "tslib": "^2.3.0"
   },
   "sideEffects": false
