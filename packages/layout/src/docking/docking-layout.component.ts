@@ -1,23 +1,3 @@
-/**
- * -------------------
- * | 1:1 | 1:2 | 1:3 |
- * -------------------
- * | 2:1 | 2:2 | 2:3 |
- * -------------------
- * | 3:1 | 3:2 | 3:3 |
- * -------------------
- *
- * const alias = {"left": "1:1-3:1", "right": "1:3-3:3", "top": "1:2", "bottom": "3:2"}
- *
- * <nu-docking>
- *      <ng-template nuDockingPanel="1:1-3:1"
- *          mode="overlay|embedded"
- *          state="opened|closed|minimized"
- *          #leftPanel="appDockedPanel"></ng-template>
- *      <ng-template #content></ng-template>
- * </nu-docking>
- */
-import { AsyncPipe, NgStyle, NgTemplateOutlet } from "@angular/common"
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -25,182 +5,304 @@ import {
     ContentChild,
     ContentChildren,
     ElementRef,
+    inject,
     Input,
     OnChanges,
     QueryList,
-    SimpleChanges,
-    TemplateRef,
-    ViewChild
+    SimpleChanges
 } from "@angular/core"
 
-import { BehaviorSubject, combineLatest, map, merge, Observable, startWith, Subject, switchMap } from "rxjs"
+import { combineLatest, map, Observable, shareReplay, startWith, Subject, switchMap } from "rxjs"
 
-import { Destructible } from "@ngutil/common"
+import { Destructible, NumberWithUnit } from "@ngutil/common"
 
-import { DockingPanelOutletComponent } from "./docking-panel-outlet.component"
-import { DockingPanelDirective } from "./docking-panel.directive"
-import { DockingPanelChanges } from "./docking-panel.service"
+import { FastDOM } from "../util"
+import { DockingContentComponent } from "./docking-content.component"
+import { type DockingPanelChanges, DockingPanelComponent } from "./docking-panel.component"
+
+type DockingVerticalPosition = "top" | "middle" | "bottom"
+type DockingHorizontalPositon = "left" | "center" | "right"
+type DockingPosition = `${DockingVerticalPosition}:${DockingHorizontalPositon}`
+export type DockingRange =
+    | DockingVerticalPosition
+    | DockingHorizontalPositon
+    | DockingPosition
+    | `${DockingPosition}-${DockingPosition}`
+
+export type DockingPositionMode = "absolute" | "fixed"
 
 const EMBEDDED_ZINDEX = 20
 const OVERLAY_ZINDEX = EMBEDDED_ZINDEX * 2
 
-interface PanelRefChanges {
-    ref: PanelRef
-    changes: DockingPanelChanges
-}
+type PanelsChanges = Array<{ panel: DockingPanelComponent; changes: DockingPanelChanges }>
 
-class PanelRef {
-    style: Partial<CSSStyleDeclaration> = {}
-    readonly changes: Observable<PanelRefChanges>
-    constructor(public readonly panel: DockingPanelDirective) {
-        this.changes = panel.changes.pipe(
-            map(changes => {
-                return { ref: this, changes }
-            })
-        )
-    }
-}
+// interface PanelRefChanges {
+//     ref: PanelRef
+//     changes: DockingPanelChanges
+// }
+
+// class PanelRef {
+//     style: Partial<CSSStyleDeclaration> = {}
+//     readonly changes: Observable<PanelRefChanges>
+//     constructor(public readonly panel: DockingPanelDirective) {
+//         this.changes = panel.changes.pipe(
+//             map(changes => {
+//                 return { ref: this, changes }
+//             })
+//         )
+//     }
+// }
 
 @Component({
     selector: "nu-docking",
     standalone: true,
-    imports: [DockingPanelOutletComponent, NgStyle, AsyncPipe, NgTemplateOutlet],
+    imports: [DockingContentComponent],
     template: `
-        <div #content class="content">
-            <ng-template [ngTemplateOutlet]="contentTpl"></ng-template>
-        </div>
+        <ng-content select="nu-docking-panel"></ng-content>
 
-        @if (!contentOnly) {
-            @for (ref of panels | async; track ref) {
-                <nu-docking-panel-outlet [panel]="ref.panel" [ngStyle]="ref.style" />
-            }
+        @if (!contentComponent) {
+            <nu-docking-content>
+                <ng-content></ng-content>
+            </nu-docking-content>
+        } @else {
+            <ng-content select="nu-docking-content"></ng-content>
         }
     `,
     styleUrl: "./docking-layout.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DockingLayoutComponent extends Destructible implements AfterViewInit, OnChanges {
+    readonly #el = inject(ElementRef<HTMLElement>)
+
     @Input() contentOnly = false
+    @Input() positionMode: DockingPositionMode = "absolute"
 
-    @ContentChild("content", { read: TemplateRef }) contentTpl!: TemplateRef<any>
+    @ContentChild(DockingContentComponent) contentComponent?: DockingContentComponent
+    @ContentChildren(DockingPanelComponent) dockingPanels!: QueryList<DockingPanelComponent>
 
-    @ContentChildren(DockingPanelDirective) dockingPanels!: QueryList<DockingPanelDirective>
-
-    @ViewChild("content", { read: ElementRef }) contentEl!: ElementRef<HTMLDivElement>
-
-    readonly panels = new BehaviorSubject<PanelRef[]>([])
+    // readonly panels = new BehaviorSubject<PanelRef[]>([])
+    readonly panels!: Observable<Array<DockingPanelComponent>>
 
     #reflow = new Subject<void>()
 
     ngAfterViewInit(): void {
+        // eslint-disable-next-line prettier/prettier
+        (this as { panels: Observable<Array<DockingPanelComponent>> }).panels = this.dockingPanels.changes.pipe(
+            startWith(null),
+            map(() => this.dockingPanels.toArray()),
+            shareReplay(1)
+        )
+
+        // this.panels.subscribe(panels => console.log({ panels }))
+
         this.d
-            .sub(merge(this.dockingPanels.changes, this.#reflow))
+            .sub(combineLatest({ panels: this.panels, reflow: this.#reflow.pipe(startWith(null)) }))
             .pipe(
-                startWith(null),
-                map(() => this.dockingPanels.map(panel => new PanelRef(panel))),
-                switchMap(refs => combineLatest(refs.map(ref => ref.changes))),
-                map(changes => {
-                    this.#layout(changes)
-                    return changes.map(c => c.ref)
-                })
+                switchMap(({ panels }) =>
+                    combineLatest(
+                        panels.map(panel =>
+                            panel.changes.pipe(
+                                map(changes => {
+                                    return { panel, changes }
+                                })
+                            )
+                        )
+                    )
+                )
             )
-            .subscribe(this.panels)
+            .subscribe(this.#layout.bind(this))
+
+        // this.d
+        //     .sub(merge(this.dockingPanels.changes, this.#reflow))
+        //     .pipe(
+        //         startWith(null),
+        //         map(() => this.dockingPanels.map(panel => new PanelRef(panel))),
+        //         switchMap(refs => combineLatest(refs.map(ref => ref.changes))),
+        //         map(changes => {
+        //             this.#layout(changes)
+        //             return changes.map(c => c.ref)
+        //         })
+        //     )
+        //     .subscribe(this.panels)
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if ("contentOnly" in changes) {
+        if ("contentOnly" in changes || "positionMode" in changes) {
             this.#reflow.next()
         }
     }
 
-    #layout(entries: PanelRefChanges[]) {
+    #layout(entries: PanelsChanges) {
+        console.log("layout", entries)
         let paddingTop = 0
         let paddingRight = 0
         let paddingBottom = 0
         let paddingLeft = 0
+        let embeddedZIndex = EMBEDDED_ZINDEX
+        let overlayZIndex = OVERLAY_ZINDEX
 
-        if (!this.contentOnly) {
-            let embeddedZIndex = EMBEDDED_ZINDEX
-            let overlayZIndex = OVERLAY_ZINDEX
-            const leftRight: PanelRefChanges[] = entries.filter(v =>
-                ["left", "right"].includes(v.changes.position.side)
-            )
-            const topBottom: PanelRefChanges[] = entries.filter(v =>
-                ["top", "bottom"].includes(v.changes.position.side)
-            )
-
+        if (this.contentOnly) {
+            // TODO:...
+        } else {
             for (const entry of entries) {
-                const changes = entry.changes
-                const ref = entry.ref
+                const panelState = entry.changes
+                const panelSize =
+                    panelState.state === "full"
+                        ? panelState.fullSize.value
+                        : panelState.state === "mini"
+                          ? panelState.miniSize.value
+                          : 0
 
-                if (changes.mode === "embedded") {
-                    ref.style.zIndex = `${embeddedZIndex++}`
-                } else if (changes.mode === "overlay") {
-                    ref.style.zIndex = `${overlayZIndex++}`
+                const isHorizontal = panelState.position.orient === "horizontal"
+                const isEmbedded = panelState.mode === "embedded"
+
+                let panelTop = null
+                let panelRight = null
+                let panelBottom = null
+                let panelLeft = null
+
+                if (isHorizontal) {
+                    panelLeft = 0
+                    panelRight = 0
+                    if (panelState.position.cells[0].v === "top") {
+                        if (isEmbedded) {
+                            paddingTop = Math.max(paddingTop, panelSize)
+                        }
+                        panelTop = 0
+                    } else if (panelState.position.cells[0].v === "bottom") {
+                        if (isEmbedded) {
+                            paddingBottom = Math.max(paddingBottom, panelSize)
+                        }
+                        panelBottom = 0
+                    }
+                } else {
+                    panelTop = 0
+                    panelBottom = 0
+
+                    if (panelState.position.cells[0].h === "left") {
+                        if (isEmbedded) {
+                            paddingLeft = Math.max(paddingLeft, panelSize)
+                        }
+                        panelLeft = 0
+                    } else if (panelState.position.cells[0].h === "right") {
+                        if (isEmbedded) {
+                            paddingRight = Math.max(paddingRight, panelSize)
+                        }
+                        panelRight = 0
+                    }
                 }
+
+                const panelGivenSize =
+                    panelState.state === "full"
+                        ? panelState.fullSize
+                        : panelState.state === "mini"
+                          ? panelState.miniSize
+                          : new NumberWithUnit(0, "px")
+
+                FastDOM.setStyle(entry.panel.el.nativeElement, {
+                    "z-index": `${isEmbedded ? embeddedZIndex++ : overlayZIndex++}`,
+                    "--docking-panel-t": panelTop != null ? `${panelTop}px` : null,
+                    "--docking-panel-r": panelRight != null ? `${panelRight}px` : null,
+                    "--docking-panel-b": panelBottom != null ? `${panelBottom}px` : null,
+                    "--docking-panel-l": panelLeft != null ? `${panelLeft}px` : null,
+                    "--docking-panel-w": !isHorizontal
+                        ? `${panelGivenSize.unit === "auto" ? "auto" : panelGivenSize}`
+                        : null,
+                    "--docking-panel-h": isHorizontal
+                        ? `${panelGivenSize.unit === "auto" ? "auto" : panelGivenSize}`
+                        : null,
+                    "--docking-panel-real-w": !isHorizontal ? `${panelSize}px` : null,
+                    "--docking-panel-real-h": isHorizontal ? `${panelSize}px` : null
+                })
             }
 
-            for (const entry of leftRight) {
-                const changes = entry.changes
-                const ref = entry.ref
+            console.log({ paddingTop, paddingRight, paddingBottom, paddingLeft })
 
-                const padding =
-                    changes.mode === "embedded"
-                        ? changes.state === "full"
-                            ? changes.fullSize
-                            : changes.state === "mini"
-                              ? changes.miniSize
-                              : 0
-                        : 0
-
-                ref.style.top = "0"
-                ref.style.bottom = "0"
-
-                if (changes.position.side === "left") {
-                    paddingLeft = Math.max(paddingLeft, padding)
-                    ref.style.left = "0"
-                    ref.style.right = ""
-                } else {
-                    paddingRight = Math.max(paddingRight, padding)
-                    ref.style.right = "0"
-                    ref.style.left = ""
-                }
-            }
-
-            for (const entry of topBottom) {
-                const changes = entry.changes
-                const ref = entry.ref
-
-                const padding =
-                    changes.mode === "embedded"
-                        ? changes.state === "full"
-                            ? changes.fullSize
-                            : changes.state === "mini"
-                              ? changes.miniSize
-                              : 0
-                        : 0
-
-                if (changes.mode === "embedded") {
-                    ref.style.left = `${paddingLeft}px`
-                    ref.style.right = `${paddingRight}px`
-                } else {
-                    ref.style.left = "0"
-                    ref.style.right = "0"
-                }
-
-                if (changes.position.side === "top") {
-                    paddingTop = Math.max(paddingTop, padding)
-                    ref.style.top = "0"
-                    ref.style.bottom = ""
-                } else {
-                    paddingBottom = Math.max(paddingBottom, padding)
-                    ref.style.bottom = `0`
-                    ref.style.top = ""
-                }
-            }
+            FastDOM.setStyle(this.#el.nativeElement, {
+                "--docking-layout-top": `${paddingTop}px`,
+                "--docking-layout-right": `${paddingRight}px`,
+                "--docking-layout-bottom": `${paddingBottom}px`,
+                "--docking-layout-left": `${paddingLeft}px`
+            })
         }
+    }
 
-        const cel = this.contentEl.nativeElement
-        cel.style.padding = `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`
+    #layoutOld(entries: PanelsChanges) {
+        // let paddingTop = 0
+        // let paddingRight = 0
+        // let paddingBottom = 0
+        // let paddingLeft = 0
+        // if (!this.contentOnly) {
+        //     let embeddedZIndex = EMBEDDED_ZINDEX
+        //     let overlayZIndex = OVERLAY_ZINDEX
+        //     const leftRight: PanelRefChanges[] = entries.filter(v =>
+        //         ["left", "right"].includes(v.changes.position.side)
+        //     )
+        //     const topBottom: PanelRefChanges[] = entries.filter(v =>
+        //         ["top", "bottom"].includes(v.changes.position.side)
+        //     )
+        //     for (const entry of entries) {
+        //         const changes = entry.changes
+        //         const ref = entry.ref
+        //         if (changes.mode === "embedded") {
+        //             ref.style.zIndex = `${embeddedZIndex++}`
+        //         } else if (changes.mode === "overlay") {
+        //             ref.style.zIndex = `${overlayZIndex++}`
+        //         }
+        //     }
+        //     for (const entry of leftRight) {
+        //         const changes = entry.changes
+        //         const ref = entry.ref
+        //         const padding =
+        //             changes.mode === "embedded"
+        //                 ? changes.state === "full"
+        //                     ? changes.fullSize
+        //                     : changes.state === "mini"
+        //                       ? changes.miniSize
+        //                       : 0
+        //                 : 0
+        //         ref.style.top = "0"
+        //         ref.style.bottom = "0"
+        //         if (changes.position.side === "left") {
+        //             paddingLeft = Math.max(paddingLeft, padding)
+        //             ref.style.left = "0"
+        //             ref.style.right = ""
+        //         } else {
+        //             paddingRight = Math.max(paddingRight, padding)
+        //             ref.style.right = "0"
+        //             ref.style.left = ""
+        //         }
+        //     }
+        //     for (const entry of topBottom) {
+        //         const changes = entry.changes
+        //         const ref = entry.ref
+        //         const padding =
+        //             changes.mode === "embedded"
+        //                 ? changes.state === "full"
+        //                     ? changes.fullSize
+        //                     : changes.state === "mini"
+        //                       ? changes.miniSize
+        //                       : 0
+        //                 : 0
+        //         if (changes.mode === "embedded") {
+        //             ref.style.left = `${paddingLeft}px`
+        //             ref.style.right = `${paddingRight}px`
+        //         } else {
+        //             ref.style.left = "0"
+        //             ref.style.right = "0"
+        //         }
+        //         if (changes.position?.cells[0].v === "top") {
+        //             paddingTop = Math.max(paddingTop, padding)
+        //             ref.style.top = "0"
+        //             ref.style.bottom = ""
+        //         } else {
+        //             paddingBottom = Math.max(paddingBottom, padding)
+        //             ref.style.bottom = `0`
+        //             ref.style.top = ""
+        //         }
+        //     }
+        // }
+        // const cel = this.contentEl.nativeElement
+        // cel.style.padding = `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`
     }
 }

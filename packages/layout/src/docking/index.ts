@@ -1,19 +1,12 @@
 import { NgModule } from "@angular/core"
 
+import { DockingContentComponent } from "./docking-content.component"
 import { DockingLayoutComponent } from "./docking-layout.component"
-import { DockingPanelDirective } from "./docking-panel.directive"
-import { DockingPanelChanges, DockingPanelMode, DockingPanelPosition, DockingPanelState } from "./docking-panel.service"
+import { DockingPanelComponent } from "./docking-panel.component"
 
-export {
-    DockingLayoutComponent,
-    DockingPanelDirective,
-    DockingPanelMode,
-    DockingPanelPosition,
-    DockingPanelState,
-    DockingPanelChanges
-}
+export { DockingLayoutComponent, DockingPanelComponent, DockingContentComponent }
 
-const members = [DockingLayoutComponent, DockingPanelDirective]
+const members = [DockingLayoutComponent, DockingPanelComponent, DockingContentComponent]
 
 @NgModule({
     imports: members,

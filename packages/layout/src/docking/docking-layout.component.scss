@@ -1,19 +1,50 @@
+// $vertical: "top", "middle", "bottom";
+// $horizontal: "left", "center", "right";
+
+// :host {
+//     // --docking-XXX is setting by component, based on which panel is visible
+//     ---docking-XXX: var(--docking-XXX, 0px);
+
+//     --docking-top-left-height: 1px;
+//     --docking-top-left-width: 1px;
+//     --docking-bottom-height: 1px;
+//     --docking-left-width: 1px;
+//     --docking-right-width: 1px;
+// }
+
+// // child
+// [docking-child="TL"] {
+//     width: var(---docking-top-left-width);
+//     height: var(---docking-top-left-height);
+// }
+
+/**
+ * -----------------------------------------------
+ * | TOP:LEFT     |  TOP:CENTER   | TOP:RIGHT    |
+ * -----------------------------------------------
+ * | MIDDLE:LEFT  | MIDDLE:CENTER | MIDDLE:RIGH  |
+ * -----------------------------------------------
+ * | BOTTOMN:LEFT | BOTTOM:CENTER | BOTTOM:RIGHT |
+ * -----------------------------------------------
+ */
+
 :host {
+    ---docking-layout-top: var(--docking-layout-top, 0px);
+    ---docking-layout-right: var(--docking-layout-right, 0px);
+    ---docking-layout-bottom: var(--docking-layout-bottom, 0px);
+    ---docking-layout-left: var(--docking-layout-left, 0px);
+    ---docking-layout-anim-duration: var(--docking-layout-anim-duration, 200ms);
+    ---docking-layout-anim-ease: var(--docking-layout-anim-ease, ease-out);
+
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
+    z-index: 0;
 
-    .content {
-        display: flex;
-        flex-flow: column nowrap;
-        align-items: stretch;
+    padding: var(---docking-layout-top) var(---docking-layout-right) var(---docking-layout-bottom) var(---docking-layout-left);
 
-        flex: 1;
-        z-index: 1;
-        max-height: 100%;
-        max-width: 100%,
-    }
+    transition: padding var(---docking-layout-anim-duration) var(---docking-layout-anim-ease);
 }

@@ -1,0 +1,59 @@
+:host {
+    ---docking-panel-t: var(--docking-panel-t, auto);
+    ---docking-panel-r: var(--docking-panel-r, auto);
+    ---docking-panel-b: var(--docking-panel-b, auto);
+    ---docking-panel-l: var(--docking-panel-l, auto);
+    ---docking-panel-w: var(--docking-panel-w, auto);
+    ---docking-panel-h: var(--docking-panel-h, auto);
+    ---docking-panel-real-w: var(--docking-panel-real-w, var(---docking-panel-w));
+    ---docking-panel-real-h: var(--docking-panel-real-h, var(---docking-panel-h));
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    position: absolute;
+    box-sizing: border-box;
+
+    top: var(---docking-panel-t);
+    right: var(---docking-panel-r);
+    bottom: var(---docking-panel-b);
+    left: var(---docking-panel-l);
+
+    width: var(---docking-panel-w);
+    height: var(---docking-panel-h);
+
+    // TODO: dont animate width & height when not in visible state
+    transition:
+        transform var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
+        width var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
+        height var(---docking-layout-anim-duration) var(---docking-layout-anim-ease);
+
+    &[side="top"], &[side="left"] {
+        ---docking-panel-t-hide: -100%;
+        ---docking-panel-t-visible: 0%;
+    }
+    &[side="bottom"], &[side="right"] {
+        ---docking-panel-t-hide: 100%;
+        ---docking-panel-t-visible: 0%;
+    }
+
+    &[state="invisible"] {
+        &[orient="horizontal"] {
+            transform: translateY(var(---docking-panel-t-hide));
+        }
+
+        &[orient="vertical"] {
+            transform: translateX(var(---docking-panel-t-hide));
+        }
+    }
+
+    &:not([state="invisible"]) {
+        &[orient="horizontal"] {
+            transform: translateY(var(---docking-panel-t-visible));
+        }
+
+        &[orient="vertical"] {
+            transform: translateX(var(---docking-panel-t-visible));
+        }
+    }
+}

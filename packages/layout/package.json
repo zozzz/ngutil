@@ -8,7 +8,7 @@
   "peerDependencies": {
     "@angular/common": "^17.1.0",
     "@angular/core": "^17.1.0",
-    "@ngutil/aria": "workspace:*"
+    "@ngutil/common": "workspace:*"
   },
   "dependencies": {
     "tslib": "^2.3.0"
