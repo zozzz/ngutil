@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.3-dev.8](https://github.com/zozzz/ngutil/compare/0.0.3-dev.7...0.0.3-dev.8) (2024-02-25)
+
+
+### Bug Fixes
+
+* **layout:** Remove observable from scroll watchers ([410e8fc](https://github.com/zozzz/ngutil/commit/410e8fcf0d4ffe044a7fd717246366207ba948a2))
+
+
+### Other changes
+
+* **aria:** Add focus & actvity services ([c72f795](https://github.com/zozzz/ngutil/commit/c72f795df36f3565bb67559df2faf13d6946e10c))
+* **tools:** update pnpm-lock.yaml ([758b5ce](https://github.com/zozzz/ngutil/commit/758b5ced2e0ccdf7e4bcc6c6e9721f14585ecb43))
+
 ## [0.0.3-dev.7](https://github.com/zozzz/ngutil/compare/0.0.3-dev.6...0.0.3-dev.7) (2024-02-25)
 
 

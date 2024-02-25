@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/aria",
-  "version": "0.0.3-dev.7",
+  "version": "0.0.3-dev.8",
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/aria/"
@@ -12,7 +12,6 @@
     "tabbable": "^6.2.0"
   },
   "dependencies": {
-
     "tslib": "^2.3.0"
   },
   "sideEffects": false
