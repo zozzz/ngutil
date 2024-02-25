@@ -1,6 +1,10 @@
 {
   "name": "@ngutil/common",
   "version": "0.0.1",
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/common/"
+  },
   "peerDependencies": {
     "@angular/common": "^17.1.0",
     "@angular/core": "^17.1.0"
