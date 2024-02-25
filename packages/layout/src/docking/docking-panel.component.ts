@@ -2,10 +2,17 @@ import { Component, ElementRef, inject, Input, Output } from "@angular/core"
 
 import { BehaviorSubject, combineLatest, map, Observable, of, shareReplay, switchMap } from "rxjs"
 
-import { BooleanInput, coerceBoolAttr, Destructible, NumberWithUnit, NumberWithUnitInput } from "@ngutil/common"
+import {
+    BooleanInput,
+    coerceBoolAttr,
+    Destructible,
+    FastDOM,
+    NumberWithUnit,
+    NumberWithUnitInput
+} from "@ngutil/common"
 
 import { L9Range, L9RangeName } from "../l9/range"
-import { FastDOM, watchDimension } from "../util"
+import { watchDimension } from "../util"
 
 export type DockingPanelState = "full" | "mini" | "invisible"
 export type DockingPanelMode = "overlay" | "embedded"

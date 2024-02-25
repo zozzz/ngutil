@@ -1,4 +1,4 @@
-import { rawRequestAnimationFrame } from "@ngutil/common"
+import { rawRequestAnimationFrame } from "./unngzone"
 
 type FastDomHandler = () => void
 

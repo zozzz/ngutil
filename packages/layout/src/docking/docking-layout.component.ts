@@ -14,9 +14,8 @@ import {
 
 import { combineLatest, map, Observable, shareReplay, startWith, Subject, switchMap } from "rxjs"
 
-import { Destructible, NumberWithUnit } from "@ngutil/common"
+import { Destructible, FastDOM, NumberWithUnit } from "@ngutil/common"
 
-import { FastDOM } from "../util"
 import { DockingContentComponent } from "./docking-content.component"
 import { type DockingPanelChanges, DockingPanelComponent } from "./docking-panel.component"
 
