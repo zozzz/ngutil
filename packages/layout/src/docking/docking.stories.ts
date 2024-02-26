@@ -5,7 +5,7 @@ import { DockingLayoutComponent } from "./docking-layout.component"
 import { NuDockingLayout } from "./index"
 
 export default {
-    title: "Shared / DockingLayout",
+    title: "Layout / DockingLayout",
     component: DockingLayoutComponent,
     decorators: [moduleMetadata({ imports: [NuDockingLayout] })],
     parameters: {
