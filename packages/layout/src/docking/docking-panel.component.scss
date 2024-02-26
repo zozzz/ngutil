@@ -38,7 +38,7 @@
         ---docking-panel-t-visible: 0%;
     }
 
-    &[state="invisible"] {
+    &[state="hidden"] {
         &[orient="horizontal"] {
             transform: translateY(var(---docking-panel-t-hide));
         }
@@ -48,7 +48,7 @@
         }
     }
 
-    &:not([state="invisible"]) {
+    &:not([state="hidden"]) {
         &[orient="horizontal"] {
             transform: translateY(var(---docking-panel-t-visible));
         }

@@ -29,6 +29,7 @@ export const DockingLayout: StoryFn<Story> = args => {
                     fullSize="200"
                     miniSize="48"
                     mode="rigid"
+                    state="hidden"
                     #leftPanel="nuDockingPanel">
                 <div style="width:100%;height:100%;background:cyan;opacity:0.5">
                     <div style="width:var(--docking-panel-full-size);background:#CC3300">FULL SIZE</div>
@@ -57,7 +58,7 @@ export const DockingLayout: StoryFn<Story> = args => {
 
             <nu-docking-panel
                     position="bottom"
-                    state="invisible"
+                    state="hidden"
                     mode="over"
                     fullSize="100"
                     #bottomPanel="nuDockingPanel">

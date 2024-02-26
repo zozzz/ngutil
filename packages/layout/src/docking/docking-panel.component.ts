@@ -14,11 +14,11 @@ import {
 import { L9Range, L9RangeName } from "../l9/range"
 import { watchDimension } from "../util"
 
-export type DockingPanelState = "full" | "mini" | "invisible"
+export type DockingPanelState = "full" | "mini" | "hidden"
 export type DockingPanelMode = "over" | "push" | "rigid"
 
 const DEFAULT_POSITION = L9Range.coerce("left")
-const INVISIBLE_SIZE = new NumberWithUnit(0, "px")
+const HIDDEN_SIZE = new NumberWithUnit(0, "px")
 const AUTO_SIZE = NumberWithUnit.coerce("auto")
 
 @Component({
@@ -51,7 +51,7 @@ export class DockingPanelComponent extends Destructible {
         }
     }
     @Output("stateChanges")
-    readonly state = new BehaviorSubject<DockingPanelState>("invisible")
+    readonly state = new BehaviorSubject<DockingPanelState>("full")
 
     @Input("mode")
     set modeInput(val: DockingPanelMode) {
@@ -77,7 +77,7 @@ export class DockingPanelComponent extends Destructible {
             this.#miniSize.next(coerced)
         }
     }
-    readonly #miniSize = new BehaviorSubject<NumberWithUnit>(INVISIBLE_SIZE)
+    readonly #miniSize = new BehaviorSubject<NumberWithUnit>(HIDDEN_SIZE)
 
     @Input("minimizable")
     set minimizable(val: BooleanInput) {
@@ -157,8 +157,8 @@ export class DockingPanelComponent extends Destructible {
             let w = null
             let h = null
 
-            // TODO: when change state from mini -> invisible, currently wrong behavior
-            // the good behavior is to not gain fullSize ang go to invisible
+            // TODO: when change state from mini -> hidden, currently wrong behavior
+            // the good behavior is to not gain fullSize ang go to hidden
             if (changes.state === "mini") {
                 if (isHorizontal) {
                     h = changes.miniSize.unit === "auto" ? changes.contentSize.height : changes.miniSize
@@ -191,7 +191,7 @@ export class DockingPanelComponent extends Destructible {
     }
 
     close() {
-        this.state.next("invisible")
+        this.state.next("hidden")
     }
 
     minimize() {
