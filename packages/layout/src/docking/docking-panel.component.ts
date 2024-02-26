@@ -32,9 +32,6 @@ export class DockingPanelComponent extends Destructible {
     @Input("position")
     set positionInput(val: L9Range | L9RangeName) {
         const coerced = L9Range.coerce(val)
-
-        console.log("SET POSITION", coerced, this.position.value.isEq(coerced))
-
         if (coerced.orient === "rect") {
             throw new Error(`Invalid position value: ${val}`)
         }

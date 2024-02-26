@@ -132,7 +132,6 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
     }
 
     #layout(entries: PanelsChanges) {
-        console.log("layout", entries)
         let paddingTop = 0
         let paddingRight = 0
         let paddingBottom = 0
@@ -215,8 +214,6 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                 })
             }
 
-            console.log({ paddingTop, paddingRight, paddingBottom, paddingLeft })
-
             FastDOM.setStyle(this.#el.nativeElement, {
                 "--docking-layout-top": `${paddingTop}px`,
                 "--docking-layout-right": `${paddingRight}px`,
@@ -224,84 +221,5 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                 "--docking-layout-left": `${paddingLeft}px`
             })
         }
-    }
-
-    #layoutOld(entries: PanelsChanges) {
-        // let paddingTop = 0
-        // let paddingRight = 0
-        // let paddingBottom = 0
-        // let paddingLeft = 0
-        // if (!this.contentOnly) {
-        //     let embeddedZIndex = EMBEDDED_ZINDEX
-        //     let overlayZIndex = OVERLAY_ZINDEX
-        //     const leftRight: PanelRefChanges[] = entries.filter(v =>
-        //         ["left", "right"].includes(v.changes.position.side)
-        //     )
-        //     const topBottom: PanelRefChanges[] = entries.filter(v =>
-        //         ["top", "bottom"].includes(v.changes.position.side)
-        //     )
-        //     for (const entry of entries) {
-        //         const changes = entry.changes
-        //         const ref = entry.ref
-        //         if (changes.mode === "embedded") {
-        //             ref.style.zIndex = `${embeddedZIndex++}`
-        //         } else if (changes.mode === "overlay") {
-        //             ref.style.zIndex = `${overlayZIndex++}`
-        //         }
-        //     }
-        //     for (const entry of leftRight) {
-        //         const changes = entry.changes
-        //         const ref = entry.ref
-        //         const padding =
-        //             changes.mode === "embedded"
-        //                 ? changes.state === "full"
-        //                     ? changes.fullSize
-        //                     : changes.state === "mini"
-        //                       ? changes.miniSize
-        //                       : 0
-        //                 : 0
-        //         ref.style.top = "0"
-        //         ref.style.bottom = "0"
-        //         if (changes.position.side === "left") {
-        //             paddingLeft = Math.max(paddingLeft, padding)
-        //             ref.style.left = "0"
-        //             ref.style.right = ""
-        //         } else {
-        //             paddingRight = Math.max(paddingRight, padding)
-        //             ref.style.right = "0"
-        //             ref.style.left = ""
-        //         }
-        //     }
-        //     for (const entry of topBottom) {
-        //         const changes = entry.changes
-        //         const ref = entry.ref
-        //         const padding =
-        //             changes.mode === "embedded"
-        //                 ? changes.state === "full"
-        //                     ? changes.fullSize
-        //                     : changes.state === "mini"
-        //                       ? changes.miniSize
-        //                       : 0
-        //                 : 0
-        //         if (changes.mode === "embedded") {
-        //             ref.style.left = `${paddingLeft}px`
-        //             ref.style.right = `${paddingRight}px`
-        //         } else {
-        //             ref.style.left = "0"
-        //             ref.style.right = "0"
-        //         }
-        //         if (changes.position?.cells[0].v === "top") {
-        //             paddingTop = Math.max(paddingTop, padding)
-        //             ref.style.top = "0"
-        //             ref.style.bottom = ""
-        //         } else {
-        //             paddingBottom = Math.max(paddingBottom, padding)
-        //             ref.style.bottom = `0`
-        //             ref.style.top = ""
-        //         }
-        //     }
-        // }
-        // const cel = this.contentEl.nativeElement
-        // cel.style.padding = `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`
     }
 }
