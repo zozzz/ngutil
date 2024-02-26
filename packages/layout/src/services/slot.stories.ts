@@ -12,7 +12,7 @@ class StorySlotsService extends SlotsService<StorySlots> {}
 
 @Directive({
     standalone: true,
-    selector: "ng-template[storySlot]",
+    selector: "[storySlot]",
     inputs: [{ name: "slot", alias: "storySlot" }]
 })
 class StorySlot extends SlotDirective<StorySlots> {
@@ -21,7 +21,7 @@ class StorySlot extends SlotDirective<StorySlots> {
 
 @Directive({
     standalone: true,
-    selector: "ng-template[storySlotOutlet]",
+    selector: "[storySlotOutlet]",
     inputs: [{ name: "slot", alias: "storySlotOutlet" }]
 })
 class StorySlotOutlet extends SlotOutletDirective<StorySlots> {
@@ -104,6 +104,7 @@ export const Basic: StoryFn<Story> = args => {
             <ng-template storySlot="top:1 as topFirst"><div>OUTER/TOP:1 Y</div></ng-template>
             <ng-template storySlot="bottom"><div>OUTER/BOTTOM:LAST</div></ng-template>
             <ng-template storySlot="bottom:10"><div>OUTER/BOTTOM:10</div></ng-template>
+            <!-- <div *storySlot="bottom:12">OUTER/BOTTOM:12</div> -->
             <ng-template storySlot="top"><div>OUTER/TOP:LAST</div></ng-template>
             <ng-template storySlot="bottom:1"><div>OUTER/BOTTOM:1</div></ng-template>
 
