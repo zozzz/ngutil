@@ -15,7 +15,7 @@ import { L9Range, L9RangeName } from "../l9/range"
 import { watchDimension } from "../util"
 
 export type DockingPanelState = "full" | "mini" | "invisible"
-export type DockingPanelMode = "overlay" | "embedded"
+export type DockingPanelMode = "over" | "push" | "rigid"
 
 const DEFAULT_POSITION = L9Range.coerce("left")
 
@@ -57,7 +57,7 @@ export class DockingPanelComponent extends Destructible {
             this.mode.next(val)
         }
     }
-    readonly mode = new BehaviorSubject<DockingPanelMode>("overlay")
+    readonly mode = new BehaviorSubject<DockingPanelMode>("rigid")
 
     @Input("fullSize")
     set fullSizeInput(val: NumberWithUnitInput) {

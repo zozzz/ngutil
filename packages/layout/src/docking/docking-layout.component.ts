@@ -28,29 +28,10 @@ export type DockingRange =
     | DockingPosition
     | `${DockingPosition}-${DockingPosition}`
 
-export type DockingPositionMode = "absolute" | "fixed"
-
-const EMBEDDED_ZINDEX = 20
-const OVERLAY_ZINDEX = EMBEDDED_ZINDEX * 2
+const RIGID_ZINDEX = 20
+const OVER_ZINDEX = RIGID_ZINDEX * 2
 
 type PanelsChanges = Array<{ panel: DockingPanelComponent; changes: DockingPanelChanges }>
-
-// interface PanelRefChanges {
-//     ref: PanelRef
-//     changes: DockingPanelChanges
-// }
-
-// class PanelRef {
-//     style: Partial<CSSStyleDeclaration> = {}
-//     readonly changes: Observable<PanelRefChanges>
-//     constructor(public readonly panel: DockingPanelDirective) {
-//         this.changes = panel.changes.pipe(
-//             map(changes => {
-//                 return { ref: this, changes }
-//             })
-//         )
-//     }
-// }
 
 @Component({
     selector: "nu-docking",
@@ -74,7 +55,6 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
     readonly #el = inject(ElementRef<HTMLElement>)
 
     @Input() contentOnly = false
-    @Input() positionMode: DockingPositionMode = "absolute"
 
     @ContentChild(DockingContentComponent) contentComponent?: DockingContentComponent
     @ContentChildren(DockingPanelComponent) dockingPanels!: QueryList<DockingPanelComponent>
@@ -92,8 +72,6 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
             shareReplay(1)
         )
 
-        // this.panels.subscribe(panels => console.log({ panels }))
-
         this.d
             .sub(combineLatest({ panels: this.panels, reflow: this.#reflow.pipe(startWith(null)) }))
             .pipe(
@@ -110,19 +88,6 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                 )
             )
             .subscribe(this.#layout.bind(this))
-
-        // this.d
-        //     .sub(merge(this.dockingPanels.changes, this.#reflow))
-        //     .pipe(
-        //         startWith(null),
-        //         map(() => this.dockingPanels.map(panel => new PanelRef(panel))),
-        //         switchMap(refs => combineLatest(refs.map(ref => ref.changes))),
-        //         map(changes => {
-        //             this.#layout(changes)
-        //             return changes.map(c => c.ref)
-        //         })
-        //     )
-        //     .subscribe(this.panels)
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -136,8 +101,8 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
         let paddingRight = 0
         let paddingBottom = 0
         let paddingLeft = 0
-        let embeddedZIndex = EMBEDDED_ZINDEX
-        let overlayZIndex = OVERLAY_ZINDEX
+        let rigidZIndex = RIGID_ZINDEX
+        let overZIndex = OVER_ZINDEX
 
         if (this.contentOnly) {
             // TODO:...
@@ -152,7 +117,7 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                           : 0
 
                 const isHorizontal = panelState.position.orient === "horizontal"
-                const isEmbedded = panelState.mode === "embedded"
+                const isRigid = panelState.mode === "rigid"
 
                 let panelTop = null
                 let panelRight = null
@@ -163,12 +128,12 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                     panelLeft = 0
                     panelRight = 0
                     if (panelState.position.cells[0].v === "top") {
-                        if (isEmbedded) {
+                        if (isRigid) {
                             paddingTop = Math.max(paddingTop, panelSize)
                         }
                         panelTop = 0
                     } else if (panelState.position.cells[0].v === "bottom") {
-                        if (isEmbedded) {
+                        if (isRigid) {
                             paddingBottom = Math.max(paddingBottom, panelSize)
                         }
                         panelBottom = 0
@@ -178,12 +143,12 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                     panelBottom = 0
 
                     if (panelState.position.cells[0].h === "left") {
-                        if (isEmbedded) {
+                        if (isRigid) {
                             paddingLeft = Math.max(paddingLeft, panelSize)
                         }
                         panelLeft = 0
                     } else if (panelState.position.cells[0].h === "right") {
-                        if (isEmbedded) {
+                        if (isRigid) {
                             paddingRight = Math.max(paddingRight, panelSize)
                         }
                         panelRight = 0
@@ -198,7 +163,7 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                           : new NumberWithUnit(0, "px")
 
                 FastDOM.setStyle(entry.panel.el.nativeElement, {
-                    "z-index": `${isEmbedded ? embeddedZIndex++ : overlayZIndex++}`,
+                    "z-index": `${isRigid ? rigidZIndex++ : overZIndex++}`,
                     "--docking-panel-t": panelTop != null ? `${panelTop}px` : null,
                     "--docking-panel-r": panelRight != null ? `${panelRight}px` : null,
                     "--docking-panel-b": panelBottom != null ? `${panelBottom}px` : null,
