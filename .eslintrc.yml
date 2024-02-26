@@ -26,6 +26,7 @@ rules:
   yoda: ["error", "never", { exceptRange: true }]
   arrow-body-style: ["error", "as-needed", { requireReturnForObjectLiteral: true }]
   prefer-arrow-callback: 2
+  no-extra-semi: "off"
 
   no-unused-vars: "off"
   unused-imports/no-unused-imports: "error"
@@ -49,6 +50,7 @@ rules:
       importOrderCaseInsensitive: true
       importOrderParserPlugins: ["typescript", "decorators-legacy"]
       importOrder:
+        - ^@storybook
         - ^@angular/
         - ^rxjs
         - <THIRD_PARTY_MODULES>

@@ -13,6 +13,7 @@ importOrderSortSpecifiers: true
 importOrderCaseInsensitive: true
 importOrderParserPlugins: ["typescript", "decorators-legacy"]
 importOrder:
+  - ^@storybook
   - ^@angular/
   - ^rxjs
   - <THIRD_PARTY_MODULES>
