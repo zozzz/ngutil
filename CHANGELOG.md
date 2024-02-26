@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.0.3-dev.9](https://github.com/zozzz/ngutil/compare/0.0.3-dev.8...0.0.3-dev.9) (2024-02-26)
+
+
+### Features
+
+* **layout:** Slots service ([726c8e4](https://github.com/zozzz/ngutil/commit/726c8e4ee9621a5911750226820f2d458a25b762))
+
+
+### Bug Fixes
+
+* **layout:** Fix L9 tests ([8f98521](https://github.com/zozzz/ngutil/commit/8f985216400c10c36a1edafd6b2d0066978ccbbe))
+
+
+### Other changes
+
+* **docs:** Update DEVELOPMENT.md ([13e7b02](https://github.com/zozzz/ngutil/commit/13e7b02e563f3e96edadac46a66290a80eb9ee3e))
+* **graphics:** Add graphics package ([b3470ee](https://github.com/zozzz/ngutil/commit/b3470ee4e9ab51b6487d7fad7417dbacc3495d2b))
+* **graphics:** Update publish config ([2330838](https://github.com/zozzz/ngutil/commit/2330838c733c6000b51fc5c9cbddda7f89ac2c6f))
+* **layout:** Remove debug & dead codes from docking layout ([378211d](https://github.com/zozzz/ngutil/commit/378211dfcf8a89fa9174649f28c0692f0f5bd807))
+* **tools:** update pnpm-lock.yaml ([f497acc](https://github.com/zozzz/ngutil/commit/f497acce010d75c0182cddeab9288ed0846c9b17))
+* **tools:** Update prettier ([b74a5c9](https://github.com/zozzz/ngutil/commit/b74a5c9d3e261654c7129edd589ca47eff4cffc2))
+
 ## [0.0.3-dev.8](https://github.com/zozzz/ngutil/compare/0.0.3-dev.7...0.0.3-dev.8) (2024-02-25)
 
 

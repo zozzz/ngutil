@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/common",
-  "version": "0.0.3-dev.8",
+  "version": "0.0.3-dev.9",
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/common/"
