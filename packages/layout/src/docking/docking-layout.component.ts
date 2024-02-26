@@ -14,7 +14,7 @@ import {
 
 import { combineLatest, map, Observable, shareReplay, startWith, Subject, switchMap } from "rxjs"
 
-import { Destructible, FastDOM, NumberWithUnit } from "@ngutil/common"
+import { Destructible, FastDOM } from "@ngutil/common"
 
 import { DockingContentComponent } from "./docking-content.component"
 import { type DockingPanelChanges, DockingPanelComponent } from "./docking-panel.component"
@@ -155,27 +155,12 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                     }
                 }
 
-                const panelGivenSize =
-                    panelState.state === "full"
-                        ? panelState.fullSize
-                        : panelState.state === "mini"
-                          ? panelState.miniSize
-                          : new NumberWithUnit(0, "px")
-
                 FastDOM.setStyle(entry.panel.el.nativeElement, {
                     "z-index": `${isRigid ? rigidZIndex++ : overZIndex++}`,
                     "--docking-panel-t": panelTop != null ? `${panelTop}px` : null,
                     "--docking-panel-r": panelRight != null ? `${panelRight}px` : null,
                     "--docking-panel-b": panelBottom != null ? `${panelBottom}px` : null,
-                    "--docking-panel-l": panelLeft != null ? `${panelLeft}px` : null,
-                    "--docking-panel-w": !isHorizontal
-                        ? `${panelGivenSize.unit === "auto" ? "auto" : panelGivenSize}`
-                        : null,
-                    "--docking-panel-h": isHorizontal
-                        ? `${panelGivenSize.unit === "auto" ? "auto" : panelGivenSize}`
-                        : null,
-                    "--docking-panel-real-w": !isHorizontal ? `${panelSize}px` : null,
-                    "--docking-panel-real-h": isHorizontal ? `${panelSize}px` : null
+                    "--docking-panel-l": panelLeft != null ? `${panelLeft}px` : null
                 })
             }
 

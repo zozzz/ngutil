@@ -18,6 +18,8 @@ export type DockingPanelState = "full" | "mini" | "invisible"
 export type DockingPanelMode = "over" | "push" | "rigid"
 
 const DEFAULT_POSITION = L9Range.coerce("left")
+const INVISIBLE_SIZE = new NumberWithUnit(0, "px")
+const AUTO_SIZE = NumberWithUnit.coerce("auto")
 
 @Component({
     standalone: true,
@@ -66,7 +68,7 @@ export class DockingPanelComponent extends Destructible {
             this.#fullSize.next(coerced)
         }
     }
-    readonly #fullSize = new BehaviorSubject<NumberWithUnit>(NumberWithUnit.coerce(0))
+    readonly #fullSize = new BehaviorSubject<NumberWithUnit>(AUTO_SIZE)
 
     @Input("miniSize")
     set miniSizeInput(val: NumberWithUnitInput) {
@@ -75,7 +77,7 @@ export class DockingPanelComponent extends Destructible {
             this.#miniSize.next(coerced)
         }
     }
-    readonly #miniSize = new BehaviorSubject<NumberWithUnit>(NumberWithUnit.coerce(0))
+    readonly #miniSize = new BehaviorSubject<NumberWithUnit>(INVISIBLE_SIZE)
 
     @Input("minimizable")
     set minimizable(val: BooleanInput) {
@@ -88,8 +90,10 @@ export class DockingPanelComponent extends Destructible {
     #minimizable: boolean = false
     #minimizableAuto: boolean = true
 
+    readonly #contentSize = watchDimension(this.el.nativeElement, "scroll-box").pipe(shareReplay(1))
+
     readonly #autoSize = combineLatest({
-        dim: watchDimension(this.el.nativeElement, "scroll-box"),
+        dim: this.#contentSize,
         pos: this.position
     }).pipe(
         map(({ dim, pos }) => {
@@ -129,7 +133,8 @@ export class DockingPanelComponent extends Destructible {
         state: this.state,
         mode: this.mode,
         fullSize: this.fullSize,
-        miniSize: this.miniSize
+        miniSize: this.miniSize,
+        contentSize: this.#contentSize
     })
 
     constructor() {
@@ -147,6 +152,37 @@ export class DockingPanelComponent extends Destructible {
                 side:
                     changes.position.orient === "horizontal" ? changes.position.cells[0].v : changes.position.cells[0].h
             })
+
+            const isHorizontal = changes.position.orient === "horizontal"
+            let w = null
+            let h = null
+
+            // TODO: when change state from mini -> invisible, currently wrong behavior
+            // the good behavior is to not gain fullSize ang go to invisible
+            if (changes.state === "mini") {
+                if (isHorizontal) {
+                    h = changes.miniSize.unit === "auto" ? changes.contentSize.height : changes.miniSize
+                } else {
+                    w = changes.miniSize.unit === "auto" ? changes.contentSize.width : changes.miniSize
+                }
+            } else {
+                if (isHorizontal) {
+                    h = changes.fullSize.unit === "auto" ? changes.contentSize.height : changes.fullSize
+                } else {
+                    w = changes.fullSize.unit === "auto" ? changes.contentSize.width : changes.fullSize
+                }
+            }
+
+            FastDOM.setStyle(
+                this.el.nativeElement,
+                {
+                    "--docking-panel-w": w != null ? `${w}` : null,
+                    "--docking-panel-h": h != null ? `${h}` : null,
+                    "--docking-panel-content-w": changes.contentSize.width,
+                    "--docking-panel-content-h": changes.contentSize.height
+                },
+                () => FastDOM.setAttributes(this.el.nativeElement, { animate: "" })
+            )
         })
     }
 

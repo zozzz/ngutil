@@ -39,6 +39,7 @@ export const DockingLayout: StoryFn<Story> = args => {
                     position="top"
                     fullSize="auto"
                     mode="rigid"
+                    state="full"
                     #topPanel="nuDockingPanel">
                 <div style="width:100%;height:100%;background:magenta;opacity:0.5">
                     <div id="header-item">Header item</div>

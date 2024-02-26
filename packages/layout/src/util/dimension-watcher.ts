@@ -73,8 +73,8 @@ function _createResizeWatcher(zone: NgZone, el: HTMLElement, box: WatchBox): Obs
 function _createScollWatcher(zone: NgZone, el: HTMLElement): Observable<Dimension> {
     return zone.runOutsideAngular(() =>
         new Observable((sub: Subscriber<Dimension>) => {
-            let lastSw: number = 0
-            let lastSh: number = 0
+            let lastSw: number = NaN
+            let lastSh: number = NaN
 
             const emit = () => {
                 const sw = el.scrollWidth
@@ -94,6 +94,7 @@ function _createScollWatcher(zone: NgZone, el: HTMLElement): Observable<Dimensio
                 attributes: true,
                 characterData: true
             })
+            emit()
 
             return () => {
                 dimSum.unsubscribe()
@@ -105,5 +106,5 @@ function _createScollWatcher(zone: NgZone, el: HTMLElement): Observable<Dimensio
 }
 
 function _number(val: number): NumberWithUnit {
-    return new NumberWithUnit(val, "pk")
+    return new NumberWithUnit(val, "px")
 }

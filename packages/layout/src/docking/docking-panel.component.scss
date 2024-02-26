@@ -5,8 +5,8 @@
     ---docking-panel-l: var(--docking-panel-l, auto);
     ---docking-panel-w: var(--docking-panel-w, auto);
     ---docking-panel-h: var(--docking-panel-h, auto);
-    ---docking-panel-real-w: var(--docking-panel-real-w, var(---docking-panel-w));
-    ---docking-panel-real-h: var(--docking-panel-real-h, var(---docking-panel-h));
+    ---docking-panel-content-w: var(--docking-panel-content-w, var(---docking-panel-w));
+    ---docking-panel-content-h: var(--docking-panel-content-h, var(---docking-panel-h));
 
     display: flex;
     flex-flow: column nowrap;
@@ -22,11 +22,12 @@
     width: var(---docking-panel-w);
     height: var(---docking-panel-h);
 
-    // TODO: dont animate width & height when not in visible state
-    transition:
-        transform var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
-        width var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
-        height var(---docking-layout-anim-duration) var(---docking-layout-anim-ease);
+    &[animate] {
+        transition:
+            transform var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
+            width var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
+            height var(---docking-layout-anim-duration) var(---docking-layout-anim-ease);
+    }
 
     &[side="top"], &[side="left"] {
         ---docking-panel-t-hide: -100%;
