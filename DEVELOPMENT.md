@@ -4,6 +4,13 @@
 
 [conventional commits](https://www.conventionalcommits.org)
 
+types:
+
+- **fix:** Bug fixes
+- **feat:** Features
+- **chore:** Others
+- **style:** Formatting
+
 scopes:
 
 - **tools** - development tools, scripts, etc...
