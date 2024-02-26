@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.3-dev.11](https://github.com/zozzz/ngutil/compare/0.0.3-dev.10...0.0.3-dev.11) (2024-02-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **layout:** Rename DockingPanel.state invisible -> hidden
+
+### Bug Fixes
+
+* **layout:** Rename DockingPanel.state invisible -> hidden ([24eb975](https://github.com/zozzz/ngutil/commit/24eb97563b7ae974de0262ebc82d49d2647acf65))
+
 ## [0.0.3-dev.10](https://github.com/zozzz/ngutil/compare/0.0.3-dev.9...0.0.3-dev.10) (2024-02-26)
 
 

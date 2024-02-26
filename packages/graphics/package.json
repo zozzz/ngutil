@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/graphics",
-  "version": "0.0.3-dev.10",
+  "version": "0.0.3-dev.11",
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/graphics/"
