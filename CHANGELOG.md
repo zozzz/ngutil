@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.0.3-dev.10](https://github.com/zozzz/ngutil/compare/0.0.3-dev.9...0.0.3-dev.10) (2024-02-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **layout:** Rename mode values
+
+### Bug Fixes
+
+* **layout:** Docking layout fixes ([ac5066f](https://github.com/zozzz/ngutil/commit/ac5066f0319af0c794d29e10f4eaf54f8afeb278))
+* **layout:** ExportAs nuDockingContent ([d8096fc](https://github.com/zozzz/ngutil/commit/d8096fccabe7775c35f0bb432c762fde82ddd1c6))
+* **layout:** Rename mode values ([0ab405c](https://github.com/zozzz/ngutil/commit/0ab405c4b6620abe296f88d133ddc562a59ecf38))
+
+
+### Other changes
+
+* **layout:** Update storybook ([5e9a3a1](https://github.com/zozzz/ngutil/commit/5e9a3a116f9f67d58629bcc8811b967ec5c1c391))
+* **tools:** Update release config ([e3c5733](https://github.com/zozzz/ngutil/commit/e3c573378b196ba30d3906c2ab647c70dc8643c3))
+
 ## [0.0.3-dev.9](https://github.com/zozzz/ngutil/compare/0.0.3-dev.8...0.0.3-dev.9) (2024-02-26)
 
 
