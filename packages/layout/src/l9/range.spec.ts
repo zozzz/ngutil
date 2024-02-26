@@ -1,13 +1,13 @@
 import { L9Cell, L9Range } from "./range"
 
 describe("L9Range", () => {
-    it("parse horizontal", () => {
+    it("parse vertical", () => {
         expect(L9Range.coerce("left").cells).toStrictEqual([
             new L9Cell("top", "left"),
             new L9Cell("middle", "left"),
             new L9Cell("bottom", "left")
         ])
-        expect(L9Range.coerce("left").orient).toStrictEqual("horizontal")
+        expect(L9Range.coerce("left").orient).toStrictEqual("vertical")
         expect(L9Range.coerce("center").cells).toStrictEqual([
             new L9Cell("top", "center"),
             new L9Cell("middle", "center"),
@@ -20,13 +20,13 @@ describe("L9Range", () => {
         ])
     })
 
-    it("parse vertical", () => {
+    it("parse horizontal", () => {
         expect(L9Range.coerce("top").cells).toStrictEqual([
             new L9Cell("top", "left"),
             new L9Cell("top", "center"),
             new L9Cell("top", "right")
         ])
-        expect(L9Range.coerce("top").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("top").orient).toStrictEqual("horizontal")
         expect(L9Range.coerce("middle").cells).toStrictEqual([
             new L9Cell("middle", "left"),
             new L9Cell("middle", "center"),
