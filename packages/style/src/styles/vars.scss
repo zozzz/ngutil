@@ -1,0 +1,47 @@
+@use "sass:list";
+@use "sass:string";
+
+
+@function is-var($value) {
+    @return type-of($value) == "string" and string.index($value, "--") == 1;
+}
+
+@function is-varfn($value) {
+    @return type-of($value) == "string" and string.index($value, "var(") == 1 and string.index($value, ")") == string.length($value);
+}
+
+@function -chanin-var($vars, $idx) {
+    $res: "";
+    $curr: list.nth($vars, $idx);
+
+    @if (is-var($curr)) {
+        $res: "var(#{$curr}";
+    } @else {
+        @return $curr;
+    }
+
+    @if (list.length($vars) > $idx) {
+        @return string.unquote("#{$res}, #{-chanin-var($vars, $idx + 1)})");
+    } @else {
+        @return string.unquote("#{$res})");
+    }
+}
+
+@function chain-var($vars...) {
+    @if (list.length($vars) > 0) {
+        @return -chanin-var($vars, 1);
+    } @else {
+        @return "";
+    }
+}
+
+
+/*
+.button {
+    @include cvar(button-fg, --color, #000);
+    ---button-fg: var(--button-fg, var(--color), #000);
+}
+*/
+@mixin cvar($name, $defaults...) {
+    ---#{$name}: #{chain-var(--#{$name}, $defaults...)};
+}

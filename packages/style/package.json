@@ -1,0 +1,21 @@
+{
+  "name": "@ngutil/style",
+  "version": "0.0.1",
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/graphics/"
+  },
+  "peerDependencies": {
+    "@angular/common": "^17.1.0",
+    "@angular/core": "^17.1.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "sass": "./src/styles/index.scss"
+    }
+  }
+}
