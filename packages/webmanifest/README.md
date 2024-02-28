@@ -3,11 +3,13 @@
 ## Usage
 
 Install
+
 ```sh
 nx add @ngutil/webmanifest
 ```
 
 Add to `project.json`
+
 ```json
 {
     // ...
@@ -26,7 +28,7 @@ Add to `project.json`
 For availbale options run:
 
 ```sh
-nx @ngutil/webmanifest:generate --help
+nx run <project-name>:<target> --help
 ```
 
 ## Autmatically copy options from `package.json` if not present in `manifest` option
