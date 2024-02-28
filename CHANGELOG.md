@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.3-dev.16](https://github.com/zozzz/ngutil/compare/0.0.3-dev.15...0.0.3-dev.16) (2024-02-28)
+
+
+### Other changes
+
+* **style:** Fix publish ([00c1dd8](https://github.com/zozzz/ngutil/commit/00c1dd80029daae6bf4483d7d8112b0f345168cd))
+* **style:** Update directory layout ([0d79215](https://github.com/zozzz/ngutil/commit/0d79215744d6a9c00568ae37bee647808bcf259c))
+* **tools:** Update pnpm-lock.yaml ([c0a6540](https://github.com/zozzz/ngutil/commit/c0a654030b8354f1201671d63397f95935b39279))
+
 ## [0.0.3-dev.15](https://github.com/zozzz/ngutil/compare/0.0.3-dev.14...0.0.3-dev.15) (2024-02-28)
 
 
