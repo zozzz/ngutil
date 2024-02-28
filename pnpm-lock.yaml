@@ -263,6 +263,9 @@ importers:
       '@angular/core':
         specifier: ^17.1.0
         version: 17.1.3(rxjs@7.8.1)(zone.js@0.14.4)
+      '@ngutil/common':
+        specifier: workspace:*
+        version: link:../../dist/packages/common
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
