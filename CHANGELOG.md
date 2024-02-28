@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.0.3-dev.14](https://github.com/zozzz/ngutil/compare/0.0.3-dev.13...0.0.3-dev.14) (2024-02-28)
+
+
+### Features
+
+* **aria:** Add NumberRange type helper ([4b19c46](https://github.com/zozzz/ngutil/commit/4b19c46d0a4f17bf3879209f5cff2e0bf5333e8f))
+* **graphics:** Add ripple directive ([4a98bac](https://github.com/zozzz/ngutil/commit/4a98bac7349ee57dc3dbb2d0f7331a2481d189d9))
+
+
+### Other changes
+
+* **aria:** Fix focus exports ([f40a389](https://github.com/zozzz/ngutil/commit/f40a3896b6bae1538908f69970d1690f26b53ff3))
+* **docs:** Update webmanifest README.md ([5996a30](https://github.com/zozzz/ngutil/commit/5996a30f9833c1ba417254df3a789c3e532003ef))
+* **tools:** Update pnpm-lock.yaml ([778a6f1](https://github.com/zozzz/ngutil/commit/778a6f1c659a2bd848e3e9f246d2188e551df77f))
+* **webmanifest:** Update README.md ([c1b5daf](https://github.com/zozzz/ngutil/commit/c1b5daffec9e170735e01bb3b9edffe191db559f))
+
 ## [0.0.3-dev.13](https://github.com/zozzz/ngutil/compare/0.0.3-dev.12...0.0.3-dev.13) (2024-02-28)
 
 
