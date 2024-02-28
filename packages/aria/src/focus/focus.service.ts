@@ -114,7 +114,7 @@ export class FocusService extends Destructible {
         )
     }
 
-    focus(node: HTMLElement, origon: FocusOrigin | null) {
+    focus(node: HTMLElement, _origon: FocusOrigin | null) {
         // TODO: focus origin
         node.focus()
     }
