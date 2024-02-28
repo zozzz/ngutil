@@ -287,6 +287,19 @@ importers:
         version: 2.6.2
     publishDirectory: ../../dist/packages/layout/
 
+  packages/style:
+    dependencies:
+      '@angular/common':
+        specifier: ^17.1.0
+        version: 17.1.3(@angular/core@17.1.3)(rxjs@7.8.1)
+      '@angular/core':
+        specifier: ^17.1.0
+        version: 17.1.3(rxjs@7.8.1)(zone.js@0.14.4)
+      tslib:
+        specifier: ^2.3.0
+        version: 2.6.2
+    publishDirectory: ../../dist/packages/graphics/
+
   packages/webmanifest:
     dependencies:
       '@nx/devkit':
