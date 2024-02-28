@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/webmanifest",
-  "version": "0.0.3-dev.14",
+  "version": "0.0.3-dev.15",
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/webmanifest/"
