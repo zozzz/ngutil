@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-dev.12](https://github.com/zozzz/ngutil/compare/0.0.3-dev.11...0.0.3-dev.12) (2024-02-28)
+
+
+### Other changes
+
+* **webmanifest:** Add webmanifest generator ([aa012b0](https://github.com/zozzz/ngutil/commit/aa012b0db88f3a7d8ec31cb2d25ec12fee4e3bb9))
+
 ## [0.0.3-dev.11](https://github.com/zozzz/ngutil/compare/0.0.3-dev.10...0.0.3-dev.11) (2024-02-26)
 
 
