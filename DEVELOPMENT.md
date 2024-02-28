@@ -9,7 +9,7 @@ types:
 - **fix:** Bug fixes
 - **feat:** Features
 - **chore:** Others
-- **style:** Formatting
+- **format:** Formatting
 
 scopes:
 

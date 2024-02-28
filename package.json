@@ -5,7 +5,7 @@
   "scripts": {
     "before:release:update-packages": "pnpm install && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): Update pnpm-lock.yaml\")",
     "before:release:test": "nx run-many -t test",
-    "before:release:format": "nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(style): Beautify files\")",
+    "before:release:format": "nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Beautify files\")",
     "before:release": "pnpm before:release:update-packages && pnpm before:release:test && pnpm before:release:format",
     "release": "release-it --ci -V --preRelease=dev",
     "build:libs": "nx run-many -t build --projects=packages/*"
