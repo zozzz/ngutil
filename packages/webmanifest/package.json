@@ -1,6 +1,10 @@
 {
   "name": "@ngutil/webmanifest",
   "version": "0.0.3-dev.12",
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/webmanifest/"
+  },
   "dependencies": {
     "@nx/devkit": "18.0.5",
     "tslib": "^2.3.0",
