@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.3-dev.13](https://github.com/zozzz/ngutil/compare/0.0.3-dev.12...0.0.3-dev.13) (2024-02-28)
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([d872eeb](https://github.com/zozzz/ngutil/commit/d872eeb5c0865d2c86b7e5c40c021b981dbb372e))
+* **webmanifest:** Fix publish config ([88e96c5](https://github.com/zozzz/ngutil/commit/88e96c5a123115653bb4cebd1e6b690a9b6ee94f))
+
 ## [0.0.3-dev.12](https://github.com/zozzz/ngutil/compare/0.0.3-dev.11...0.0.3-dev.12) (2024-02-28)
 
 
