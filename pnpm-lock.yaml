@@ -298,6 +298,7 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
+    publishDirectory: ../../dist/packages/webmanifest/
 
 packages:
 
