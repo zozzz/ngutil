@@ -1,4 +1,4 @@
-# requirements: pnpm add -D -W eslint eslint-config-prettier eslint-plugin-unused-imports prettier eslint-plugin-prettier prettier-eslint-cli @trivago/prettier-plugin-sort-imports eslint-plugin-storybook @typescript-eslint/eslint-plugin @typescript-eslint/parser
+# requirements: pnpm add -D -W eslint eslint-config-prettier eslint-plugin-unused-imports prettier eslint-plugin-prettier prettier-eslint-cli @trivago/prettier-plugin-sort-imports eslint-plugin-storybook @typescript-eslint/eslint-plugin @typescript-eslint/parser jsonc-eslint-parser
 # package.json "pretty": "prettier-eslint --log-level=info --write \"{,!(node_modules)/**/}*.{js,cjs,mjs,ts}\""
 
 root: true
@@ -15,6 +15,7 @@ plugins:
   - "@typescript-eslint"
   - "prettier"
   - "unused-imports"
+  - "@nx"
 
 rules:
   # ESLINT
@@ -82,3 +83,8 @@ overrides:
   - files: ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"]
     env:
       jest: true
+
+  - files: ["*.json"]
+    parser: jsonc-eslint-parser
+    rules:
+      max-len: off

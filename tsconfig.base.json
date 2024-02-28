@@ -18,7 +18,8 @@
       "@ngutil/aria": ["packages/aria/src/index.ts"],
       "@ngutil/common": ["packages/common/src/index.ts"],
       "@ngutil/graphics": ["packages/graphics/src/index.ts"],
-      "@ngutil/layout": ["packages/layout/src/index.ts"]
+      "@ngutil/layout": ["packages/layout/src/index.ts"],
+      "@ngutil/webmanifest": ["packages/webmanifest/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

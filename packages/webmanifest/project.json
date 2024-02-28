@@ -1,0 +1,41 @@
+{
+  "name": "webmanifest",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/webmanifest/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/webmanifest",
+        "main": "packages/webmanifest/src/index.ts",
+        "tsConfig": "packages/webmanifest/tsconfig.lib.json",
+        "assets": [
+          "packages/webmanifest/*.md",
+          {
+            "input": "./packages/webmanifest/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/webmanifest/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/webmanifest",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./packages/webmanifest",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}
