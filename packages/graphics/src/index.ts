@@ -1,1 +1,1 @@
-export * from "./lib/graphics/graphics.component"
+export * from "./ripple/ripple.directive"
