@@ -1,47 +1,74 @@
 @use "sass:list";
 @use "sass:string";
 
-
-@function is-var($value) {
+/// Detects if the given value is var name: `--var-name`
+///
+/// @param {string} $value value to be need to testing
+/// @return {boolean} true if the given value is var name
+@function is-var-name($value) {
     @return type-of($value) == "string" and string.index($value, "--") == 1;
 }
 
-@function is-varfn($value) {
+
+/// Detects if the given value is a var fn call: `var(--var-name)`
+///
+/// @param {string} $value value to be need to testing
+/// @return {boolean} true if the given value is var call
+@function is-var-fn($value) {
     @return type-of($value) == "string" and string.index($value, "var(") == 1 and string.index($value, ")") == string.length($value);
 }
 
-@function -chanin-var($vars, $idx) {
+
+/// Detects if the given value is var name or var fn
+///
+/// @param {string} $value value to be need to testing
+/// @return {boolean} true if the given value is var name or var call
+@function is-var($value) {
+    @return is-var-name($value) or is-var-fn($value);
+}
+
+@function _var-chain($vars, $idx) {
     $res: "";
     $curr: list.nth($vars, $idx);
 
-    @if (is-var($curr)) {
+    @if (is-var-name($curr)) {
         $res: "var(#{$curr}";
     } @else {
         @return $curr;
     }
 
     @if (list.length($vars) > $idx) {
-        @return string.unquote("#{$res}, #{-chanin-var($vars, $idx + 1)})");
+        @return string.unquote("#{$res}, #{_var-chain($vars, $idx + 1)})");
     } @else {
         @return string.unquote("#{$res})");
     }
 }
 
-@function chain-var($vars...) {
+
+/// Chain variables like this: `var(--var-1, var(--var-2, var(--var-3, default-value)))`
+///
+/// @param {any} $vars variable names or default value
+/// @return {string} the chained variables
+@function var-chain($vars...) {
     @if (list.length($vars) > 0) {
-        @return -chanin-var($vars, 1);
+        @return _var-chain($vars, 1);
     } @else {
         @return "";
     }
 }
 
 
-/*
-.button {
-    @include cvar(button-fg, --color, #000);
-    ---button-fg: var(--button-fg, var(--color), #000);
-}
-*/
-@mixin cvar($name, $defaults...) {
-    ---#{$name}: #{chain-var(--#{$name}, $defaults...)};
+/// Create configurable css variables:
+///
+/// @example
+///   .nu-button {
+///     @include nu.var-option(button-fg, #000);
+///     // expands to:
+///     ---button-fg: var(--button-fg, #000);
+///     @include nu.var-option(button-hover-fg, ---button-fg, #000);
+///     // expands to:
+///     ---button-hover-fg: var(--button-hover-fg, var(---button-fg), #000);
+///   }
+@mixin var-option($name, $vars...) {
+    ---#{$name}: #{var-chain(--#{$name}, $vars...)};
 }
