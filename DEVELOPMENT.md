@@ -34,6 +34,42 @@ Add this to `package.json`
 }
 ```
 
+### Style inculdes
+
+Add this to `ng-package.json`:
+
+```json
+"lib": {
+    "styleIncludePaths": ["../"]
+}
+```
+
+Add this to `project.json` for storybook:
+
+```json
+"storybook": {
+    "options": {
+        "stylePreprocessorOptions": {
+            "includePaths": ["packages"]
+        }
+    }
+}
+```
+
+And you can use `@use "style" as nu;` in scss files.
+
+#### TODO
+
+Make `@use "@ngutil/style" as nu;` works in scss files. Maybe need a whole directory struture refactor this.
+
+```
+packages
+    |_ @ngutil
+        |_ style
+        |_ common
+        |_ ...
+```
+
 ### Storybook
 
 #### Add
