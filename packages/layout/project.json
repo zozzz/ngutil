@@ -28,7 +28,10 @@
         "port": 4400,
         "configDir": "packages/layout/.storybook",
         "browserTarget": "layout:build-storybook",
-        "compodoc": false
+        "compodoc": false,
+        "stylePreprocessorOptions": {
+          "includePaths": ["packages"]
+        }
       },
       "configurations": {
         "ci": {

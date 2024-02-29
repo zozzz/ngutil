@@ -1,5 +1,1 @@
-@use "./vars" as *;
-
-@mixin root-mixin() {
-    root-mixin: ok;
-}
+@import "./vars";
