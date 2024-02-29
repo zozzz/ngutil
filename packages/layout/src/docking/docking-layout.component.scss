@@ -1,22 +1,4 @@
-// $vertical: "top", "middle", "bottom";
-// $horizontal: "left", "center", "right";
-
-// :host {
-//     // --docking-XXX is setting by component, based on which panel is visible
-//     ---docking-XXX: var(--docking-XXX, 0px);
-
-//     --docking-top-left-height: 1px;
-//     --docking-top-left-width: 1px;
-//     --docking-bottom-height: 1px;
-//     --docking-left-width: 1px;
-//     --docking-right-width: 1px;
-// }
-
-// // child
-// [docking-child="TL"] {
-//     width: var(---docking-top-left-width);
-//     height: var(---docking-top-left-height);
-// }
+@use "style" as nu;
 
 /**
  * -----------------------------------------------
@@ -29,12 +11,12 @@
  */
 
 :host {
-    ---docking-layout-top: var(--docking-layout-top, 0px);
-    ---docking-layout-right: var(--docking-layout-right, 0px);
-    ---docking-layout-bottom: var(--docking-layout-bottom, 0px);
-    ---docking-layout-left: var(--docking-layout-left, 0px);
-    ---docking-layout-anim-duration: var(--docking-layout-anim-duration, 200ms);
-    ---docking-layout-anim-ease: var(--docking-layout-anim-ease, ease-out);
+    @include nu.var-option(docking-layout-top, 0px);
+    @include nu.var-option(docking-layout-right, 0px);
+    @include nu.var-option(docking-layout-bottom, 0px);
+    @include nu.var-option(docking-layout-left, 0px);
+    @include nu.var-option(docking-layout-anim-duration, 200ms);
+    @include nu.var-option(docking-layout-anim-ease, ease-out);
 
     display: flex;
     flex-flow: column nowrap;

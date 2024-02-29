@@ -1,12 +1,14 @@
+@use "style" as nu;
+
 :host {
-    ---docking-panel-t: var(--docking-panel-t, auto);
-    ---docking-panel-r: var(--docking-panel-r, auto);
-    ---docking-panel-b: var(--docking-panel-b, auto);
-    ---docking-panel-l: var(--docking-panel-l, auto);
-    ---docking-panel-w: var(--docking-panel-w, auto);
-    ---docking-panel-h: var(--docking-panel-h, auto);
-    ---docking-panel-content-w: var(--docking-panel-content-w, var(---docking-panel-w));
-    ---docking-panel-content-h: var(--docking-panel-content-h, var(---docking-panel-h));
+    @include nu.var-option(docking-panel-t, auto);
+    @include nu.var-option(docking-panel-r, auto);
+    @include nu.var-option(docking-panel-b, auto);
+    @include nu.var-option(docking-panel-l, auto);
+    @include nu.var-option(docking-panel-w, auto);
+    @include nu.var-option(docking-panel-h, auto);
+    @include nu.var-option(docking-panel-content-w, ---docking-panel-w);
+    @include nu.var-option(docking-panel-content-g, ---docking-panel-h);
 
     display: flex;
     flex-flow: column nowrap;
