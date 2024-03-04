@@ -1,3 +1,3 @@
 export { watchMedia } from "./services/media-watcher"
 export { ColorSchemeService } from "./services/color-scheme.service"
-export { Ease, Duration } from "../sass"
+export { Ease, Duration } from "./sass"

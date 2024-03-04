@@ -25,8 +25,9 @@
     "yaml-style": {
       "executor": "@ngutil/nx:yaml-style",
       "options": {
-        "files": ["packages/style/sass/**/index.yml"]
-      }
+        "files": ["packages/style/src/sass/**/index.yml"]
+      },
+      "defaultConfiguration": "production"
     }
   }
 }
