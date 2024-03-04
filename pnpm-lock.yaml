@@ -234,6 +234,9 @@ importers:
       '@ngutil/common':
         specifier: workspace:*
         version: link:../../dist/packages/common
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
       tabbable:
         specifier: ^6.2.0
         version: 6.2.0
@@ -282,6 +285,12 @@ importers:
       '@ngutil/common':
         specifier: workspace:*
         version: link:../../dist/packages/common
+      '@ngutil/style':
+        specifier: workspace:*
+        version: link:../../dist/packages/style
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
@@ -314,9 +323,16 @@ importers:
       '@angular/core':
         specifier: ^17.1.0
         version: 17.1.3(rxjs@7.8.1)(zone.js@0.14.4)
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
+    devDependencies:
+      '@ngutil/nx':
+        specifier: workspace:*
+        version: link:../../dist/packages/nx
     publishDirectory: ../../dist/packages/style/
 
   packages/webmanifest:
