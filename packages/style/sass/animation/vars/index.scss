@@ -1,0 +1,12 @@
+/* ! AUTO GENERATED DO NOT EDIT ! */
+
+$ease-deceleration: cubic-bezier(0, 0, 0.2, 1) !default;
+$ease-standard: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$ease-acceleration: cubic-bezier(0.4, 0, 1, 1) !default;
+$ease-sharp: cubic-bezier(0.4, 0, 0.6, 1) !default;
+/// Reach nearly end position fast, and slowly move to final position
+$ease-emphasized: cubic-bezier(0.12, 0.9, 0.12, 0.9) !default;
+$duration-fast: 200ms !default;
+$duration-medium: 300ms !default;
+$duration-slow: 400ms !default;
+$duration-snail: 600ms !default;

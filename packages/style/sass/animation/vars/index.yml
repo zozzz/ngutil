@@ -1,0 +1,17 @@
+meta:
+  scss:
+    type: flatten
+  ts:
+content:
+  ease:
+    deceleration: cubic-bezier(0, 0, 0.2, 1)
+    standard: cubic-bezier(0.4, 0, 0.2, 1)
+    acceleration: cubic-bezier(0.4, 0, 1, 1)
+    sharp: cubic-bezier(0.4, 0, 0.6, 1)
+    emphasized: cubic-bezier(0.12, 0.9, 0.12, 0.9); // Reach nearly end position fast, and slowly move to final position
+
+  duration:
+    fast: 200ms
+    medium: 300ms
+    slow: 400ms
+    snail: 600ms

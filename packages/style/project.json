@@ -21,6 +21,12 @@
         }
       },
       "defaultConfiguration": "production"
+    },
+    "yaml-style": {
+      "executor": "@ngutil/nx:yaml-style",
+      "options": {
+        "files": ["packages/style/sass/**/index.yml"]
+      }
     }
   }
 }

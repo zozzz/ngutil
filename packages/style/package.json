@@ -15,7 +15,8 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "sass": "./index.scss"
+      "sass": "./index.scss",
+      "scss": "./index.scss"
     }
   }
 }
