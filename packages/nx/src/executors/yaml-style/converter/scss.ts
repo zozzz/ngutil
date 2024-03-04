@@ -39,11 +39,13 @@ export class ScssOptions extends CommonOptions {
 }
 
 export async function convertToScss(options: ScssOptions, data: ConvertData) {
+    const header = `/* ! AUTO GENERATED DO NOT EDIT ! */\n\n`
+
     switch (options.type) {
         case "flatten":
-            return flattenConverter(options, data) + "\n"
+            return header + flattenConverter(options, data) + "\n"
         case "map":
-            return mapConverter(options, data) + "\n"
+            return header + mapConverter(options, data) + "\n"
         default:
             throw new Error(`Not supported type value: ${options.type}`)
     }
