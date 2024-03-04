@@ -1,7 +1,11 @@
 export type NumberWithUnitInput = number | string | NumberWithUnit
 
 const specials = ["auto", "inherit"]
-const regex = /^([\d.\-+]+)\s*(v[h|w|min|max]|p[c|t|x]|[re|e|c|m]m|[l|c]h|%|in|Q|ex)?$/
+
+export const UNIT_REGEX = "v[h|w|min|max]|p[c|t|x]|[re|e|c|m]m|[l|c]h|%|in|Q|ex|m?s"
+export const NUMBER_REGEX = "[+-]?(?:\\d*\\.\\d+|\\d+\\.\\d*|\\d+)"
+
+const regex = new RegExp(`^(${NUMBER_REGEX})\\s*(${UNIT_REGEX})?$`)
 
 export class NumberWithUnit {
     static coerce(value: any, defaultUnit?: string) {
