@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.0.3-dev.17](https://github.com/zozzz/ngutil/compare/0.0.3-dev.16...0.0.3-dev.17) (2024-03-04)
+
+
+### Features
+
+* **style:** animation vars ([0d1cc39](https://github.com/zozzz/ngutil/commit/0d1cc392d4b4907970cdaae0e2ce74315276d2f1))
+
+
+### Bug Fixes
+
+* **layout:** docking layout uses animation vars ([864230a](https://github.com/zozzz/ngutil/commit/864230aae0a74b3bde2258c81d865f2908ef8144))
+* **style:** Fix style includes ([4814cd3](https://github.com/zozzz/ngutil/commit/4814cd351067aa8669199d10c1d3e1dbe999ef55))
+* **style:** make style buildable ([5381a97](https://github.com/zozzz/ngutil/commit/5381a97cf205c775be1e87e681dddc88bb096377))
+* **yaml-style:** Add auto generated header to scss files ([a57baee](https://github.com/zozzz/ngutil/commit/a57baeefdf826318744779167831435a7a8e16ef))
+
+
+### Other changes
+
+* **common:** Update public export ([c57d926](https://github.com/zozzz/ngutil/commit/c57d926b6d0efd043776ccdc9ba5114974049438))
+* **docs:** Update DEVELOPMENT.md ([fdb58c1](https://github.com/zozzz/ngutil/commit/fdb58c14978aa050bcaab99f08d7a42839f269b8))
+* **layout:** Update docking to use style module ([9ef9fda](https://github.com/zozzz/ngutil/commit/9ef9fda407f113408c1bdb99b1f065da71447fa5))
+* Remove ngutil app ([d464c74](https://github.com/zozzz/ngutil/commit/d464c7483c3178a0b585822bc994d8179ed4aa8c))
+* **style:** Update vars docs ([5465808](https://github.com/zozzz/ngutil/commit/5465808067d533abec27ed0a504ff54497ceb23c))
+* **tools:** Update pnpm-lock.yaml ([ab237c0](https://github.com/zozzz/ngutil/commit/ab237c02ba86928741026fb5707cb92aae76ab10))
+* update packages ([0316ced](https://github.com/zozzz/ngutil/commit/0316ced71ab112778f2b5090f048918b3aa40362))
+* **yaml-style:** Add yaml-style executor ([7b1ebf9](https://github.com/zozzz/ngutil/commit/7b1ebf9e0251058cc67e36be9f8660958c5d1793))
+* **yaml-style:** update docs ([46affa6](https://github.com/zozzz/ngutil/commit/46affa6c25a7d740cf7e9ac29bd646be758b2902))
+
 ## [0.0.3-dev.16](https://github.com/zozzz/ngutil/compare/0.0.3-dev.15...0.0.3-dev.16) (2024-02-28)
 
 
