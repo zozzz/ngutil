@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@nx/devkit": "18.0.5",
+    "glob": "^10.3.10",
     "is-plain-object": "^5.0.0",
     "tslib": "^2.3.0",
     "yaml": "^2.4.0"

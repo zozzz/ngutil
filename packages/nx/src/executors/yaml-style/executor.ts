@@ -1,5 +1,6 @@
 import { type ExecutorContext } from "@nx/devkit"
 import * as fs from "fs/promises"
+import { globIterate } from "glob"
 import { isPlainObject } from "is-plain-object"
 import * as path from "path"
 import { parse } from "yaml"
@@ -33,8 +34,10 @@ export const CONVERTERS: Converters = {
 
 export default async function runExecutor(options: YamlStyleExecutorSchema, _context: ExecutorContext) {
     for (const file of options.files) {
-        const absPath = path.join(_context.root, file)
-        await convertFile(absPath)
+        for await (const entry of globIterate(file, { cwd: _context.root, root: _context.root })) {
+            const absPath = path.join(_context.root, entry)
+            await convertFile(absPath)
+        }
     }
 
     return { success: true }
