@@ -20,7 +20,8 @@
           "tsConfig": "packages/layout/tsconfig.lib.json"
         }
       },
-      "defaultConfiguration": "production"
+      "defaultConfiguration": "production",
+      "dependsOn": ["style:yaml-style", "^build"]
     },
     "storybook": {
       "executor": "@storybook/angular:start-storybook",

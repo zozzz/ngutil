@@ -9,7 +9,8 @@
     "@angular/common": "^17.1.0",
     "@angular/core": "^17.1.0",
     "@ngutil/common": "workspace:*",
-    "tabbable": "^6.2.0"
+    "tabbable": "^6.2.0",
+    "rxjs": "^7.8.1"
   },
   "dependencies": {
     "tslib": "^2.3.0"
