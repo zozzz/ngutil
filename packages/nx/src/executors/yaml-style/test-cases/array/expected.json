@@ -1,0 +1,20 @@
+{
+  "Elevation": [
+    "box-shadow(0)",
+    "box-shadow(1)",
+    "box-shadow(2)"
+  ],
+  "Deeper": {
+    "Umbra": [
+      "box-shadow(umbra-0)",
+      "box-shadow(umbra-1)",
+      "box-shadow(umbra-2)"
+    ],
+    "Comments": [
+      "box-shadow(comments-0)",
+      "box-shadow(comments-1)",
+      "box-shadow(comments-2)",
+      "box-shadow(comments-3)"
+    ]
+  }
+}

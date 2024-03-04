@@ -1,0 +1,42 @@
+{
+  "Primary": {
+    "Normal": [
+      "#CCC",
+      "#000"
+    ],
+    "Light": [
+      "#FFF",
+      "#000"
+    ],
+    "Dark": [
+      "#333",
+      "#CCC"
+    ]
+  },
+  "Deep": {
+    "Level1": {
+      "Level2": {
+        "X": "10px",
+        "Y": "20px"
+      },
+      "Level2X": {
+        "Level3": [
+          "Array 1",
+          "Array 2",
+          "Array 3"
+        ]
+      }
+    }
+  },
+  "Sizes": {
+    "Zero": [],
+    "One": [
+      1
+    ],
+    "Many": [
+      1,
+      2,
+      3
+    ]
+  }
+}

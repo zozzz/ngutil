@@ -1,0 +1,16 @@
+meta: { ts, scss, json }
+content:
+  elevation:
+    - box-shadow(0)
+    - box-shadow(1)
+    - box-shadow(2)
+  deeper:
+    umbra:
+      - box-shadow(umbra-0)
+      - box-shadow(umbra-1)
+      - box-shadow(umbra-2)
+    comments:
+      - box-shadow(comments-0); // comment-0
+      - box-shadow(comments-1)  ; // comment-1
+      - box-shadow(comments-2);// comment-2
+      - box-shadow(comments-3) ;// comment-3

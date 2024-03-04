@@ -1,0 +1,54 @@
+{
+  "Primary": {
+    "Light": "#FFF",
+    "Dark": "#000"
+  },
+  "UnitVariants": {
+    "Duration1": "0.1s",
+    "Duration2": "200ms",
+    "Percent": "50%",
+    "Pixel": "50px"
+  },
+  "Accent": {
+    "Light": {
+      "Fg": "#000",
+      "Bg": "#FFF"
+    }
+  },
+  "Gradient": [
+    "#FFF",
+    "#000"
+  ],
+  "Simple": "#CC3300",
+  "SimpleWithComment": "#CC3300",
+  "DictInArray": [
+    {
+      "X": 10,
+      "Y": "20%"
+    },
+    {
+      "X": "20px",
+      "Y": "30px"
+    }
+  ],
+  "True": true,
+  "ArrayInArray": [
+    [
+      1,
+      2,
+      3
+    ],
+    [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ]
+    ]
+  ]
+}

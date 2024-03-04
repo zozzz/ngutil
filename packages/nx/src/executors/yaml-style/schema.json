@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "YamlStyle executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "x-completion-type": "file"
+      },
+      "description": "Yaml files to convert into scss and ts files"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["files"]
+}

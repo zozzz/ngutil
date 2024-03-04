@@ -1,0 +1,38 @@
+$primary: (
+    "normal": (
+        #CCC,
+        #000
+    ),
+    "light": (
+        #FFF,
+        #000
+    ),
+    "dark": (
+        #333,
+        #CCC
+    )
+);
+$deep: (
+    "level1": (
+        "level2": (
+            "x": 10px,
+            "y": 20px
+        ),
+        "level2-x": (
+            "level3": (
+                Array 1,
+                Array 2,
+                Array 3
+            )
+        )
+    )
+);
+$sizes: (
+    "zero": (),
+    "one": (1,),
+    "many": (
+        1,
+        2,
+        3
+    )
+);

@@ -1,0 +1,36 @@
+meta: { ts, scss, json }
+content:
+  primary:
+    light: "#FFF"
+    dark: "#000"
+
+  unit-variants:
+    duration-1: .1s
+    duration-2: 200ms
+    percent: 50%
+    pixel: 50px
+
+  accent:
+    light:
+      fg: "#000; // With comment"
+      bg: "#FFF"
+
+  gradient: ["#FFF", "#000"]
+
+  simple: "#CC3300"
+  simple-with-comment: "#CC3300; // some color"
+
+  dict-in-array:
+    - { x: 10, y: 20% }
+    - { x: 20px, y: 30px }
+
+  true: true
+
+  array-in-array:
+    - [1, 2, 3]
+    - - - 1
+        - 2
+        - 3
+      - - 4
+        - 5
+        - 6
