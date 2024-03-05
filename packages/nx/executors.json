@@ -4,6 +4,11 @@
       "implementation": "./src/executors/yaml-style/executor",
       "schema": "./src/executors/yaml-style/schema.json",
       "description": "yaml-style executor"
+    },
+    "webmanifest": {
+      "implementation": "./src/executors/webmanifest/executor",
+      "schema": "./src/executors/webmanifest/schema.json",
+      "description": "webmanifest executor"
     }
   }
 }
