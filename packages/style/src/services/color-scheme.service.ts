@@ -1,12 +1,13 @@
-import { Injectable } from "@angular/core"
+import { inject, Injectable } from "@angular/core"
 
-import { map, shareReplay } from "rxjs"
+import { map, Observable, shareReplay } from "rxjs"
 
-import { watchMedia } from "./media-watcher"
+import { MediaWatcher } from "./media-watcher.service"
 
 @Injectable({ providedIn: "root" })
 export class ColorSchemeService {
-    readonly isDark = watchMedia("(prefers-color-scheme: dark)")
+    readonly #mq = inject(MediaWatcher)
+    readonly isDark: Observable<boolean> = this.#mq.watch("(prefers-color-scheme: dark)")
     readonly isLight = this.isDark.pipe(
         map(v => !v),
         shareReplay(1)

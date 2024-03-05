@@ -16,7 +16,7 @@
     @include nu.var-option(docking-layout-bottom, 0px);
     @include nu.var-option(docking-layout-left, 0px);
     @include nu.var-option(docking-layout-anim-duration, nu.$duration-medium);
-    @include nu.var-option(docking-layout-anim-ease, nu.$ease-emphasized);
+    @include nu.var-option(docking-layout-anim-ease, nu.$ease-standard);
 
     display: flex;
     flex-flow: column nowrap;

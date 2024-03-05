@@ -10,9 +10,9 @@ import {
     NumberWithUnit,
     NumberWithUnitInput
 } from "@ngutil/common"
+import { DimensionWatcher } from "@ngutil/style"
 
 import { L9Range, L9RangeName } from "../l9/range"
-import { watchDimension } from "../util"
 
 export type DockingPanelState = "full" | "mini" | "hidden"
 export type DockingPanelMode = "over" | "push" | "rigid"
@@ -30,6 +30,7 @@ const AUTO_SIZE = NumberWithUnit.coerce("auto")
 })
 export class DockingPanelComponent extends Destructible {
     readonly el = inject(ElementRef<HTMLElement>)
+    readonly #dimWatcher = inject(DimensionWatcher)
 
     @Input("position")
     set positionInput(val: L9Range | L9RangeName) {
@@ -90,7 +91,15 @@ export class DockingPanelComponent extends Destructible {
     #minimizable: boolean = false
     #minimizableAuto: boolean = true
 
-    readonly #contentSize = watchDimension(this.el.nativeElement, "scroll-box").pipe(shareReplay(1))
+    readonly #contentSize = this.#dimWatcher.watch(this.el.nativeElement, "scroll-box").pipe(
+        map(dim => {
+            return {
+                width: new NumberWithUnit(dim.width, "px"),
+                height: new NumberWithUnit(dim.height, "px")
+            }
+        }),
+        shareReplay(1)
+    )
 
     readonly #autoSize = combineLatest({
         dim: this.#contentSize,
