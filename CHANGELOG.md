@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.3-dev.19](https://github.com/zozzz/ngutil/compare/0.0.3-dev.18...0.0.3-dev.19) (2024-03-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **webmanifest:** remove
+
+### Features
+
+* **webmanifest:** Add import possibility to manifest ([e883af6](https://github.com/zozzz/ngutil/commit/e883af6536533a07c0432bd54c392fe9143ef2f8))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([4b3079a](https://github.com/zozzz/ngutil/commit/4b3079a5b0073abc894009fc815e785d9b44290a))
+* **webmanifest:** Move under nx package ([a90a5c4](https://github.com/zozzz/ngutil/commit/a90a5c49fcdcae554c2fcb3cef2e5ad9710f4467))
+* **webmanifest:** remove ([e0365a2](https://github.com/zozzz/ngutil/commit/e0365a28476cd3b071a44d930b5d440c333d496f))
+
 ## [0.0.3-dev.18](https://github.com/zozzz/ngutil/compare/0.0.3-dev.17...0.0.3-dev.18) (2024-03-05)
 
 
