@@ -1,12 +1,14 @@
+import { type ExecutorContext } from "@nx/devkit"
 import { favicons } from "favicons"
 import * as fs from "fs/promises"
+import { isPlainObject } from "is-plain-object"
 import * as path from "path"
 import { rimraf } from "rimraf"
 
-import { commit } from "../../util"
+import { commit, importValue } from "../../util"
 import { GenerateExecutorSchema } from "./schema"
 
-export default async function runExecutor(options: GenerateExecutorSchema) {
+export default async function runExecutor(options: GenerateExecutorSchema, context: ExecutorContext) {
     options.iconPath = path.resolve(withDefault(options, "iconPath", null, true))
     options.indexHtml = path.resolve(withDefault(options, "indexHtml", null, false))
     options.indexHtmlOutput = path.resolve(withDefault(options, "indexHtmlOutput", options.indexHtml, true))
@@ -22,7 +24,7 @@ export default async function runExecutor(options: GenerateExecutorSchema) {
         await rimraf(options.outputPath)
     }
 
-    await generate(options)
+    await generate(options, context)
 
     if (options.commitMessage && options.noCommit !== true) {
         const cpaths = [options.outputPath]
@@ -37,9 +39,9 @@ export default async function runExecutor(options: GenerateExecutorSchema) {
     }
 }
 
-async function generate(options: GenerateExecutorSchema) {
+async function generate(options: GenerateExecutorSchema, context: ExecutorContext) {
     const pckg = await readPackageJson(options.packageJson)
-    const config = { ...options.manifest }
+    const config = await substManifest(options.manifest, context.root)
 
     if (!config.version) {
         config.version = pckg.version
@@ -85,16 +87,6 @@ async function generate(options: GenerateExecutorSchema) {
 }
 
 async function readPackageJson(pth: string) {
-    // import * as _readPackageJson from "read-package-json"
-    // return new Promise<{ [key: string]: any }>((resolve, reject) => {
-    //     _readPackageJson(pth, console.error, false, (err, data) => {
-    //         if (err) {
-    //             reject(err)
-    //         } else {
-    //             resolve(data)
-    //         }
-    //     })
-    // })
     return await import(pth)
 }
 
@@ -111,5 +103,19 @@ function withDefault<T extends GenerateExecutorSchema, K extends keyof T>(
         return def
     } else {
         return options[key as any]
+    }
+}
+
+async function substManifest(manifest: any, root: string): Promise<any> {
+    if (isPlainObject(manifest)) {
+        const res = {}
+        for (const [k, v] of Object.entries(manifest)) {
+            res[k] = await substManifest(v, root)
+        }
+        return res
+    } else if (Array.isArray(manifest)) {
+        return manifest.map(async v => await substManifest(v, root))
+    } else {
+        return importValue(manifest, root)
     }
 }

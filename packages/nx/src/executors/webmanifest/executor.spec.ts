@@ -17,20 +17,25 @@ describe("Generate webmanifest", () => {
         const indexContent = fs.readFileSync(indexHtml, { encoding: "utf-8" })
         const indexHtmlOutput = path.join(OUTPUT_DIR, "index.html")
 
-        const output = await executor({
-            iconPath: iconPath,
-            indexHtml: indexHtml,
-            indexHtmlOutput: indexHtmlOutput,
-            indexHtmlReplaceTag: "XYZ",
-            outputPath: path.join(OUTPUT_DIR, "manifest"),
-            packageJson: path.join(ASSETS_DIR, "package.json"),
-            manifest: {
-                path: "assets/manifest",
-                appName: "TestApp",
-                appShortName: "Test applicaton"
+        const output = await executor(
+            {
+                iconPath: iconPath,
+                indexHtml: indexHtml,
+                indexHtmlOutput: indexHtmlOutput,
+                indexHtmlReplaceTag: "XYZ",
+                outputPath: path.join(OUTPUT_DIR, "manifest"),
+                packageJson: path.join(ASSETS_DIR, "package.json"),
+                manifest: {
+                    path: "assets/manifest",
+                    appName: "TestApp",
+                    appShortName: "Test applicaton",
+                    theme_color: "import('test-assets/colors.json').Colors.Theme",
+                    background: "import('test-assets/colors.json')['Colors'][\"Background\"]"
+                },
+                clean: true
             },
-            clean: true
-        })
+            { root: SELF_DIR } as any
+        )
 
         expect(output.success).toStrictEqual(true)
 
