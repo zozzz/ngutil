@@ -28,6 +28,54 @@
         "files": ["packages/style/src/sass/**/index.yml"]
       },
       "defaultConfiguration": "production"
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "packages/style/.storybook",
+        "browserTarget": "style:build-storybook",
+        "compodoc": false,
+        "styles": ["packages/style/src/stories/style.scss"]
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/style",
+        "configDir": "packages/style/.storybook",
+        "browserTarget": "style:build-storybook",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test-storybook -c packages/style/.storybook --url=http://localhost:4400"
+      }
+    },
+    "static-storybook": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "style:build-storybook",
+        "staticFilePath": "dist/storybook/style"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "style:build-storybook:ci"
+        }
+      }
     }
   }
 }

@@ -1,0 +1,7 @@
+@use "../sass" as *;
+
+:root {
+    ---elevation-color: 0, 0, 0;
+}
+
+@include define-elevations(var(---elevation-color));
