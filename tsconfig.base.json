@@ -21,8 +21,7 @@
       "@ngutil/graphics": ["packages/graphics/src/index.ts"],
       "@ngutil/layout": ["packages/layout/src/index.ts"],
       "@ngutil/nx": ["packages/nx/src/index.ts"],
-      "@ngutil/style": ["packages/style/src/index.ts"],
-      "@ngutil/webmanifest": ["packages/webmanifest/src/index.ts"]
+      "@ngutil/style": ["packages/style/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
