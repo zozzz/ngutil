@@ -7,7 +7,7 @@ import { Destructible, FastDOM } from "@ngutil/common"
 import { type FocusableEvent, type FocusOrigin, FocusService } from "./focus.service"
 
 // TODO: set [attr.focused]="[mouse | keyboard | program] [exact | child]"
-@Directive()
+@Directive({ standalone: true })
 export class Focusable extends Destructible {
     #service = inject(FocusService)
     #elRef = inject(ElementRef<Node>)
@@ -15,6 +15,7 @@ export class Focusable extends Destructible {
 
     readonly events!: Observable<FocusableEvent>
     readonly origin!: Observable<FocusOrigin>
+    // readonly origin = new BehaviorSubject<FocusOrigin>(null)
     readonly exact!: Observable<boolean>
 
     constructor(zone: NgZone) {
@@ -45,7 +46,6 @@ export class Focusable extends Destructible {
                             focused = focused.parentElement
                         }
                     }
-
                     return { origin: event.origin, exact, node: event.element } as FocusableEvent
                 }),
                 shareReplay(1)
