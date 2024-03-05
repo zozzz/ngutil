@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-dev.20](https://github.com/zozzz/ngutil/compare/0.0.3-dev.19...0.0.3-dev.20) (2024-03-05)
+
+
+### Bug Fixes
+
+* **yaml-style:** Automatic string conversion + !str flag ([e2ba870](https://github.com/zozzz/ngutil/commit/e2ba8700e440e99601e8ab2c1c36412d2accd36f))
+
 ## [0.0.3-dev.19](https://github.com/zozzz/ngutil/compare/0.0.3-dev.18...0.0.3-dev.19) (2024-03-05)
 
 
