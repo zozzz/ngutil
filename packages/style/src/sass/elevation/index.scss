@@ -1,0 +1,28 @@
+@use "sass:list";
+@use "./vars" as *;
+@use "../animation/vars" as anim;
+
+
+@mixin elevation($level, $color) {
+    @if ($level == 0) {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    } @else {
+        box-shadow: #{list.nth($umbra-offset, $level + 1)} rgba(#{$color}, $umbra-opacity),
+                    #{list.nth($penumbra-offset, $level + 1)} rgba(#{$color}, $penumbra-opacity),
+                    #{list.nth($ambient-offset, $level + 1)} rgba(#{$color}, $ambient-opacity);
+    }
+}
+
+/// Define elevation selectors: [elevation=level]
+@mixin define-elevations($color) {
+    // [animate-elevation] {
+    //     transition: box-shadow #{anim.$duration-fast} #{anim.$ease-standard};
+    //     // will-change: box-shadow;
+    // }
+
+    @for $i from 1 through list.length($umbra-offset) {
+        [elevation="#{$i - 1}"] {
+            @include elevation($i - 1, $color);
+        }
+    }
+}
