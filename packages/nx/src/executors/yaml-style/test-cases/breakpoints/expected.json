@@ -1,0 +1,6 @@
+{
+  "Breakpoints": {
+    "Sm": "(max-width: 400px)",
+    "Auto": "(max-width: 600px)"
+  }
+}

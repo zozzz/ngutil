@@ -1,0 +1,5 @@
+meta: { ts, json, scss }
+content:
+  breakpoints:
+    sm: "(max-width: 400px) !str; // 0 - 400"
+    auto: "(max-width: 600px); // 0 - 600"

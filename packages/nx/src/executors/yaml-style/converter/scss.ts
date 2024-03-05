@@ -59,7 +59,7 @@ function flattenConverter(options: ScssOptions, data: ConvertData) {
     return flatten(data)
         .map(value => {
             const varName = "$" + value.path.map(dashedCase).join("-")
-            const varValue = value.value.unit ? `${value.value.value}${value.value.unit}` : value.value.value
+            const varValue = literalValue(value.value)
             const comment = value.value.comment ? `/// ${value.value.comment}\n` : ""
             return `${comment}${varName}: ${varValue} !default;`
         })
@@ -247,8 +247,15 @@ class ScssValue extends ScssElement {
     }
 
     override render(out: string[], _identLevel: number) {
-        const literal = this.literal
-        const varValue = literal.unit ? `${literal.value}${literal.unit}` : String(literal.value)
-        out.push(varValue)
+        out.push(literalValue(this.literal))
+    }
+}
+
+function literalValue(literal: Literal): string {
+    const varValue = literal.unit ? `${literal.value}${literal.unit}` : String(literal.value)
+    if (literal.flags.str) {
+        return `"${varValue.replace(/"/, '\\"')}"`
+    } else {
+        return varValue
     }
 }
