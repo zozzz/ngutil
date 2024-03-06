@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.3](https://github.com/zozzz/ngutil/compare/0.0.3-dev.20...0.0.3) (2024-03-06)
+
+
+### Bug Fixes
+
+* **layout:** Docking layout can shrink ([2974ad6](https://github.com/zozzz/ngutil/commit/2974ad69e8a14deef20742e708ff3a0f7bcc9e1d))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([beec123](https://github.com/zozzz/ngutil/commit/beec123ebaa5fbb527eaf6cb2942b2514e1968a2))
+
 ## [0.0.3-dev.20](https://github.com/zozzz/ngutil/compare/0.0.3-dev.19...0.0.3-dev.20) (2024-03-05)
 
 
