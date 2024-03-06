@@ -1,6 +1,6 @@
-import { Component, ElementRef, inject, Input, Output } from "@angular/core"
+import { AfterViewInit, Component, ElementRef, inject, Input, Output, ViewChild } from "@angular/core"
 
-import { BehaviorSubject, combineLatest, map, Observable, of, shareReplay, switchMap } from "rxjs"
+import { BehaviorSubject, combineLatest, map, Observable, of, ReplaySubject, shareReplay, switchMap } from "rxjs"
 
 import {
     BooleanInput,
@@ -26,11 +26,17 @@ const AUTO_SIZE = NumberWithUnit.coerce("auto")
     selector: "nu-docking-panel",
     exportAs: "nuDockingPanel",
     styleUrl: "./docking-panel.component.scss",
-    template: `<ng-content></ng-content>`
+    template: `
+        <div class="content" #content>
+            <ng-content></ng-content>
+        </div>
+    `
 })
-export class DockingPanelComponent extends Destructible {
+export class DockingPanelComponent extends Destructible implements AfterViewInit {
     readonly el = inject(ElementRef<HTMLElement>)
     readonly #dimWatcher = inject(DimensionWatcher)
+    @ViewChild("content", { read: ElementRef, static: true })
+    readonly content!: ElementRef<HTMLElement>
 
     @Input("position")
     set positionInput(val: L9Range | L9RangeName) {
@@ -91,15 +97,7 @@ export class DockingPanelComponent extends Destructible {
     #minimizable: boolean = false
     #minimizableAuto: boolean = true
 
-    readonly #contentSize = this.#dimWatcher.watch(this.el.nativeElement, "scroll-box").pipe(
-        map(dim => {
-            return {
-                width: new NumberWithUnit(dim.width, "px"),
-                height: new NumberWithUnit(dim.height, "px")
-            }
-        }),
-        shareReplay(1)
-    )
+    readonly #contentSize = new ReplaySubject<{ width: NumberWithUnit; height: NumberWithUnit }>(1)
 
     readonly #autoSize = combineLatest({
         dim: this.#contentSize,
@@ -193,6 +191,20 @@ export class DockingPanelComponent extends Destructible {
                 () => FastDOM.setAttributes(this.el.nativeElement, { animate: "" })
             )
         })
+    }
+
+    ngAfterViewInit(): void {
+        this.d
+            .sub(this.#dimWatcher.watch(this.content, "scroll-box"))
+            .pipe(
+                map(dim => {
+                    return {
+                        width: new NumberWithUnit(dim.width, "px"),
+                        height: new NumberWithUnit(dim.height, "px")
+                    }
+                })
+            )
+            .subscribe(this.#contentSize)
     }
 
     open() {

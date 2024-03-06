@@ -15,6 +15,7 @@
     align-items: stretch;
     position: absolute;
     box-sizing: border-box;
+    overflow: hidden;
 
     top: var(---docking-panel-t);
     right: var(---docking-panel-r);
