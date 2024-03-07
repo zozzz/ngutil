@@ -42,6 +42,9 @@
     }
 
     &[state="hidden"] {
+        animation: var(---docking-layout-anim-duration) var(---docking-layout-anim-ease) hide;
+        animation-fill-mode: forwards;
+
         &[orient="horizontal"] {
             transform: translateY(var(---docking-panel-t-hide));
         }
@@ -52,6 +55,8 @@
     }
 
     &:not([state="hidden"]) {
+        visibility: visible;
+
         &[orient="horizontal"] {
             transform: translateY(var(---docking-panel-t-visible));
         }
@@ -60,4 +65,31 @@
             transform: translateX(var(---docking-panel-t-visible));
         }
     }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    &[orient="horizontal"] {
+        .content {
+            width: 100%;
+            min-width: 100%;
+            max-width: 100%;
+        }
+    }
+
+    &[orient="vertical"] {
+        .content {
+            height: 100%;
+            min-height: 100%;
+            max-height: 100%;
+        }
+    }
+}
+
+@keyframes hide {
+    99% { visibility: visible; }
+    100% { visibility: hidden; }
 }

@@ -97,6 +97,15 @@ export class DockingPanelComponent extends Destructible implements AfterViewInit
     #minimizable: boolean = false
     #minimizableAuto: boolean = true
 
+    @Input("backdrop")
+    set backdrop(val: BooleanInput) {
+        this.#backdrop = coerceBoolAttr(val)
+    }
+    get backdrop(): boolean {
+        return this.#backdrop
+    }
+    #backdrop: boolean = false
+
     readonly #contentSize = new ReplaySubject<{ width: NumberWithUnit; height: NumberWithUnit }>(1)
 
     readonly #autoSize = combineLatest({
@@ -144,6 +153,7 @@ export class DockingPanelComponent extends Destructible implements AfterViewInit
         contentSize: this.#contentSize
     })
 
+    // TODO: better animation handling in min -> hidden -> min -> full
     constructor() {
         super()
 

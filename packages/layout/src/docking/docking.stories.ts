@@ -19,6 +19,7 @@ import { NuDockingLayout } from "./index"
                 state="hidden"
                 #leftPanel="nuDockingPanel"
                 style="background:cyan;opacity:0.5"
+                backdrop
             >
                 <div style="width:var(--docking-panel-full-size);background:#CC3300;padding-top:100px;">FULL SIZE</div>
             </nu-docking-panel>
@@ -44,6 +45,9 @@ import { NuDockingLayout } from "./index"
                 #rightPanel="nuDockingPanel"
                 style="background:yellow;opacity:0.5"
             >
+                <div style="flex:1 1 1%;border: 1px solid red">B1</div>
+                <div style="flex:2 1 1%;border: 1px solid green">B2</div>
+                <div style="flex:1 1 1%;border: 1px solid blue">B3</div>
             </nu-docking-panel>
 
             <nu-docking-panel

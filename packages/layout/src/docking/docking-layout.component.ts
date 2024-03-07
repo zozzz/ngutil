@@ -9,13 +9,15 @@ import {
     Input,
     OnChanges,
     QueryList,
-    SimpleChanges
+    SimpleChanges,
+    ViewChild
 } from "@angular/core"
 
 import { combineLatest, map, Observable, shareReplay, startWith, Subject, switchMap } from "rxjs"
 
 import { Destructible, FastDOM } from "@ngutil/common"
 
+import { DockingBackdropComponent } from "./docking-backdrop.component"
 import { DockingContentComponent } from "./docking-content.component"
 import { type DockingPanelChanges, DockingPanelComponent } from "./docking-panel.component"
 
@@ -28,15 +30,16 @@ export type DockingRange =
     | DockingPosition
     | `${DockingPosition}-${DockingPosition}`
 
-const RIGID_ZINDEX = 20
+const RIGID_ZINDEX = 100
 const OVER_ZINDEX = RIGID_ZINDEX * 2
+const BACKDROP_ZINDEX = 10000
 
 type PanelsChanges = Array<{ panel: DockingPanelComponent; changes: DockingPanelChanges }>
 
 @Component({
     selector: "nu-docking",
     standalone: true,
-    imports: [DockingContentComponent],
+    imports: [DockingContentComponent, DockingBackdropComponent],
     template: `
         <ng-content select="nu-docking-panel"></ng-content>
 
@@ -47,6 +50,8 @@ type PanelsChanges = Array<{ panel: DockingPanelComponent; changes: DockingPanel
         } @else {
             <ng-content select="nu-docking-content"></ng-content>
         }
+
+        <nu-docking-backdrop #backdrop (click)="onHideBackdropPanel($event)" />
     `,
     styleUrl: "./docking-layout.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -57,12 +62,15 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
     @Input() contentOnly = false
 
     @ContentChild(DockingContentComponent) contentComponent?: DockingContentComponent
+    @ViewChild("backdrop", { read: ElementRef, static: true })
+    backdropEl?: ElementRef<HTMLElement>
     @ContentChildren(DockingPanelComponent) dockingPanels!: QueryList<DockingPanelComponent>
 
     // readonly panels = new BehaviorSubject<PanelRef[]>([])
     readonly panels!: Observable<Array<DockingPanelComponent>>
 
     #reflow = new Subject<void>()
+    #backdropPanel: DockingPanelComponent | null = null
 
     ngAfterViewInit(): void {
         // eslint-disable-next-line prettier/prettier
@@ -103,6 +111,9 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
         let paddingLeft = 0
         let rigidZIndex = RIGID_ZINDEX
         let overZIndex = OVER_ZINDEX
+        let backdropZIndex = -1
+
+        this.#backdropPanel = null
 
         if (this.contentOnly) {
             // TODO:...
@@ -155,8 +166,15 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                     }
                 }
 
+                let panelZIndex = isRigid ? (rigidZIndex += 2) : (overZIndex += 2)
+                if (panelState.state !== "hidden" && entry.panel.backdrop) {
+                    backdropZIndex = BACKDROP_ZINDEX
+                    panelZIndex = backdropZIndex + 1
+                    this.#backdropPanel = entry.panel
+                }
+
                 FastDOM.setStyle(entry.panel.el.nativeElement, {
-                    "z-index": `${isRigid ? rigidZIndex++ : overZIndex++}`,
+                    "z-index": `${panelZIndex}`,
                     "--docking-panel-t": panelTop != null ? `${panelTop}px` : null,
                     "--docking-panel-r": panelRight != null ? `${panelRight}px` : null,
                     "--docking-panel-b": panelBottom != null ? `${panelBottom}px` : null,
@@ -170,6 +188,20 @@ export class DockingLayoutComponent extends Destructible implements AfterViewIni
                 "--docking-layout-bottom": `${paddingBottom}px`,
                 "--docking-layout-left": `${paddingLeft}px`
             })
+
+            if (this.backdropEl) {
+                FastDOM.setAttributes(this.backdropEl.nativeElement, {
+                    state: backdropZIndex < 0 ? "hidden" : "visible"
+                })
+                FastDOM.setStyle(this.backdropEl.nativeElement, { "z-index": `${backdropZIndex}` })
+            }
+        }
+    }
+
+    onHideBackdropPanel(event: Event) {
+        event.preventDefault()
+        if (this.#backdropPanel) {
+            this.#backdropPanel.close()
         }
     }
 }
