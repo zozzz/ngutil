@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.4](https://github.com/zozzz/ngutil/compare/0.0.3...0.0.4) (2024-03-07)
+
+
+### Features
+
+* **layout:** docking layout backdrop ([b79f4d2](https://github.com/zozzz/ngutil/commit/b79f4d25bfe168df1c22325ffcff89870318d539))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([3efde40](https://github.com/zozzz/ngutil/commit/3efde4028faeaa95f700f97ae832105cec1f7d08))
+
 ## [0.0.3](https://github.com/zozzz/ngutil/compare/0.0.3-dev.20...0.0.3) (2024-03-06)
 
 
