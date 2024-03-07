@@ -27,7 +27,7 @@ const AUTO_SIZE = NumberWithUnit.coerce("auto")
     exportAs: "nuDockingPanel",
     styleUrl: "./docking-panel.component.scss",
     template: `
-        <div class="content" #content>
+        <div class="nu-docking-wrapper" #content>
             <ng-content></ng-content>
         </div>
     `
