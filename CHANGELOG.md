@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.5](https://github.com/zozzz/ngutil/compare/0.0.4...0.0.5) (2024-03-08)
+
+
+### Features
+
+* **nx:** svg-to-ts executor ([4c36125](https://github.com/zozzz/ngutil/commit/4c36125d85748e3a0dfbdf3b37bee8e0dc44b0b7))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([a33b52e](https://github.com/zozzz/ngutil/commit/a33b52effdf3fda078f3e7b7499102d14f4c4239))
+
 ## [0.0.4](https://github.com/zozzz/ngutil/compare/0.0.3...0.0.4) (2024-03-07)
 
 
