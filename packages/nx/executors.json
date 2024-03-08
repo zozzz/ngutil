@@ -9,6 +9,11 @@
       "implementation": "./src/executors/webmanifest/executor",
       "schema": "./src/executors/webmanifest/schema.json",
       "description": "webmanifest executor"
+    },
+    "svg-to-ts": {
+      "implementation": "./src/executors/svg-to-ts/executor",
+      "schema": "./src/executors/svg-to-ts/schema.json",
+      "description": "svg-to-ts executor"
     }
   }
 }

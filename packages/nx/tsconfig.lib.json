@@ -5,6 +5,10 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/executors/yaml-style/executor.spec.ts_", "src/executors/yaml-style/converter/literal.spec.ts_"],
+  "include": [
+    "src/**/*.ts",
+    "src/executors/yaml-style/executor.spec.ts_",
+    "src/executors/yaml-style/converter/literal.spec.ts_"
+  ],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

@@ -1,6 +1,7 @@
 import { isPlainObject } from "is-plain-object"
 
-import { CommonOptions, ConvertData, ConverterOptions, dashedCase } from "./abstract"
+import { kebabCase } from "../../../util"
+import { CommonOptions, ConvertData, ConverterOptions } from "./abstract"
 import { Literal } from "./literal"
 
 export type ScssType = "flatten" | "map"
@@ -58,7 +59,7 @@ export async function convertToScss(options: ScssOptions, data: ConvertData) {
 function flattenConverter(options: ScssOptions, data: ConvertData) {
     return flatten(data)
         .map(value => {
-            const varName = "$" + value.path.map(dashedCase).join("-")
+            const varName = "$" + value.path.map(kebabCase).join("-")
             const varValue = literalValue(value.value)
             const comment = value.value.comment ? `/// ${value.value.comment}\n` : ""
             return `${comment}${varName}: ${varValue} !default;`
@@ -143,7 +144,7 @@ class ScssName {
     readonly local: string
 
     constructor(public readonly path: string[]) {
-        const converted = path.map(dashedCase)
+        const converted = path.map(kebabCase)
         this.id = "$" + converted.join("-")
         this.local = converted[converted.length - 1]
     }
@@ -183,7 +184,7 @@ class ScssMap extends ScssElement {
         const lastIndex = entries.length - 1
         out.push(`(\n`)
         for (const [i, [k, v]] of entries.entries()) {
-            out.push(`${this.ident(identLevel + 1)}"${dashedCase(k)}": `)
+            out.push(`${this.ident(identLevel + 1)}"${kebabCase(k)}": `)
             v.render(out, identLevel + 1)
             if (i !== lastIndex) {
                 out.push(",")

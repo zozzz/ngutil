@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "SvgToTsExecutorSchema",
+  "description": "",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "prefix": {
+      "description": "Prefix of every generated varaibales",
+      "type": "string"
+    },
+    "sets": {
+      "description": "Different icon set configurations",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["files", "output"],
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "description": "Input svg files",
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "description": "Input svg file (can be glob)",
+                      "type": "string",
+                      "x-completion-type": "file"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["file", "name"],
+                      "properties": {
+                        "file": {
+                          "description": "Input svg file",
+                          "type": "string",
+                          "x-completion-type": "file"
+                        },
+                        "name": {
+                          "description": "Generated name in ts file",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "output": {
+            "description": "Generated ts file path",
+            "type": "string",
+            "x-completion-type": "file"
+          },
+          "overrides": {
+            "description": "Various svg overrides",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["addClass"],
+                  "properties": {
+                    "addClass": {
+                      "description": "Add class to the root svg element",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["attributes"],
+                  "properties": {
+                    "attributes": {
+                      "description": "Add or remove attributes based on value, if null provided, the attribute is remove. More info: https://svgo.dev/docs/plugins/remove-attrs/",
+                      "type": "object",
+                      "patternProperties": {
+                        "^.*$": {
+                          "anyOf": [{ "type": "string" }, { "type": "null" }]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["sets"]
+}

@@ -1,6 +1,7 @@
 import { isPlainObject } from "is-plain-object"
 
-import { CommonOptions, ConvertData, ConverterOptions, pascalCase } from "./abstract"
+import { pascalCase } from "../../../util"
+import { CommonOptions, ConvertData, ConverterOptions } from "./abstract"
 import { Literal } from "./literal"
 
 export class JsonOptions extends CommonOptions {

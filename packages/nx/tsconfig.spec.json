@@ -5,5 +5,12 @@
     "module": "commonjs",
     "types": ["jest", "node"]
   },
-  "include": ["jest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts", "src/**/*.d.ts", "src/executors/yaml-style/executor.spec.ts_", "src/executors/yaml-style/converter/literal.spec.ts_"]
+  "include": [
+    "jest.config.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts",
+    "src/executors/yaml-style/executor.spec.ts_",
+    "src/executors/yaml-style/converter/literal.spec.ts_"
+  ]
 }
