@@ -42,7 +42,7 @@
     "@nx/eslint-plugin": "18.0.5",
     "@nx/jest": "18.0.5",
     "@nx/js": "18.0.5",
-    "@nx/plugin": "^18.0.7",
+    "@nx/plugin": "^18.0.8",
     "@nx/storybook": "18.0.5",
     "@nx/web": "18.0.5",
     "@nx/workspace": "18.0.5",
