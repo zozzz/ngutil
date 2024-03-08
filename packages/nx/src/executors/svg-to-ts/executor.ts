@@ -58,7 +58,7 @@ async function convertGroup(prefix: string | undefined, output: string, group: S
         tsContent.push(`export const ${k} = \`${svg}\``)
     }
 
-    const typeName = pascalCase(`${prefix ? `${prefix}-` : ""}iconName`)
+    const typeName = pascalCase(`${prefix ? `${prefix}-` : ""}svgNames`)
     tsContent.push(`export type ${typeName} = ${keys.map(k => `"${k}"`).join(" | ")}`)
 
     await fs.mkdir(path.dirname(output), { recursive: true })
