@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.0.6](https://github.com/zozzz/ngutil/compare/0.0.5...0.0.6) (2024-03-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **nx:** svg-to-ts rename exported names to {prefix}SvgNames
+
+### Features
+
+* **nx:** svg-to-ts add presets ([6f319a1](https://github.com/zozzz/ngutil/commit/6f319a190594ea9fbb8d58afb1ddb72205614812))
+
+
+### Bug Fixes
+
+* **nx:** svg-to-ts rename exported names to {prefix}SvgNames ([f93d9f4](https://github.com/zozzz/ngutil/commit/f93d9f4f6f2bd02456afd60ad865810d6364ac4e))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([bf40509](https://github.com/zozzz/ngutil/commit/bf405097a4f07b7818eba906aabad4b1840fa2b6))
+
 ## [0.0.5](https://github.com/zozzz/ngutil/compare/0.0.4...0.0.5) (2024-03-08)
 
 
