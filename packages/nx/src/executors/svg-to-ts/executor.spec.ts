@@ -88,4 +88,20 @@ describe("SvgToTs Executor", () => {
         )
         expect(output.success).toBe(true)
     })
+
+    it("empty", async () => {
+        const output = await executor(
+            {
+                prefix: "nu",
+                sets: [
+                    {
+                        files: ["aaaaaaaaaaaaaaaaaa.svg"],
+                        output: "generated/empty.ts"
+                    }
+                ]
+            },
+            { root: path.join(SELF_DIR, "test-assets") } as any
+        )
+        expect(output.success).toBe(true)
+    })
 })

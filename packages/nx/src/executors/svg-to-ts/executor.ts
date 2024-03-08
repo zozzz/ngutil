@@ -51,7 +51,7 @@ async function convertGroup(prefix: string | undefined, output: string, group: S
         }
     }
 
-    const tsContent = [`/* eslint-disable */`]
+    const tsContent = [`/* eslint-disable */`, `/* ! AUTO GENERATED DO NOT EDIT ! */`]
     const keys = Object.keys(svgs).sort((a, b) => a.localeCompare(b))
 
     for (const k of keys) {
@@ -60,7 +60,12 @@ async function convertGroup(prefix: string | undefined, output: string, group: S
     }
 
     const typeName = pascalCase(`${prefix ? `${prefix}-` : ""}svgNames`)
-    tsContent.push(`export type ${typeName} = ${keys.map(k => `"${k}"`).join(" | ")}`)
+
+    if (keys.length === 0) {
+        tsContent.push(`export type ${typeName} = never`)
+    } else {
+        tsContent.push(`export type ${typeName} = ${keys.map(k => `"${k}"`).join(" | ")}`)
+    }
 
     await fs.mkdir(path.dirname(output), { recursive: true })
     await fs.writeFile(output, tsContent.join("\n"), { encoding: "utf-8" })
