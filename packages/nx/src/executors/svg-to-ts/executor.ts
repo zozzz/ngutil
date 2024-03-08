@@ -9,6 +9,7 @@ import { SvgToTsExecutorSchema } from "./schema"
 
 type Sets = Array<SvgToTsExecutorSchema["sets"][number]>
 type Overrides = SvgToTsExecutorSchema["sets"][number]["overrides"]
+type PresetName = SvgToTsExecutorSchema["sets"][number]["preset"]
 
 export default async function runExecutor(options: SvgToTsExecutorSchema, context: ExecutorContext) {
     const grouped = groupByOutput(options, context)
@@ -45,7 +46,7 @@ async function convertGroup(prefix: string | undefined, output: string, group: S
         for await (const file of setFiles(set, context)) {
             const name = prefix == null ? file.name : `${prefix}-${file.name}`
             const tsName = camelCase(name)
-            const content = await convertSvg(file.file, set.overrides)
+            const content = await convertSvg(file.file, set.preset || "general", set.overrides)
             svgs[tsName] = content.data
         }
     }
@@ -80,7 +81,46 @@ async function* setFiles(set: SvgToTsExecutorSchema["sets"][number], context: Ex
     }
 }
 
-async function convertSvg(file: string, overrides: Overrides) {
+const GENERAL_PLUGINS = [
+    "cleanupAttrs",
+    "cleanupEnableBackground",
+    "cleanupIds",
+    "collapseGroups",
+    "convertColors",
+    "convertPathData",
+    "convertShapeToPath",
+    "convertStyleToAttrs",
+    "inlineStyles",
+    "mergePaths",
+    "mergeStyles",
+    "minifyStyles",
+    "removeUselessDefs",
+    "removeComments",
+    "removeDesc",
+    "removeDimensions",
+    "removeDoctype",
+    "removeEditorsNSData",
+    "removeEmptyAttrs",
+    "removeEmptyContainers",
+    "removeEmptyText",
+    "removeMetadata",
+    "removeScriptElement",
+    "removeTitle",
+    "removeUnusedNS",
+    "removeUselessStrokeAndFill",
+    "removeXMLProcInst",
+    "removeXMLNS",
+    "reusePaths",
+    "sortAttrs",
+    "sortDefsChildren"
+]
+
+const PRESETS: { [key in PresetName]?: any[] } = {
+    icon: ["removeStyleElement", ...GENERAL_PLUGINS],
+    general: [...GENERAL_PLUGINS]
+}
+
+async function convertSvg(file: string, preset: PresetName, overrides: Overrides) {
     let overridePlugins = []
     if (overrides) {
         for (const override of overrides) {
@@ -103,42 +143,7 @@ async function convertSvg(file: string, overrides: Overrides) {
             pretty: false,
             useShortTags: true
         },
-        plugins: [
-            "cleanupAttrs",
-            "cleanupEnableBackground",
-            "cleanupIds",
-            "collapseGroups",
-            "convertColors",
-            "convertPathData",
-            "convertShapeToPath",
-            "convertStyleToAttrs",
-            "inlineStyles",
-            "mergePaths",
-            "mergeStyles",
-            "minifyStyles",
-            "removeComments",
-            "removeDesc",
-            "removeDimensions",
-            "removeDoctype",
-            "removeEditorsNSData",
-            "removeEmptyAttrs",
-            "removeEmptyContainers",
-            "removeEmptyText",
-            "removeMetadata",
-            "removeScriptElement",
-            // TODO: maybe not safe
-            "removeStyleElement",
-            "removeTitle",
-            "removeUnusedNS",
-            "removeUselessDefs",
-            "removeUselessStrokeAndFill",
-            "removeXMLProcInst",
-            "removeXMLNS",
-            "reusePaths",
-            "sortAttrs",
-            "sortDefsChildren",
-            ...overridePlugins
-        ]
+        plugins: [...PRESETS[preset], ...overridePlugins]
     })
 }
 

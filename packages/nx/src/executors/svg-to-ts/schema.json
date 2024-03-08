@@ -56,6 +56,11 @@
             "type": "string",
             "x-completion-type": "file"
           },
+          "preset": {
+            "type": "string",
+            "enum": ["icon", "general"],
+            "default": "general"
+          },
           "overrides": {
             "description": "Various svg overrides",
             "type": "array",

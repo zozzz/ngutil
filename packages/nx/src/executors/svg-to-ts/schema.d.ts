@@ -6,56 +6,57 @@
  */
 
 export interface SvgToTsExecutorSchema {
+  /**
+   * Prefix of every generated varaibales
+   */
+  prefix?: string;
+  /**
+   * Different icon set configurations
+   */
+  sets: {
     /**
-     * Prefix of every generated varaibales
+     * Input svg files
      */
-    prefix?: string
+    files: (
+      | string
+      | {
+          /**
+           * Input svg file
+           */
+          file: string;
+          /**
+           * Generated name in ts file
+           */
+          name: string;
+        }
+    )[];
     /**
-     * Different icon set configurations
+     * Generated ts file path
      */
-    sets: {
-        /**
-         * Input svg files
-         */
-        files: (
-            | string
-            | {
-                  /**
-                   * Input svg file
-                   */
-                  file: string
-                  /**
-                   * Generated name in ts file
-                   */
-                  name: string
-              }
-        )[]
-        /**
-         * Generated ts file path
-         */
-        output: string
-        /**
-         * Various svg overrides
-         */
-        overrides?: (
-            | {
-                  /**
-                   * Add class to the root svg element
-                   */
-                  addClass: string[]
-              }
-            | {
-                  /**
-                   * Add or remove attributes based on value
-                   */
-                  attributes: {
-                      /**
-                       * This interface was referenced by `undefined`'s JSON-Schema definition
-                       * via the `patternProperty` "^.*$".
-                       */
-                      [k: string]: string | null
-                  }
-              }
-        )[]
-    }[]
+    output: string;
+    preset?: "icon" | "general";
+    /**
+     * Various svg overrides
+     */
+    overrides?: (
+      | {
+          /**
+           * Add class to the root svg element
+           */
+          addClass: string[];
+        }
+      | {
+          /**
+           * Add or remove attributes based on value, if null provided, the attribute is remove. More info: https://svgo.dev/docs/plugins/remove-attrs/
+           */
+          attributes: {
+            /**
+             * This interface was referenced by `undefined`'s JSON-Schema definition
+             * via the `patternProperty` "^.*$".
+             */
+            [k: string]: string | null;
+          };
+        }
+    )[];
+  }[];
 }
