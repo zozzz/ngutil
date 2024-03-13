@@ -38,23 +38,6 @@ describe("SvgToTs Executor", () => {
         expect(output.success).toBe(true)
     })
 
-    it("glob-icon", async () => {
-        const output = await executor(
-            {
-                prefix: "nu",
-                sets: [
-                    {
-                        files: ["*.svg"],
-                        output: "generated/glob-icon.ts",
-                        preset: "icon"
-                    }
-                ]
-            },
-            { root: path.join(SELF_DIR, "test-assets") } as any
-        )
-        expect(output.success).toBe(true)
-    })
-
     it("addClass", async () => {
         const output = await executor(
             {
@@ -103,5 +86,24 @@ describe("SvgToTs Executor", () => {
             { root: path.join(SELF_DIR, "test-assets") } as any
         )
         expect(output.success).toBe(true)
+    })
+
+    describe("preset", () => {
+        it("icon", async () => {
+            const output = await executor(
+                {
+                    prefix: "nu",
+                    sets: [
+                        {
+                            files: ["*.svg"],
+                            output: "generated/preset-icon.ts",
+                            preset: "icon"
+                        }
+                    ]
+                },
+                { root: path.join(SELF_DIR, "test-assets") } as any
+            )
+            expect(output.success).toBe(true)
+        })
     })
 })

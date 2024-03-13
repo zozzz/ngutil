@@ -121,7 +121,12 @@ const GENERAL_PLUGINS = [
 ]
 
 const PRESETS: { [key in PresetName]?: any[] } = {
-    icon: ["removeStyleElement", ...GENERAL_PLUGINS],
+    icon: [
+        "removeStyleElement",
+        ...GENERAL_PLUGINS,
+        { name: "addAttributesToSVGElement", params: { attributes: [{ fill: "currentColor" }] } },
+        { name: "removeAttrs", params: { attrs: "class" } }
+    ],
     general: [...GENERAL_PLUGINS]
 }
 
