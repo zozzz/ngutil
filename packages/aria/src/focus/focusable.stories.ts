@@ -24,6 +24,11 @@ import { Focusable } from "./focusable.directive"
             align-items: stretch;
             min-width: 300px;
             box-sizing: border-box;
+            margin: 16px;
+
+            &:focus {
+                outline: none;
+            }
 
             pre {
                 padding: 10px;
@@ -36,8 +41,12 @@ import { Focusable } from "./focusable.directive"
                 }
             }
 
-            &[focused~="mouse"] {
+            &[focused~="mouse"] pre {
                 background: red;
+            }
+
+            &[focused~="keyboard"] pre {
+                background: blue;
             }
         }
     `,
@@ -73,6 +82,8 @@ type Story = StoryObj<FocusableComponent>
 
 export const Basic: StoryFn<Story> = args => {
     const template = `
+        <story-focusable></story-focusable>
+        <story-focusable></story-focusable>
         <story-focusable></story-focusable>
     `
 
