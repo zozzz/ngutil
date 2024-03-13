@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.0.7](https://github.com/zozzz/ngutil/compare/0.0.6...0.0.7) (2024-03-13)
+
+
+### Features
+
+* **nx:** svg-to-ts: update icon preset ([9f6b1df](https://github.com/zozzz/ngutil/commit/9f6b1dfe21d5c1d0051a7c6f710314ff8a5a12a0))
+
+
+### Bug Fixes
+
+* **nx:** svg-to-ts empty file generation is fixed ([326bff9](https://github.com/zozzz/ngutil/commit/326bff913ffa953fbe6d0658dad1ede1d5c46cf3))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([6d5c2db](https://github.com/zozzz/ngutil/commit/6d5c2dbb2c003e230680be741b8b42d7db7f2ee8))
+
 ## [0.0.6](https://github.com/zozzz/ngutil/compare/0.0.5...0.0.6) (2024-03-08)
 
 
