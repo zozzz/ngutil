@@ -220,7 +220,8 @@ export class BusyTracker<T extends BusyName> extends Destructible {
  */
 @Directive({
     standalone: true,
-    selector: "[busyName]"
+    selector: "[busyName]",
+    exportAs: "busy"
 })
 export class Busy<T extends BusyName> {
     readonly tracker: BusyTracker<T> = inject(BusyTracker, { skipSelf: true })
