@@ -1,5 +1,6 @@
 import {
     computed,
+    DestroyRef,
     Directive,
     inject,
     Inject,
@@ -11,10 +12,11 @@ import {
     Signal,
     SkipSelf
 } from "@angular/core"
-import { toObservable, toSignal } from "@angular/core/rxjs-interop"
+import { takeUntilDestroyed, toObservable, toSignal } from "@angular/core/rxjs-interop"
 
 import {
     BehaviorSubject,
+    combineLatest,
     filter,
     finalize,
     isObservable,
@@ -22,29 +24,37 @@ import {
     Observable,
     scan,
     shareReplay,
-    takeUntil,
-    tap
+    switchMap,
+    tap,
+    throwError
 } from "rxjs"
 
-import { Destructible } from "./destruct"
+import { isEqual } from "lodash"
 
-export type BusyName = string | "*"
+import { ConnectProtocol } from "./connect-protocol"
+
 export type BusyProgress = { total: number; current: number; message?: string }
-export type BusyEventParams = { busy: boolean; progress?: BusyProgress }
+export type BusyEventParams = { busy?: boolean; progress?: BusyProgress }
 export type BusyEvent = { name: string } & BusyEventParams
 
-export class BusyState<T extends BusyName> {
+export type BusyConnectable = Observable<boolean | BusyEventParams> | BusyTracker<any> | Signal<boolean>
+
+export class BusyState<T extends string> implements ConnectProtocol {
     readonly #events = new BehaviorSubject<BusyEvent | null>(null)
-    readonly events: Observable<BusyEvent> = this.#events.pipe(filter(event => event != null)) as any
 
     #data: { [key: string]: BusyEventParams } = {}
 
-    readonly changes = this.#events.pipe(
+    readonly current$ = this.#events.pipe(
         scan((state, current) => {
             if (current == null) {
                 return state
             }
-            state[current.name] = { busy: current.busy, progress: current.progress }
+
+            if (current.busy == null) {
+                delete state[current.name]
+            } else {
+                state[current.name] = { busy: current.busy, progress: current.progress }
+            }
             return state
         }, {} as any),
         tap(state => (this.#data = state)),
@@ -53,7 +63,7 @@ export class BusyState<T extends BusyName> {
     )
 
     get isBusy(): boolean {
-        return !!Object.values(this.#data).find(v => v.busy)
+        return Object.values(this.#data).some(v => v.busy)
     }
 
     get progress(): BusyProgress | undefined {
@@ -79,23 +89,57 @@ export class BusyState<T extends BusyName> {
     }
 
     is(name: T): boolean {
-        if (name === "*") {
-            return this.isBusy
-        } else {
-            return this.#data[name]?.busy === true
-        }
+        return this.#data[name]?.busy === true
     }
 
     has(name: T): boolean {
         return this.#data[name] != null
     }
 
-    set(name: T, busy: boolean, progress?: BusyProgress) {
-        this.#events.next({ name, busy, progress })
+    set(name: T, busy: boolean | undefined, progress?: BusyProgress) {
+        const current = this.#data[name]
+        if (current == null || current.busy !== busy || !isEqual(current.progress, progress)) {
+            this.#events.next({ name, busy, progress })
+        }
     }
 
-    get(name: T) {
+    get(name: T): BusyEventParams | undefined {
         return this.#data[name]
+    }
+
+    keys() {
+        return Object.keys(this.#data)
+    }
+
+    entries() {
+        return Object.entries(this.#data)
+    }
+
+    connect(o: Observable<typeof this> | typeof this, prefix?: string): Observable<unknown> {
+        if (o instanceof BusyState) {
+            return this.connect(o.current$, prefix)
+        } else {
+            return new Observable(() => {
+                const otherKeys: string[] = []
+
+                const sub = o.subscribe(otherState => {
+                    for (const [k, v] of otherState.entries()) {
+                        const key = prefix ? `${prefix}-${k}` : k
+                        if (!otherKeys.includes(key)) {
+                            otherKeys.push(key)
+                        }
+                        this.set(key as T, v.busy, v.progress)
+                    }
+                })
+
+                return () => {
+                    sub.unsubscribe()
+                    for (const k of otherKeys) {
+                        this.set(k as T, undefined, undefined)
+                    }
+                }
+            })
+        }
     }
 }
 
@@ -106,7 +150,7 @@ export class BusyState<T extends BusyName> {
  *   template: `
  *     <spinner *ngIf="busy.is('reload') | async">
  *     <spinner *ngIf="busy.any | async">
- *     <button busyName="reload"></button>
+ *     <button nuBusy="reload"></button>
  *   `
  * })
  * export class Grid {
@@ -114,23 +158,23 @@ export class BusyState<T extends BusyName> {
  * }
  * ```
  */
-@Injectable({ providedIn: "any" })
-export class BusyTracker<T extends BusyName> extends Destructible {
+@Injectable()
+export class BusyTracker<T extends string> implements ConnectProtocol {
+    private readonly destroyRef = inject(DestroyRef)
+
     private readonly _state = this.parent
         ? (this.parent as unknown as { _state: BusyState<T> })._state
         : new BusyState()
 
-    readonly events = this._state.events
+    readonly state$ = this._state.current$
 
-    readonly state: Signal<BusyState<T>> = toSignal(this._state.changes, { requireSync: true })
+    readonly state: Signal<BusyState<T>> = toSignal(this.state$, { requireSync: true })
 
     readonly any = computed(() => this.state().isBusy)
 
     readonly progress = computed(() => this.state().progress)
 
-    constructor(@Inject(BusyTracker) @SkipSelf() @Optional() private readonly parent?: BusyTracker<any>) {
-        super()
-    }
+    constructor(@Inject(BusyTracker) @SkipSelf() @Optional() private readonly parent?: BusyTracker<any>) {}
 
     init(name: T, busy: boolean, progress?: BusyProgress) {
         const state = this.state()
@@ -144,16 +188,11 @@ export class BusyTracker<T extends BusyName> extends Destructible {
     }
 
     is(name: T): Observable<boolean> {
-        return this._state.changes.pipe(map(state => state.is(name)))
+        return this.state$.pipe(map(state => state.is(name)))
     }
 
     watch(name: T): Observable<BusyEventParams | undefined> {
-        return this._state.changes.pipe(
-            map(state => {
-                const data = state.get(name)
-                return data ? { busy: data.busy, progress: data.progress } : undefined
-            })
-        )
+        return this.state$.pipe(map(state => state.get(name)))
     }
 
     /**
@@ -169,41 +208,28 @@ export class BusyTracker<T extends BusyName> extends Destructible {
             )
     }
 
-    connect(value: Observable<boolean | BusyEventParams> | Signal<boolean>, name: T): void
-    connect(value: BusyTracker<any>, prefix?: string): void
-    connect(value: Observable<boolean | BusyEventParams> | BusyTracker<any> | Signal<boolean>, name?: string): void {
-        if (isObservable(value) && name != null) {
-            this.d.sub(value).subscribe(value => {
-                if (typeof value === "boolean") {
-                    this.set(name as T, value)
-                } else {
-                    this.set(name as T, value.busy, value.progress)
-                }
-            })
-        } else if (value instanceof BusyTracker) {
-            if (name != null) {
-                value.d
-                    .sub(value.events)
-                    .pipe(
-                        takeUntil(this.d.on),
-                        map(v => {
-                            return { ...v, name: `${name}-${v.name}` }
-                        })
-                    )
-                    .subscribe(event => {
-                        this.set(event.name as T, event.busy, event.progress)
-                    })
-            } else {
-                value.d
-                    .sub(value.events)
-                    .pipe(takeUntil(this.d.on))
-                    .subscribe(event => {
-                        this.set(event.name as T, event.busy, event.progress)
-                    })
+    connect(value: BusyConnectable, name?: T): Observable<unknown> {
+        if (isObservable(value)) {
+            if (name == null) {
+                return throwError(() => new Error("Missing `name` param"))
             }
+
+            return new Observable(() => {
+                const sub = value.subscribe(busyValue => {
+                    if (typeof busyValue === "boolean") {
+                        this.set(name as T, busyValue)
+                    } else {
+                        this.set(name as T, !!busyValue.busy, busyValue.progress)
+                    }
+                })
+                return sub.unsubscribe.bind(sub)
+            }).pipe(takeUntilDestroyed(this.destroyRef))
+        } else if (value instanceof BusyTracker) {
+            return this._state.connect(value.state$, name).pipe(takeUntilDestroyed(this.destroyRef))
         } else if (isSignal(value)) {
-            this.connect(toObservable(value), name as T)
+            return this.connect(toObservable(value), name)
         }
+        return throwError(() => new Error("Unsupported Busy source"))
     }
 }
 
@@ -211,33 +237,81 @@ export class BusyTracker<T extends BusyName> extends Destructible {
  * ```ts
  * @Component({
  *   template: `
- *     <button busyName="save">SAVE</button>
- *     <progress busyName="fileUpload">
- *     <progress busyName="*">
+ *     <button nuBusy="save">SAVE</button>
+ *     <progress nuBusy="fileUpload">
+ *     <progress nuBusy="*">
  *   `
  * })
  * ```
  */
 @Directive({
     standalone: true,
-    selector: "[busyName]",
-    exportAs: "busy"
+    selector: "[nuBusy]",
+    exportAs: "nuBusy"
 })
-export class Busy<T extends BusyName> {
+export class Busy<T extends string> implements ConnectProtocol {
     readonly tracker: BusyTracker<T> = inject(BusyTracker, { skipSelf: true })
 
-    readonly name: InputSignal<T> = input.required<T>({ alias: "busyName" })
+    readonly name: InputSignal<T> = input.required<T>({ alias: "nuBusy" })
+    readonly #name = toObservable(this.name)
 
-    readonly isBusy = computed(() => this.tracker.state().is(this.name()))
+    readonly state$ = combineLatest({ name: this.#name, state: this.tracker.state$ }).pipe(
+        map(({ name, state }) => {
+            if (name === "*") {
+                const isBusy = state.isBusy
+                return {
+                    isBusy: isBusy,
+                    isOthersBusy: isBusy,
+                    progress: state.progress
+                }
+            }
 
-    readonly isOthersBusy = computed(() => {
-        const state = this.tracker.state()
-        return state.isBusy && !state.is(this.name())
-    })
+            const self = state.get(name)
+            if (self) {
+                const isBusy = self.busy === true
+                return {
+                    isBusy: isBusy,
+                    isOthersBusy: state.isBusy && !isBusy,
+                    progress: self.progress
+                }
+            } else {
+                return {
+                    isBusy: false,
+                    isOthersBusy: state.isBusy,
+                    progress: undefined
+                }
+            }
+        }),
+        shareReplay(1)
+    )
 
-    readonly progress = computed(() => {
-        const state = this.tracker.state()
-        const data = state.get(this.name())
-        return data ? data.progress : undefined
-    })
+    readonly isBusy$ = this.state$.pipe(
+        map(v => v.isBusy),
+        shareReplay(1)
+    )
+    readonly isBusy = toSignal(this.isBusy$, { rejectErrors: true })
+
+    readonly isOthersBusy$ = this.state$.pipe(
+        map(v => v.isOthersBusy),
+        shareReplay(1)
+    )
+    readonly isOthersBusy = toSignal(this.isOthersBusy$, { rejectErrors: true })
+
+    readonly progress$ = this.state$.pipe(
+        map(v => v.progress),
+        shareReplay(1)
+    )
+    readonly progress = toSignal(this.progress$, { rejectErrors: true })
+
+    connect(value: BusyConnectable) {
+        return new Observable(() => {
+            const tsub = this.#name
+                .pipe(
+                    filter(name => name !== "*"),
+                    switchMap(name => this.tracker.connect(value, name))
+                )
+                .subscribe()
+            return tsub.unsubscribe.bind(tsub)
+        })
+    }
 }

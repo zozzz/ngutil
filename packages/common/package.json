@@ -8,7 +8,10 @@
   "peerDependencies": {
     "@angular/common": "^17.3.0",
     "@angular/core": "^17.3.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "utility-types": "^3.11.0",
+    "lodash": "^4.17.21",
+    "deep-freeze-strict": "^1.1.1"
   },
   "sideEffects": false
 }
