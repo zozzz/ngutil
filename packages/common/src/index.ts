@@ -13,6 +13,7 @@ export {
 export { FastDOM } from "./dom"
 export { NumberRange } from "./type-util"
 export { Busy, BusyEvent, BusyEventParams, BusyProgress, BusyState, BusyTracker } from "./busy"
+export { ObservableArray, watchArray } from "./observable-array"
 
 export { Concat } from "./types/concat"
 export { Eval, IfAny, IsAny, IfTuple, IsTuple, TupleItems, ObjectKey, MaxRecursion } from "./types/util"
