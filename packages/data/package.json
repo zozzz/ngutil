@@ -1,5 +1,5 @@
 {
-  "name": "@ngutil/list",
+  "name": "@ngutil/data",
   "version": "0.0.9",
   "publishConfig": {
     "access": "public",
