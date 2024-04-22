@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.9](https://github.com/zozzz/ngutil/compare/0.0.8...0.0.9) (2024-04-22)
+
+
+### Bug Fixes
+
+* **data:** publishConfig ([78c69de](https://github.com/zozzz/ngutil/commit/78c69deb31789c94ab38314844954e1fd958df0b))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([a9e13b3](https://github.com/zozzz/ngutil/commit/a9e13b31112a56511d0674a0babc936462db073a))
+
 ## [0.0.8](https://github.com/zozzz/ngutil/compare/0.0.7...0.0.8) (2024-04-22)
 
 

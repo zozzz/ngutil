@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/source",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "MIT",
   "scripts": {
     "before:release:update-packages": "pnpm update && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): Update pnpm-lock.yaml\")",
