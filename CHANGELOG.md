@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.10](https://github.com/zozzz/ngutil/compare/0.0.9...0.0.10) (2024-04-22)
+
+
+### Bug Fixes
+
+* **data:** package.json:name ([ed91b36](https://github.com/zozzz/ngutil/commit/ed91b3650e4b439534a0b207875333a16b9825f7))
+
 ## [0.0.9](https://github.com/zozzz/ngutil/compare/0.0.8...0.0.9) (2024-04-22)
 
 
