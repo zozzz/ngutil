@@ -2,12 +2,12 @@
   "name": "@ngutil/list",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/cdk": "^17.3.3",
-    "@angular/core": "^17.3.0",
+    "@angular/cdk": "^17.3.5",
+    "@angular/core": "^17.3.5",
     "lodash": "^4.17.21",
     "utility-types": "^3.11.0",
     "rxjs": "^7.8.1",
-    "@ngutil/common": "worksace:*"
+    "@ngutil/common": "workspace:*"
   },
   "sideEffects": false
 }

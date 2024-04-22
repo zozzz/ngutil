@@ -6,12 +6,11 @@
     "directory": "../../dist/packages/common/"
   },
   "peerDependencies": {
-    "@angular/cdk": "workspace:*",
-    "@angular/core": "workspace:*",
-    "rxjs": "workspace:*",
-    "utility-types": "workspace:*",
-    "lodash": "workspace:*",
-    "deep-freeze-strict": "workspace:*"
+    "@angular/cdk": "^17.3.5",
+    "@angular/core": "^17.3.5",
+    "rxjs": "^7.8.1",
+    "utility-types": "^3.11.0",
+    "lodash": "^4.17.21"
   },
   "sideEffects": false
 }

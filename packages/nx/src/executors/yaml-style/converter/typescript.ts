@@ -1,4 +1,4 @@
-import { isPlainObject } from "is-plain-object"
+import { isPlainObject } from "lodash"
 
 import { pascalCase } from "../../../util"
 import { CommonOptions, ConvertData, ConverterOptions } from "./abstract"

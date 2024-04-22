@@ -1,7 +1,7 @@
 import { type ExecutorContext } from "@nx/devkit"
 import * as fs from "fs/promises"
 import { globIterate } from "glob"
-import { isPlainObject } from "is-plain-object"
+import { isPlainObject } from "lodash"
 import * as path from "path"
 import { parse } from "yaml"
 

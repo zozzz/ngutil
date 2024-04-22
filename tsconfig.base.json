@@ -18,6 +18,7 @@
     "paths": {
       "@ngutil/aria": ["packages/aria/src/index.ts"],
       "@ngutil/common": ["packages/common/src/index.ts"],
+      "@ngutil/data": ["packages/data/src/index.ts"],
       "@ngutil/graphics": ["packages/graphics/src/index.ts"],
       "@ngutil/layout": ["packages/layout/src/index.ts"],
       "@ngutil/nx": ["packages/nx/src/index.ts"],

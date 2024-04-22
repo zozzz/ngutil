@@ -1,13 +1,14 @@
-import * as Case from "case"
+import { camelCase, upperFirst, kebabCase } from "lodash"
+export { camelCase, kebabCase }
 
 export function pascalCase(value: string): string {
-    return Case.pascal(value)
+    return upperFirst(camelCase(value))
 }
 
-export function kebabCase(value: string): string {
-    return Case.kebab(value)
-}
+// export function kebabCase(value: string): string {
+//     return Case.kebab(value)
+// }
 
-export function camelCase(value: string): string {
-    return Case.camel(value)
-}
+// export function camelCase(value: string): string {
+//     return Case.camel(value)
+// }

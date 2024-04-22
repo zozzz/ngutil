@@ -6,12 +6,12 @@
     "directory": "../../dist/packages/graphics/"
   },
   "peerDependencies": {
-    "@angular/common": "^17.1.0",
-    "@angular/core": "^17.1.0",
+    "@angular/common": "^17.3.5",
+    "@angular/core": "^17.3.5",
     "@ngutil/common": "workspace:*"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.6.2"
   },
   "sideEffects": false
 }
