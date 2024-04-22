@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.0.8](https://github.com/zozzz/ngutil/compare/0.0.7...0.0.8) (2024-04-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **common:** remove ObservableArray
+
+### Features
+
+* **common:** Add BusyTracker ([e569db6](https://github.com/zozzz/ngutil/commit/e569db60d898065d82d82807530c1db93c1cc940))
+* **common:** Add type utils ([4e12f4d](https://github.com/zozzz/ngutil/commit/4e12f4d2955976afb85e993fc9b9b9ddc5093410))
+* **common:** BusyTracker ([fea36dc](https://github.com/zozzz/ngutil/commit/fea36dca3450d488de6b8840da8acee4218ad83c))
+* **common:** deepClone, isPlainObject, deepFreeze, toSorted ([452e8a6](https://github.com/zozzz/ngutil/commit/452e8a62d0f495c97f0feb564d5336d47a64d57c))
+* **common:** ObservableArray ([78b810f](https://github.com/zozzz/ngutil/commit/78b810f48ccdf1a1a07dd2fc41a94c0b77287b1f))
+* **data:** Add data package ([c4b461b](https://github.com/zozzz/ngutil/commit/c4b461b4fd9a685a8233ea7b079a31ed5546edf6))
+
+
+### Other changes
+
+* **common:** remove ObservableArray ([258ed28](https://github.com/zozzz/ngutil/commit/258ed284de03eddea00b35336a85efd6f5da1f36))
+* **tools:** Update pnpm-lock.yaml ([ffb7a17](https://github.com/zozzz/ngutil/commit/ffb7a17f979eb5db8830bed998d138fe51d6af3b))
+* Update pacakges ([36789c1](https://github.com/zozzz/ngutil/commit/36789c1ff86be22fd4ce65fe86d55f1da9de2561))
+
 ## [0.0.7](https://github.com/zozzz/ngutil/compare/0.0.6...0.0.7) (2024-03-13)
 
 
