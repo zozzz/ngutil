@@ -11,8 +11,7 @@
     "rxjs": "workspace:*",
     "utility-types": "workspace:*",
     "lodash": "workspace:*",
-    "deep-freeze-strict": "workspace:*",
-    "on-change": "workspace:*"
+    "deep-freeze-strict": "workspace:*"
   },
   "sideEffects": false
 }

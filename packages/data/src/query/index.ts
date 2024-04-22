@@ -1,0 +1,8 @@
+export { Filter, filterBy, filterMerge, FilterOp } from "./filter"
+export { Grouper, groupBy, grouperMerge } from "./grouper"
+export { Sorter, sortBy, sorterMerge } from "./sorter"
+export { Slimer, slimBy, slimerMerge } from "./slimer"
+export { Slice, sliceMerge, sliceApply, sliceInsert, sliceToPages, sliceClamp, sliceEq } from "./slice"
+export { pathGetterCompile } from "./path"
+export { Query, QueryResult } from "./query"
+export { queryExecutor, QueryExecutor } from "./executor"
