@@ -3,6 +3,7 @@ import { DataSource as CdkDataSource, CollectionViewer } from "@angular/cdk/coll
 import {
     BehaviorSubject,
     combineLatest,
+    concatMap,
     debounceTime,
     distinctUntilChanged,
     finalize,
@@ -51,6 +52,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     readonly #slice = new ReplaySubject<Slice>(1)
     readonly slice$: Observable<Slice> = this.#slice.pipe(
+        switchMap(slice => this.provider.clampSlice(slice)),
         distinctUntilChanged(isEqual),
         map(slice => deepFreeze(deepClone(slice))),
         shareReplay(1)
@@ -73,27 +75,25 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     readonly items$: Observable<PartialCollection<T>> = combineLatest({ query: this.query$, reset: this.reset$ }).pipe(
         tap(() => this.#setBusy(true)),
         debounceTime(DEBOUNCE_TIME),
-        switchMap(({ query }) =>
-            // TODO: maybe hasSlice + getSlice
-            this.store.getSlice(query.slice).pipe(
-                switchMap(items => {
-                    // TODO: endReached
-                    const hasMissing = items.some(v => v == null)
-                    if (hasMissing) {
+        switchMap(({ query }) => {
+            return this.store.hasSlice(query.slice).pipe(
+                switchMap(hasSlice => {
+                    if (hasSlice) {
+                        return this.store.getSlice(query.slice)
+                    } else {
                         return this.provider.queryList(query).pipe(
                             switchMap(result => {
                                 if (result.total != null) {
                                     this.total$.next(result.total)
                                 }
                                 return this.store.insertSlice(query.slice, result.items)
-                            })
+                            }),
+                            take(1)
                         )
-                    } else {
-                        return of(items)
                     }
                 })
             )
-        ),
+        }),
         finalize(() => this.#setBusy(false)),
         shareReplay(1)
     )
@@ -113,6 +113,10 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     setSlice(slice: Slice) {
         this.#slice.next(slice)
         return this
+    }
+
+    all() {
+        return this.setSlice({start: 0, end: Infinity})
     }
 
     realod() {

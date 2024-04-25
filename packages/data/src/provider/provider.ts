@@ -1,7 +1,8 @@
 import type { Observable } from "rxjs"
+import { of } from "rxjs"
 
 import type { Model, ModelMeta, ModelRefNorm } from "../model"
-import type { Query, QueryResult } from "../query"
+import type { Query, QueryResult, Slice } from "../query"
 import { DataSource } from "../source"
 import type { CollectionStore } from "../store"
 
@@ -30,6 +31,13 @@ export abstract class DataProvider<T extends Model> {
      * Query item position in the list that matching by the given request
      */
     abstract queryPosition(ref: ModelRefNorm, request: Query<T>): Observable<number | undefined>
+
+    /**
+     * Froce Slice boundaries, useful in array, or obeservable providers
+     */
+    clampSlice(slice: Slice): Observable<Slice> {
+        return of(slice)
+    }
 
     /**
      * @returns New data source instance

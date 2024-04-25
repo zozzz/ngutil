@@ -3,6 +3,7 @@ import { type Observable, of } from "rxjs"
 import type { Model, ModelMetaInput } from "../model"
 import { LocalProvider } from "./local"
 
+
 export class ArrayProvider<T extends Model> extends LocalProvider<T> {
     override readonly items$: Observable<readonly T[]>
 

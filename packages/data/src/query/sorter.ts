@@ -12,13 +12,13 @@ export const enum SortDirection {
     Desc = "desc"
 }
 
-type Direction = SortDirection.Asc | SortDirection.Desc | "asc" | "desc"
-type DirectionExtra = { dir: Direction; emptyFirst: boolean }
+export type SortDir = SortDirection.Asc | SortDirection.Desc | "asc" | "desc"
+export type SortDirExtra = { dir: SortDir; emptyFirst: boolean }
 
-type _Sorter<F> = { [K in keyof F]: { [key in K]: Direction | DirectionExtra } }[keyof F]
+type _Sorter<F> = { [K in keyof F]: { [key in K]: SortDir | SortDirExtra } }[keyof F]
 // TODO: fix recursion
 // export type Sorter<T extends Model> = Array<_Sorter<Flatten<T>>>
-export type Sorter<T extends Model> = Array<{ [key: string]: Direction | DirectionExtra }>
+export type Sorter<T extends Model> = Array<{ [key: string]: SortDir | SortDirExtra }>
 
 type NormalizedEntry = { path: string; isAsc: boolean; emptyFirst: boolean }
 export type SorterNormalized = Array<NormalizedEntry>
@@ -55,8 +55,8 @@ export function sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNorm
                 } else if (isPlainObject(v)) {
                     return {
                         path: k,
-                        isAsc: ((v as DirectionExtra).dir || "asc").toLowerCase() === "asc",
-                        emptyFirst: (v as DirectionExtra).emptyFirst == null ? true : !!(v as DirectionExtra).emptyFirst
+                        isAsc: ((v as SortDirExtra).dir || "asc").toLowerCase() === "asc",
+                        emptyFirst: (v as SortDirExtra).emptyFirst == null ? true : !!(v as SortDirExtra).emptyFirst
                     }
                 } else {
                     throw new Error(`Invalid sorter: ${v}`)
