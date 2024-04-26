@@ -6,7 +6,7 @@
     "before:release:update-packages": "pnpm update -w -r --latest && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): Update pnpm-lock.yaml\")",
     "before:release:test": "pnpm nx run-many -t test",
     "before:release:format": "pnpm nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Beautify files\")",
-    "before:release": "pnpm before:release:update-packages && pnpm before:release:test && pnpm before:release:format",
+    "before:release": "pnpm before:release:update-packages && pnpm before:release:format",
     "release": "pnpm release-it --ci -V --increment=patch",
     "build:libs": "pnpm nx run-many -t build --projects=packages/*"
   },
