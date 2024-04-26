@@ -18,7 +18,7 @@ export type SortDirExtra = { dir: SortDir; emptyFirst: boolean }
 type _Sorter<F> = { [K in keyof F]: { [key in K]: SortDir | SortDirExtra } }[keyof F]
 // TODO: fix recursion
 // export type Sorter<T extends Model> = Array<_Sorter<Flatten<T>>>
-export type Sorter<T extends Model> = Array<{ [key: string]: SortDir | SortDirExtra }>
+export type Sorter<T extends Model> = Array<{ [key: string]: SortDir | SortDirExtra | undefined }>
 
 type NormalizedEntry = { path: string; isAsc: boolean; emptyFirst: boolean }
 export type SorterNormalized = Array<NormalizedEntry>
