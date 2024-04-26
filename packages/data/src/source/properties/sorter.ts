@@ -23,7 +23,7 @@ export class SorterCombined<T extends Model> extends PropertyCombined<T> {
 
     of(name: string): Observable<OfTypes<T>> {
         return this.merged$.pipe(
-            map((sorters: any) => sorterFind(sorters, name))
+            map((sorters: any) => sorters == null ? undefined : sorterFind(sorters, name))
         )
     }
 
