@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.12](https://github.com/zozzz/ngutil/compare/0.0.11...0.0.12) (2024-04-26)
+
+
+### Bug Fixes
+
+* **data:** Local providers not providing items ([9b47611](https://github.com/zozzz/ngutil/commit/9b476111121cec17a0531da51ab8e8868b62678c))
+
+
+### Other changes
+
+* temprorary remove test from pre release ([c4da315](https://github.com/zozzz/ngutil/commit/c4da3152660823860ac6a19ba0fb1b72fecb0263))
+* **tools:** Update pnpm-lock.yaml ([4820f06](https://github.com/zozzz/ngutil/commit/4820f0674619a54a46508ba33a1e0cf9f4fec88f))
+* **tools:** Update pnpm-lock.yaml ([b4ffe52](https://github.com/zozzz/ngutil/commit/b4ffe52f05349740c8674a68770ba7b19da148fd))
+* **tools:** Update pnpm-lock.yaml ([af5534e](https://github.com/zozzz/ngutil/commit/af5534e32ad357cbbe19e51659cb6a1a560406bb))
+
 ## [0.0.11](https://github.com/zozzz/ngutil/compare/0.0.10...0.0.11) (2024-04-24)
 
 
