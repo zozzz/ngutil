@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.16](https://github.com/zozzz/ngutil/compare/0.0.15...0.0.16) (2024-04-26)
+
+
+### Bug Fixes
+
+* **data:** executor sortBy is imported from lodash ([eb47266](https://github.com/zozzz/ngutil/commit/eb472667bb71cd92a5398919493a25ef3210bb93))
+
 ## [0.0.15](https://github.com/zozzz/ngutil/compare/0.0.14...0.0.15) (2024-04-26)
 
 ## [0.0.14](https://github.com/zozzz/ngutil/compare/0.0.13...0.0.14) (2024-04-26)
