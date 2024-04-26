@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.0.13](https://github.com/zozzz/ngutil/compare/0.0.12...0.0.13) (2024-04-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **data:** rename DataSourceProxy.source -> DataSourceProxy.value
+
+### Features
+
+* **data:** SorterCombined add some usefull methods ([3f9ae6d](https://github.com/zozzz/ngutil/commit/3f9ae6d704ae9d48264af0e5812ad3d42c64e673))
+
+
+### Bug Fixes
+
+* **data:** rename DataSourceProxy.source -> DataSourceProxy.value ([4875059](https://github.com/zozzz/ngutil/commit/48750591062e5f9fa5bcb2fde63ddf17f244294a))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([321f1df](https://github.com/zozzz/ngutil/commit/321f1df77745990516b4597338527c429059fc4e))
+
 ## [0.0.12](https://github.com/zozzz/ngutil/compare/0.0.11...0.0.12) (2024-04-26)
 
 
