@@ -128,7 +128,7 @@ importers:
         version: 17.3.6(chokidar@3.6.0)
       '@storybook/addon-essentials':
         specifier: ^8.0.9
-        version: 8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/addon-interactions':
         specifier: ^8.0.9
         version: 8.0.9(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.7)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.5.0(@swc/helpers@0.5.11))(@types/node@20.12.7)(typescript@5.4.5)))
@@ -3108,8 +3108,8 @@ packages:
   '@types/react-dom@18.3.0':
     resolution: {integrity: sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==}
 
-  '@types/react@18.3.0':
-    resolution: {integrity: sha512-DiUcKjzE6soLyln8NNZmyhcQjVv+WsUIFSqetMN0p8927OztKT4VTfFTqsbAi5oAGIcgOmOajlfBqyptDDjZRw==}
+  '@types/react@18.3.1':
+    resolution: {integrity: sha512-V0kuGBX3+prX+DQ/7r2qsv1NsdfnCLnTgnRJ1pYnxykBhGMz+qj+box5lq7XsO5mtZsBqpjwwTu/7wszPfMBcw==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -11719,10 +11719,10 @@ snapshots:
     dependencies:
       call-bind: 1.0.7
 
-  '@mdx-js/react@3.0.1(@types/react@18.3.0)(react@18.3.1)':
+  '@mdx-js/react@3.0.1(@types/react@18.3.1)(react@18.3.1)':
     dependencies:
       '@types/mdx': 2.0.13
-      '@types/react': 18.3.0
+      '@types/react': 18.3.1
       react: 18.3.1
 
   '@messageformat/core@3.3.0':
@@ -12572,20 +12572,20 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@radix-ui/react-compose-refs@1.0.1(@types/react@18.3.0)(react@18.3.1)':
+  '@radix-ui/react-compose-refs@1.0.1(@types/react@18.3.1)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.24.4
       react: 18.3.1
     optionalDependencies:
-      '@types/react': 18.3.0
+      '@types/react': 18.3.1
 
-  '@radix-ui/react-slot@1.0.2(@types/react@18.3.0)(react@18.3.1)':
+  '@radix-ui/react-slot@1.0.2(@types/react@18.3.1)(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.24.4
-      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.3.0)(react@18.3.1)
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.3.1)(react@18.3.1)
       react: 18.3.1
     optionalDependencies:
-      '@types/react': 18.3.0
+      '@types/react': 18.3.1
 
   '@release-it/bumper@6.0.1(release-it@17.2.1(typescript@5.4.5))':
     dependencies:
@@ -12764,9 +12764,9 @@ snapshots:
       memoizerific: 1.11.3
       ts-dedent: 2.2.0
 
-  '@storybook/addon-controls@8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/addon-controls@8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@storybook/blocks': 8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/blocks': 8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       lodash: 4.17.21
       ts-dedent: 2.2.0
     transitivePeerDependencies:
@@ -12779,10 +12779,10 @@ snapshots:
   '@storybook/addon-docs@8.0.9(encoding@0.1.13)':
     dependencies:
       '@babel/core': 7.24.4
-      '@mdx-js/react': 3.0.1(@types/react@18.3.0)(react@18.3.1)
-      '@storybook/blocks': 8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mdx-js/react': 3.0.1(@types/react@18.3.1)(react@18.3.1)
+      '@storybook/blocks': 8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/client-logger': 8.0.9
-      '@storybook/components': 8.0.9(@types/react@18.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/components': 8.0.9(@types/react@18.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/csf-plugin': 8.0.9
       '@storybook/csf-tools': 8.0.9
       '@storybook/global': 5.0.0
@@ -12791,7 +12791,7 @@ snapshots:
       '@storybook/react-dom-shim': 8.0.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/theming': 8.0.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/types': 8.0.9
-      '@types/react': 18.3.0
+      '@types/react': 18.3.1
       fs-extra: 11.2.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -12802,11 +12802,11 @@ snapshots:
       - encoding
       - supports-color
 
-  '@storybook/addon-essentials@8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/addon-essentials@8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@storybook/addon-actions': 8.0.9
       '@storybook/addon-backgrounds': 8.0.9
-      '@storybook/addon-controls': 8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/addon-controls': 8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/addon-docs': 8.0.9(encoding@0.1.13)
       '@storybook/addon-highlight': 8.0.9
       '@storybook/addon-measure': 8.0.9
@@ -12885,7 +12885,7 @@ snapshots:
       '@storybook/telemetry': 8.0.9(encoding@0.1.13)
       '@storybook/types': 8.0.9
       '@types/node': 18.19.31
-      '@types/react': 18.3.0
+      '@types/react': 18.3.1
       '@types/react-dom': 18.3.0
       '@types/semver': 7.5.8
       '@types/webpack-env': 1.18.4
@@ -12915,11 +12915,11 @@ snapshots:
       - utf-8-validate
       - webpack-cli
 
-  '@storybook/blocks@8.0.9(@types/react@18.3.0)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/blocks@8.0.9(@types/react@18.3.1)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@storybook/channels': 8.0.9
       '@storybook/client-logger': 8.0.9
-      '@storybook/components': 8.0.9(@types/react@18.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/components': 8.0.9(@types/react@18.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/core-events': 8.0.9
       '@storybook/csf': 0.1.5
       '@storybook/docs-tools': 8.0.9(encoding@0.1.13)
@@ -13028,9 +13028,9 @@ snapshots:
     dependencies:
       '@storybook/global': 5.0.0
 
-  '@storybook/components@8.0.9(@types/react@18.3.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/components@8.0.9(@types/react@18.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@radix-ui/react-slot': 1.0.2(@types/react@18.3.0)(react@18.3.1)
+      '@radix-ui/react-slot': 1.0.2(@types/react@18.3.1)(react@18.3.1)
       '@storybook/client-logger': 8.0.9
       '@storybook/csf': 0.1.5
       '@storybook/global': 5.0.0
@@ -13726,9 +13726,9 @@ snapshots:
 
   '@types/react-dom@18.3.0':
     dependencies:
-      '@types/react': 18.3.0
+      '@types/react': 18.3.1
 
-  '@types/react@18.3.0':
+  '@types/react@18.3.1':
     dependencies:
       '@types/prop-types': 15.7.12
       csstype: 3.1.3
