@@ -1,4 +1,4 @@
-import { groupBy, isEqual, sortBy } from "lodash"
+import { isEqual } from "lodash"
 import { Primitive } from "utility-types"
 
 import { DeepReadonly, toSorted } from "@ngutil/common"
@@ -7,7 +7,8 @@ import { Model } from "../model"
 import { Filter, filterBy } from "./filter"
 import { Query, QueryResult } from "./query"
 import { Slice } from "./slice"
-import { Sorter } from "./sorter"
+import { groupBy } from "./grouper"
+import { Sorter, sortBy } from "./sorter"
 
 const INPUT = Symbol("INPUT")
 
