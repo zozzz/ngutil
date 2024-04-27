@@ -179,8 +179,15 @@ export function sorterMerge<T extends Model>(...sorters: Array<Sorter<T> | undef
             for (const [k, v] of Object.entries(sentry)) {
                 const existing = (result as any).find((value: any) => value[k] != null)
                 if (existing) {
-                    ;(existing as any)[k] = deepClone(v)
-                } else {
+                    if (v == null) {
+                        delete (existing as any)[k]
+                        if (Object.keys(existing).length === 0) {
+                            result.splice(result.indexOf(existing), 1)
+                        }
+                    } else {
+                        ;(existing as any)[k] = deepClone(v)
+                    }
+                } else if (v != null) {
                     result.push({ [k]: deepClone(v) } as any)
                 }
             }
