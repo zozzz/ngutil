@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.17](https://github.com/zozzz/ngutil/compare/0.0.16...0.0.17) (2024-04-27)
+
+
+### Bug Fixes
+
+* **data:** Fix query change flow ([9fc705f](https://github.com/zozzz/ngutil/commit/9fc705f3cd9499460cd7ef26e273f433779c739f))
+* **data:** sorterMerge remove undefined values in merge ([00a2d13](https://github.com/zozzz/ngutil/commit/00a2d13841b2044114c113c17a2533161eaa0c53))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([49a74db](https://github.com/zozzz/ngutil/commit/49a74dbfa588dfd369e858eacd0e1941ee8962e7))
+* use eslint < 9, some plugins is not supportting eslint >= 9 ([02dc5c1](https://github.com/zozzz/ngutil/commit/02dc5c16279e2515bfaed0c7771b85f89738b620))
+
 ## [0.0.16](https://github.com/zozzz/ngutil/compare/0.0.15...0.0.16) (2024-04-26)
 
 
