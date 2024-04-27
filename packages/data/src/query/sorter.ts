@@ -197,12 +197,10 @@ export function sorterMerge<T extends Model>(...sorters: Array<Sorter<T> | undef
     return result
 }
 
-
 export function sorterFind<T extends Model>(sorters: Sorter<T>, name: string): SortDir | SortDirExtra | undefined {
     const sorter = sorters.find(v => v[name] != null)
     if (sorter != null) {
         return sorter[name]
     }
     return undefined
-
 }

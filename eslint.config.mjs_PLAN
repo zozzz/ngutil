@@ -1,0 +1,118 @@
+import prettier from "eslint-plugin-prettier"
+import storybook from "eslint-plugin-storybook"
+import unusedImports from "eslint-plugin-unused-imports"
+import ts from "@typescript-eslint/eslint-plugin"
+import tsParser from "@typescript-eslint/parser"
+import jsonc from "jsonc-eslint-parser"
+import jest from "eslint-plugin-jest"
+
+
+/** @type { import("eslint").Linter.FlatConfig[] } */
+export default [
+    {
+        files: ["*.ts", "*.tsx", "*.js", "*.cjs", "*.mjs"],
+        // TODO: @nx
+        plugins: { ts, prettier, unusedImports },
+
+        ignores: [
+            "node_modules",
+            "!.storybook",
+        ],
+
+        languageOptions: {
+            parser: tsParser
+        },
+
+        /*
+        max-len: ["error", { code: 120 }]
+        quote-props: ["error", "consistent-as-needed"]
+        eqeqeq: ["error", "always", { "null": "ignore" }]
+        no-alert: "error"
+        no-empty: "error"
+        yoda: ["error", "never", { exceptRange: true }]
+        arrow-body-style: ["error", "as-needed", { requireReturnForObjectLiteral: true }]
+        prefer-arrow-callback: 2
+        no-extra-semi: "off"
+
+        no-unused-vars: "off"
+        unused-imports/no-unused-imports: "error"
+        unused-imports/no-unused-vars:
+            - warn
+            - { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" }
+        */
+        rules: {
+            "max-len": [
+                "error",
+                {
+                    "code": 120
+                }
+            ],
+            "quote-props": [
+                "error",
+                "consistent-as-needed"
+            ],
+            "eqeqeq": [
+                "error",
+                "always",
+                {
+                    "null": "ignore"
+                }
+            ],
+            "no-alert": "error",
+            "no-empty": "error",
+            "yoda": [
+                "error",
+                "never",
+                {
+                    "exceptRange": true
+                }
+            ],
+            "arrow-body-style": [
+                "error",
+                "as-needed",
+                {
+                    "requireReturnForObjectLiteral": true
+                }
+            ],
+            "prefer-arrow-callback": 2,
+            "no-extra-semi": "off",
+            "no-unused-vars": "off",
+            "unused-imports/no-unused-imports": "error",
+            "unused-imports/no-unused-vars": [
+                "warn",
+                {
+                    "vars": "all",
+                    "varsIgnorePattern": "^_",
+                    "args": "after-used",
+                    "argsIgnorePattern": "^_"
+                }
+            ]
+        }
+    },
+    {
+        files: ["*.ts"],
+        rules: {
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-non-null-assertion": "off",
+            "@typescript-eslint/no-unused-vars": "off",
+            "@typescript-eslint/no-for-in-array": "off",
+        }
+    },
+    {
+        files: ["*.json"],
+        languageOptions: {
+            parser: jsonc
+        },
+        rules: {
+            "max-len": "off"
+        }
+    },
+    {
+        files: ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+        plugins: {jest}
+    },
+    {
+        files: ["*.stories.ts"],
+        plugins: {storybook}
+    }
+]

@@ -5,10 +5,10 @@ import { DeepReadonly, toSorted } from "@ngutil/common"
 
 import { Model } from "../model"
 import { Filter, filterBy } from "./filter"
+import { groupBy } from "./grouper"
 import { Query, QueryResult } from "./query"
 import { Slice } from "./slice"
-import { groupBy } from "./grouper"
-import { Sorter, sortBy } from "./sorter"
+import { sortBy, Sorter } from "./sorter"
 
 const INPUT = Symbol("INPUT")
 
