@@ -3,7 +3,6 @@ import { DataSource as CdkDataSource, CollectionViewer } from "@angular/cdk/coll
 import {
     BehaviorSubject,
     combineLatest,
-    concatMap,
     debounceTime,
     distinctUntilChanged,
     finalize,
@@ -20,7 +19,7 @@ import {
     tap
 } from "rxjs"
 
-import { isEqual, merge } from "lodash"
+import { isEqual } from "lodash"
 
 import { ConnectProtocol, deepClone, deepFreeze, DeepReadonly } from "@ngutil/common"
 
@@ -58,25 +57,29 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         shareReplay(1)
     )
 
-    readonly #reload = new Subject<void>()
-    readonly reset$: Observable<unknown> = merge(this.#queryBase, this.#reload).pipe(
+    readonly #reload = new BehaviorSubject<void>(undefined)
+
+    readonly query$: Observable<DSQuery<T>> = combineLatest({ base: this.#queryBase, reload: this.#reload }).pipe(
         tap(() => this.#setBusy(true)),
-        switchMap(() => this.store.clear()),
+        // TODO: maybe silent reset or prevent items$ chenges
+        // TODO: alternative solution use cacheId, and query item from store with this cacheId
+        switchMap(({ base }) => this.store.clear().pipe(map(() => base))),
+        switchMap(queryBase =>
+            this.slice$.pipe(
+                tap(() => this.#setBusy(true)),
+                map(slice => {
+                    return { ...queryBase, slice }
+                })
+            )
+        ),
         shareReplay(1)
     )
 
-    readonly query$: Observable<DSQuery<T>> = combineLatest({ base: this.#queryBase, slice: this.slice$ }).pipe(
-        map(({ base, slice }) => {
-            return { ...base, slice }
-        }),
-        shareReplay(1)
-    )
-
-    readonly items$: Observable<PartialCollection<T>> = combineLatest({ query: this.query$, reset: this.reset$ }).pipe(
+    readonly items$: Observable<PartialCollection<T>> = this.query$.pipe(
         tap(() => this.#setBusy(true)),
         debounceTime(DEBOUNCE_TIME),
-        switchMap(({ query }) => {
-            return this.store.hasSlice(query.slice).pipe(
+        switchMap(query =>
+            this.store.hasSlice(query.slice).pipe(
                 switchMap(hasSlice => {
                     if (hasSlice) {
                         return this.store.getSlice(query.slice)
@@ -93,7 +96,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                     }
                 })
             )
-        }),
+        ),
         finalize(() => this.#setBusy(false)),
         shareReplay(1)
     )
@@ -116,7 +119,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     all() {
-        return this.setSlice({start: 0, end: Infinity})
+        return this.setSlice({ start: 0, end: Infinity })
     }
 
     realod() {
