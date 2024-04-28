@@ -80,9 +80,10 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         debounceTime(DEBOUNCE_TIME),
         switchMap(query =>
             this.store.hasSlice(query.slice).pipe(
+                take(1),
                 switchMap(hasSlice => {
                     if (hasSlice) {
-                        return this.store.getSlice(query.slice)
+                        return this.store.getSlice(query.slice).pipe(take(1))
                     } else {
                         return this.provider.queryList(query).pipe(
                             switchMap(result => {

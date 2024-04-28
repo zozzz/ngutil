@@ -194,6 +194,10 @@ export function sorterMerge<T extends Model>(...sorters: Array<Sorter<T> | undef
         }
     }
 
+    if (result?.length === 0) {
+        return undefined
+    }
+
     return result
 }
 

@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, map, Observable } from "rxjs"
+import { BehaviorSubject, combineLatest, map, Observable, shareReplay } from "rxjs"
 
 import { isEqual } from "lodash"
 
@@ -39,7 +39,10 @@ export abstract class PropertyCombined<T> {
 
 export function mergedProperty(merger: (...items: any[]) => any, ...props: Observable<any>[]): Observable<any> {
     if (props.length > 1) {
-        return combineLatest(props).pipe(map(values => deepFreeze(merger(...values))))
+        return combineLatest(props).pipe(
+            map(values => deepFreeze(merger(...values))),
+            shareReplay(1)
+        )
     } else {
         return props[0] as any
     }

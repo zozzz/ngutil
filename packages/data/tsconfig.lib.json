@@ -7,6 +7,19 @@
     "inlineSources": true,
     "types": []
   },
-  "exclude": ["src/**/*.spec.ts", "src/test-setup.ts", "jest.config.ts", "src/**/*.test.ts"],
-  "include": ["src/**/*.ts", "src/query/array-reducer.spec.ts_DEL", "src/data-source/data-source.directive.ts_", "src/query/array-reducer.ts_DEL", "src/query/query.spec.ts_DEL"]
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/test-setup.ts",
+    "jest.config.ts",
+    "src/**/*.test.ts",
+    "**/*.stories.ts",
+    "**/*.stories.js"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/query/array-reducer.spec.ts_DEL",
+    "src/data-source/data-source.directive.ts_",
+    "src/query/array-reducer.ts_DEL",
+    "src/query/query.spec.ts_DEL"
+  ]
 }

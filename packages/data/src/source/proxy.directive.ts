@@ -1,5 +1,5 @@
 import { DataSource as CdkDataSource, CollectionViewer } from "@angular/cdk/collections"
-import { Directive, Input, OnDestroy, Optional, input } from "@angular/core"
+import { Directive, Input, OnDestroy, Optional } from "@angular/core"
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
 
 import {
@@ -63,8 +63,8 @@ export type DataSourceInput<T extends Model> = any
 })
 export class DataSourceProxy<T extends Model = Model>
     extends CdkDataSource<T | undefined>
-    implements OnDestroy, ConnectProtocol {
-
+    implements OnDestroy, ConnectProtocol
+{
     @Input({ required: true, alias: "nuDataSource" })
     set value(value: DataSourceInput<T>) {
         this.#valueSub?.unsubscribe()
@@ -100,25 +100,26 @@ export class DataSourceProxy<T extends Model = Model>
     readonly isBusy = toSignal(this.busy$, { rejectErrors: true, initialValue: false })
 
     @Input()
-    set filter(value: Filter<T>) {
+    set forcedFilterInput(value: Filter<T>) {
+        // this.query.filter.forced.update(value)
         this.#filter.next(value)
     }
     readonly #filter = new ReplaySubject<Filter<T>>(1)
 
     @Input()
-    set sorter(value: Sorter<T>) {
+    set forcedSorterInput(value: Sorter<T>) {
         this.#sorter.next(value)
     }
     readonly #sorter = new ReplaySubject<Sorter<T>>(1)
 
     @Input()
-    set grouper(value: Grouper<T>) {
+    set forcedGrouperInput(value: Grouper<T>) {
         this.#grouper.next(value)
     }
     readonly #grouper = new ReplaySubject<Grouper<T>>(1)
 
     @Input()
-    set slimer(value: Slimer<T>) {
+    set forcedSlimerInput(value: Slimer<T>) {
         this.#slimer.next(value)
     }
     readonly #slimer = new ReplaySubject<Slimer<T>>(1)
