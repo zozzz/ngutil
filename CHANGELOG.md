@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.18](https://github.com/zozzz/ngutil/compare/0.0.17...0.0.18) (2024-04-28)
+
+
+### Bug Fixes
+
+* **data:** Fix DataSource items$ and sorter ([c8dc072](https://github.com/zozzz/ngutil/commit/c8dc0720aa18931c8338f857a5818c000370d728))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([7fe8df4](https://github.com/zozzz/ngutil/commit/7fe8df4a790dfa816b91f47b30c0ddd3b555546e))
+
 ## [0.0.17](https://github.com/zozzz/ngutil/compare/0.0.16...0.0.17) (2024-04-27)
 
 
