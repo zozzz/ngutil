@@ -128,6 +128,10 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     getItem(ref: ModelRef): Observable<T | undefined> {
+        return this.watchItem(ref).pipe(take(1))
+    }
+
+    watchItem(ref: ModelRef): Observable<T | undefined> {
         const refn = this.provider.meta.normalizeRef(ref)
         return this.#storeFirst(
             query => this.store.get(refn),
@@ -136,6 +140,10 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     getItemPosition(ref: ModelRef): Observable<number | undefined> {
+        return this.watchItemPosition(ref).pipe(take(1))
+    }
+
+    watchItemPosition(ref: ModelRef): Observable<number | undefined> {
         const refn = this.provider.meta.normalizeRef(ref)
         return this.#storeFirst(
             query => this.store.indexOf(refn).pipe(map(i => (i < 0 ? undefined : i))),
@@ -146,11 +154,11 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     realodItem(ref: ModelRef, insertPosition?: number): Observable<T | undefined> {
         const refn = this.provider.meta.normalizeRef(ref)
         return this.query$.pipe(
-            switchMap(query => this.provider.queryItem(refn, query)),
+            take(1),
+            switchMap(query => this.provider.queryItem(refn, query).pipe(take(1))),
             switchMap(item =>
                 item != null ? this.store.updateOrInsert(refn, item, insertPosition).pipe(map(() => item)) : of(item)
-            ),
-            take(1)
+            )
         )
     }
 

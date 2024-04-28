@@ -6,7 +6,7 @@
     "before:release:update-packages": "pnpm update -w -r --latest && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): Update pnpm-lock.yaml\")",
     "before:release:test": "pnpm nx run-many -t test",
     "before:release:format": "pnpm nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Beautify files\")",
-    "before:release": "pnpm before:release:update-packages && pnpm before:release:format",
+    "before:release": "pnpm before:release:format",
     "release": "pnpm release-it --ci -V --increment=patch",
     "build:libs": "pnpm nx run-many -t build --projects=packages/*"
   },
@@ -66,7 +66,7 @@
     "@typescript-eslint/eslint-plugin": "7.7.1",
     "@typescript-eslint/parser": "7.7.1",
     "autoprefixer": "^10.4.19",
-    "eslint": "^9.1.1",
+    "eslint": "<9",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "^28.3.0",
     "eslint-plugin-prettier": "^5.1.3",
