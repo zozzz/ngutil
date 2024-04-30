@@ -6,7 +6,7 @@ import { DeepReadonly, toSorted } from "@ngutil/common"
 import { Model } from "../model"
 import { Filter, filterBy } from "./filter"
 import { groupBy } from "./grouper"
-import { Query, QueryResult } from "./query"
+import { QueryResult, QueryWithSlice } from "./query"
 import { Slice } from "./slice"
 import { sortBy, Sorter } from "./sorter"
 
@@ -27,7 +27,10 @@ export interface QueryExecutor<T extends Model> extends QueryExecutors<T> {
     (items: readonly T[]): QueryResult<T>
 }
 
-export function queryExecutor<T extends Model>(query: Query<T>, previous?: QueryExecutor<T>): QueryExecutor<T> {
+export function queryExecutor<T extends Model>(
+    query: QueryWithSlice<T>,
+    previous?: QueryExecutor<T>
+): QueryExecutor<T> {
     const executors: QueryExecutors<T> = {
         filterFn: filterExecutor(query.filter, previous?.filterFn),
         sorterFn: sorterExecutor(query.sorter, previous?.sorterFn),

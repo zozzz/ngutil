@@ -1,9 +1,12 @@
+import { map, Observable } from "rxjs"
+
 import { flattenDeep, isEqual } from "lodash"
 
 import { deepClone, isPlainObject } from "@ngutil/common"
 
 import { Model } from "../model"
 import { pathGetterCompile } from "./path"
+import { QueryProperty, QueryPropertySet } from "./query-property"
 
 export type SorterFn<T = any> = (a: T, b: T) => number
 
@@ -163,7 +166,7 @@ export function compare(a: any, b: any, emptyFirst: boolean): number {
     return a > b ? -1 : 1
 }
 
-export function sorterMerge<T extends Model>(...sorters: Array<Sorter<T> | undefined | null>): Sorter<T> | undefined {
+export function sorterMerge<T extends Model>(...sorters: any[]): any | undefined {
     let result: Sorter<T> | undefined
 
     for (const sorter of sorters) {
@@ -207,4 +210,47 @@ export function sorterFind<T extends Model>(sorters: Sorter<T>, name: string): S
         return sorter[name]
     }
     return undefined
+}
+
+type OfTypes<T extends Model> = ReturnType<typeof sorterFind<T>>
+
+export class SorterProperty<T extends Model> extends QueryProperty<Sorter<T>> {
+    protected override merge(a?: Sorter<T> | undefined, b?: Sorter<T> | undefined): Sorter<T> | undefined {
+        return sorterMerge(a, b)
+    }
+}
+
+export class SorterPropertySet<T extends Model> extends QueryPropertySet<Sorter<T>> {
+    #of(name: string): Observable<OfTypes<T>> {
+        return this.pipe(map((sorters: any) => (sorters == null ? undefined : sorterFind(sorters, name))))
+    }
+
+    directionOf(name: string) {
+        return this.#of(name).pipe(
+            map(value => {
+                if (value == null) {
+                    return undefined
+                } else if (typeof value === "string") {
+                    return value
+                } else {
+                    return value.dir
+                }
+            })
+        )
+    }
+
+    isAsc(name: string): Observable<boolean> {
+        return this.directionOf(name).pipe(map(v => v === SortDirection.Asc))
+    }
+
+    isDesc(name: string): Observable<boolean> {
+        return this.directionOf(name).pipe(map(v => v === SortDirection.Desc))
+    }
+
+    protected override newProperty(): QueryProperty<Sorter<T>> {
+        return new SorterProperty(undefined)
+    }
+    protected override merge(...args: any[]) {
+        return sorterMerge(...args)
+    }
 }

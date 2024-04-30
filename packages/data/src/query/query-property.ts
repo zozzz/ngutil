@@ -1,31 +1,18 @@
-import { BehaviorSubject, Observable } from "rxjs"
+import { BehaviorSubject, combineLatest, map, Observable, shareReplay } from "rxjs"
 
 import { isEqual } from "lodash"
 
-import { deepClone } from "@ngutil/common"
+import { deepClone, deepFreeze } from "@ngutil/common"
 
-const PROXIED = Symbol("PROXIED")
+import { readonlyProp } from "./util"
 
-export interface IQueryProperty<T> extends Observable<T | undefined> {
-    set(value?: T): void
-    del(): void
-    update(value?: T): void
+export interface QueryPropertyClass<T> {
+    new (value?: T): QueryProperty<T>
+
+    merge<V>(...values: V[]): V | undefined
 }
 
-export interface IQueryCombinedProperty<T> extends Observable<T> {
-    readonly normal: IQueryProperty<T>
-    readonly forced: IQueryProperty<T>
-}
-
-export interface IProxied {
-    [PROXIED]: any
-}
-
-export function isProxied(v: any) {
-    return v != null && v[PROXIED] !== null
-}
-
-export abstract class QueryProperty<T> extends BehaviorSubject<T | undefined> implements IQueryProperty<T> {
+export abstract class QueryProperty<T> extends BehaviorSubject<T | undefined> {
     set(value?: T) {
         this.#nextClone(value)
     }
@@ -66,56 +53,33 @@ export abstract class QueryProperty<T> extends BehaviorSubject<T | undefined> im
     }
 }
 
-// export class QueryPropertyProxy<T> extends Observable<T> implements IProxied {
-//     #pending?: Array<[string, any[]]>
-//     #sub?: Subscription;
-//     [PROXIED]?: any
+export abstract class QueryPropertySet<T> extends Observable<T> {
+    readonly #combined: Observable<T>
 
-//     constructor(source: Observable<IQueryProperty<T>>) {
-//         super(dest =>
-//             source
-//                 .pipe(
-//                     tap(prop => {
-//                         this[PROXIED] = prop
-//                         if (this.#pending) {
-//                             const pending = this.#pending
-//                             this.#pending = undefined
-//                             for (const [fn, args] of pending) {
-//                                 ;(prop as any)[fn](...args)
-//                             }
-//                         }
-//                     })
-//                 )
-//                 .subscribe(dest)
-//         )
+    constructor(...names: string[]) {
+        super(dest => this.#combined.subscribe(dest))
 
-//         new Proxy(this, {
-//             get(target, prop, receiver) {},
-//             set(target, prop, value, receiver) {
-//                 if ((typeof prop === "string" && prop.startsWith("#")) || prop === PROXIED) {
-//                     return Reflect.set(target, prop, value, receiver)
-//                 } else {
-//                     throw new Error("This is a proxy, every property is readonly")
-//                 }
-//             }
-//         })
-//     }
+        const observables: Array<Observable<any>> = []
+        const props: { [key: string]: Observable<any> } = {}
 
-//     #exec(fn: string, ...args: any[]) {
-//         if (this[PROXIED] != null) {
-//             this[PROXIED][fn](...args)
-//         } else {
-//             if (this.#pending == null) {
-//                 this.#pending = []
-//             }
-//             this.#pending.push([fn, args])
-//             if (this.#sub == null) {
-//                 this.#sub = this.subscribe()
-//             }
-//         }
-//     }
-// }
+        for (const name of names) {
+            const o = this.newProperty()
+            observables.push(o)
+            props[name] = o
+        }
 
-// function queryProxy<T extends Observable<any>>(source: T, mutators: string[], observables: string[]): T {
+        this.#combined = combineLatest(observables).pipe(
+            map(values => deepFreeze(this.merge(...values))),
+            shareReplay(1)
+        )
 
-// }
+        for (const [k, v] of Object.entries(props)) {
+            readonlyProp(this, k, v)
+        }
+    }
+
+    protected abstract newProperty(): QueryProperty<T>
+    protected abstract merge(...args: any[]): any | undefined
+}
+
+export type QueryPropertySetOf<T, P, N extends string[]> = T & { [K in N[number]]: P }

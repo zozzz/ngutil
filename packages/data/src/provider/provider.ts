@@ -2,7 +2,7 @@ import type { Observable } from "rxjs"
 import { of } from "rxjs"
 
 import type { Model, ModelMeta, ModelRefNorm } from "../model"
-import type { Query, QueryResult, Slice } from "../query"
+import type { QueryResult, QueryWithSlice, Slice } from "../query"
 import { DataSource } from "../source"
 import type { CollectionStore } from "../store"
 
@@ -20,17 +20,17 @@ export abstract class DataProvider<T extends Model> {
     /**
      * Query items by the given request
      */
-    abstract queryList(request: Query<T>): Observable<QueryResult<T>>
+    abstract queryList(request: QueryWithSlice<T>): Observable<QueryResult<T>>
 
     /**
      * Query exactly one item by the given request
      */
-    abstract queryItem(ref: ModelRefNorm, request: Query<T>): Observable<T | undefined>
+    abstract queryItem(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<T | undefined>
 
     /**
      * Query item position in the list that matching by the given request
      */
-    abstract queryPosition(ref: ModelRefNorm, request: Query<T>): Observable<number | undefined>
+    abstract queryPosition(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<number | undefined>
 
     /**
      * Froce Slice boundaries, useful in array, or obeservable providers

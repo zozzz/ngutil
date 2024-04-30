@@ -5,10 +5,12 @@ import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
 import {
     combineLatest,
     finalize,
+    map,
     Observable,
     of,
     ReplaySubject,
     share,
+    shareReplay,
     Subject,
     Subscription,
     switchMap,
@@ -79,14 +81,13 @@ export class DataSourceProxy<T extends Model = Model>
             .subscribe(this.#value)
     }
 
-    get value(): DataSource<T> {
-        return this.#valueSig()!
-    }
-
     #valueSub?: Subscription
     readonly #value = new ReplaySubject<DataSource<T>>(1)
     readonly value$ = this.#value.pipe(takeUntilDestroyed())
-    readonly #valueSig = toSignal(this.value$)
+    readonly query$ = this.value$.pipe(
+        map(value => value.query$),
+        shareReplay(1)
+    )
 
     readonly items$ = this.value$.pipe(
         switchMap(value => value.items$),
@@ -134,26 +135,26 @@ export class DataSourceProxy<T extends Model = Model>
         }
 
         this.#subs.add(
-            combineLatest({ src: this.value$, filter: this.#filter }).subscribe(({ src, filter }) => {
-                src.filter.forced.set(filter)
+            combineLatest({ query: this.query$, filter: this.#filter }).subscribe(({ query, filter }) => {
+                query.filter.forced.set(filter)
             })
         )
 
         this.#subs.add(
-            combineLatest({ src: this.value$, sorter: this.#sorter }).subscribe(({ src, sorter }) => {
-                src.sorter.forced.set(sorter)
+            combineLatest({ query: this.query$, sorter: this.#sorter }).subscribe(({ query, sorter }) => {
+                query.sorter.forced.set(sorter)
             })
         )
 
         this.#subs.add(
-            combineLatest({ src: this.value$, grouper: this.#grouper }).subscribe(({ src, grouper }) => {
-                src.grouper.forced.set(grouper)
+            combineLatest({ query: this.query$, grouper: this.#grouper }).subscribe(({ query, grouper }) => {
+                query.grouper.forced.set(grouper)
             })
         )
 
         this.#subs.add(
-            combineLatest({ src: this.value$, slimer: this.#slimer }).subscribe(({ src, slimer }) => {
-                src.slimer.forced.set(slimer)
+            combineLatest({ query: this.query$, slimer: this.#slimer }).subscribe(({ query, slimer }) => {
+                query.slimer.forced.set(slimer)
             })
         )
     }

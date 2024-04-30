@@ -21,33 +21,19 @@ import {
 
 import { isEqual } from "lodash"
 
-import { ConnectProtocol, deepClone, deepFreeze, DeepReadonly } from "@ngutil/common"
+import { ConnectProtocol, deepClone, deepFreeze } from "@ngutil/common"
 
 import type { Model, ModelRef } from "../model"
 import type { DataProvider } from "../provider/provider"
-import type { Filter, Grouper, Query, Slice, Slimer, Sorter } from "../query"
+import type { QueryWithSlice, Slice } from "../query"
+import { querySubject } from "../query"
 import { type CollectionStore, MemoryStore, type PartialCollection } from "../store"
-import { FilterCombined, GrouperCombined, SlimerCombined, SorterCombined } from "./properties"
 
 const DEBOUNCE_TIME = 50
-
-type DSQuery<T extends Model> = Query<T> & { slice: DeepReadonly<Slice> }
 
 export class DataSource<T extends Model> extends CdkDataSource<T | undefined> implements ConnectProtocol {
     readonly busy$ = new BehaviorSubject<boolean>(false)
     readonly total$ = new BehaviorSubject<number | undefined>(undefined)
-
-    readonly filter = new FilterCombined<Filter<T>>()
-    readonly sorter = new SorterCombined<Sorter<T>>()
-    readonly slimer = new SlimerCombined<Slimer<T>>()
-    readonly grouper = new GrouperCombined<Grouper<T>>()
-
-    readonly #queryBase = combineLatest({
-        filter: this.filter.merged$,
-        sorter: this.sorter.merged$,
-        slimer: this.slimer.merged$,
-        grouper: this.grouper.merged$
-    }).pipe(shareReplay(1))
 
     readonly #slice = new ReplaySubject<Slice>(1)
     readonly slice$: Observable<Slice> = this.#slice.pipe(
@@ -59,25 +45,29 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     readonly #reload = new BehaviorSubject<void>(undefined)
 
-    readonly query$: Observable<DSQuery<T>> = combineLatest({ base: this.#queryBase, reload: this.#reload }).pipe(
+    readonly #query: Observable<QueryWithSlice<T>> = combineLatest({
+        query: this.query$,
+        reload: this.#reload
+    }).pipe(
         tap(() => this.#setBusy(true)),
         // TODO: maybe silent reset or prevent items$ chenges
         // TODO: alternative solution use cacheId, and query item from store with this cacheId
-        switchMap(({ base }) => this.store.clear().pipe(map(() => base))),
-        switchMap(queryBase =>
+        switchMap(({ query }) => this.store.clear().pipe(map(() => query))),
+        switchMap(query =>
             this.slice$.pipe(
                 tap(() => this.#setBusy(true)),
                 map(slice => {
-                    return { ...queryBase, slice }
+                    return { ...query, slice }
                 })
             )
         ),
         shareReplay(1)
     )
 
-    readonly items$: Observable<PartialCollection<T>> = this.query$.pipe(
+    readonly items$: Observable<PartialCollection<T>> = this.#query.pipe(
         tap(() => this.#setBusy(true)),
         debounceTime(DEBOUNCE_TIME),
+        // tap(query => console.log(query)),
         switchMap(query =>
             this.store.hasSlice(query.slice).pipe(
                 take(1),
@@ -102,16 +92,12 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         shareReplay(1)
     )
 
-    readonly store: CollectionStore<T>
     constructor(
         public readonly provider: DataProvider<T>,
-        store?: CollectionStore<T>
+        public readonly store: CollectionStore<T> = new MemoryStore(),
+        public readonly query$ = querySubject("normal", "forced")
     ) {
         super()
-        if (store == null) {
-            store = new MemoryStore()
-        }
-        this.store = store
     }
 
     setSlice(slice: Slice) {
@@ -153,7 +139,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     realodItem(ref: ModelRef, insertPosition?: number): Observable<T | undefined> {
         const refn = this.provider.meta.normalizeRef(ref)
-        return this.query$.pipe(
+        return this.#query.pipe(
             take(1),
             switchMap(query => this.provider.queryItem(refn, query).pipe(take(1))),
             switchMap(item =>
@@ -163,10 +149,10 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     #storeFirst<X>(
-        storeFn: (query: Query<T>) => Observable<X>,
-        selfFn: (query: Query<T>) => Observable<X>
+        storeFn: (query: QueryWithSlice<T>) => Observable<X>,
+        selfFn: (query: QueryWithSlice<T>) => Observable<X>
     ): Observable<X> {
-        return this.query$.pipe(
+        return this.#query.pipe(
             take(1),
             switchMap(query => storeFn(query).pipe(switchMap(result => (result == null ? selfFn(query) : of(result)))))
         )

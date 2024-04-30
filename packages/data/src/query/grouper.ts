@@ -1,6 +1,7 @@
 import { Flatten, Primitive } from "@ngutil/common"
 
 import { Model } from "../model"
+import { QueryProperty, QueryPropertySet } from "./query-property"
 
 export type GrouperFn<T = any> = (item: any) => Primitive
 
@@ -92,3 +93,19 @@ export function grouperMerge<T extends Model, F = Flatten<T>>(
 // ): Grouper<T, F> | undefined {
 //     return undefined
 // }
+
+export class GrouperProperty<T extends Model> extends QueryProperty<Grouper<T>> {
+    protected override merge(a?: any, b?: any) {
+        return grouperMerge(a, b)
+    }
+}
+
+export class GrouperPropertySet<T extends Model> extends QueryPropertySet<Grouper<T>> {
+    protected override newProperty(): QueryProperty<any> {
+        return new GrouperProperty(undefined)
+    }
+
+    protected override merge(...args: any[]) {
+        return grouperMerge(...args)
+    }
+}

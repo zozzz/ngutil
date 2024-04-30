@@ -4,6 +4,7 @@ import { AsPrimitive, deepClone, isPlainObject, MaxRecursion } from "@ngutil/com
 
 import { Model } from "../model"
 import { PathGetter, pathGetterCompile } from "./path"
+import { QueryProperty, QueryPropertySet } from "./query-property"
 
 export const enum FilterOp {
     Eq = "==",
@@ -440,4 +441,22 @@ export function filterMerge(...filters: any[]): any | undefined {
     }
 
     return result as any
+}
+
+export class FilterProperty<T extends Model> extends QueryProperty<Filter<T>> {
+    // static override merge = filterMerge
+
+    protected override merge(a?: Filter<T> | undefined, b?: Filter<T> | undefined): Filter<T> | undefined {
+        return filterMerge(a, b)
+    }
+}
+
+export class FilterPropertySet<T extends Model> extends QueryPropertySet<Filter<T>> {
+    protected override newProperty(): QueryProperty<Filter<T>> {
+        return new FilterProperty(undefined)
+    }
+
+    protected override merge(...args: any[]) {
+        return filterMerge(...args)
+    }
 }

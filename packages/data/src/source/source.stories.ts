@@ -34,13 +34,13 @@ const ITEMS = new ArrayProvider(
         <table>
             <thead>
                 <tr>
-                    @if ((source.value$ | async).sorter; as sorter) {
+                    @if (source.query$ | async; as query) {
                         @for (head of header; track head.field) {
                             <td style="width:150px" (click)="sortBy(head.field)">
                                 {{ head.title }}
                                 <!-- TODO: better: source.directionOf(head.field) -->
                                 <!-- TODO: better: source.query.sorter.directionOf(head.field) -->
-                                @if (sorter.directionOf(head.field) | async; as dir) {
+                                @if (query.sorter.directionOf(head.field) | async; as dir) {
                                     @if (dir === "asc") {
                                         ▲
                                     } @else if (dir === "desc") {
@@ -73,22 +73,23 @@ class BasicTable {
         { field: "name", title: "Name" }
     ]
 
+    // constructor() {
+    //     this.source.query$.subscribe(q => console.log(q))
+    // }
+
     sortBy(field: string) {
         // TODO: Plans
         // this.source.sorter.directionOf().pipe(
         //     take(1),
         //     map(dir => {
-
         //     })
         // ).subscribe(nextDir => {
         //     this.source.sorter.set(nextDir)
         // })
-
         // this.source.sorter.mutate((value) => { })
-
-        this.source.value$
+        this.source.query$
             .pipe(
-                map(value => value.sorter),
+                map(query => query.sorter),
                 switchMap(sorter =>
                     sorter.directionOf(field).pipe(
                         map(dir => {

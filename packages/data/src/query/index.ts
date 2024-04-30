@@ -4,5 +4,5 @@ export { Sorter, sortBy, sorterMerge, SortDir, SortDirection, SortDirExtra, sort
 export { Slimer, slimBy, slimerMerge } from "./slimer"
 export { Slice, sliceMerge, sliceApply, sliceInsert, sliceToPages, sliceClamp, sliceEq } from "./slice"
 export { pathGetterCompile } from "./path"
-export { Query, QueryResult } from "./query"
+export { Query, QueryWithSlice, QueryResult, querySubject, QuerySubject } from "./query"
 export { queryExecutor, QueryExecutor } from "./executor"
