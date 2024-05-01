@@ -208,43 +208,43 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
     }
 }
 
+type GetPathFn = (pth: string) => ReturnType<typeof pathGetterCompile>
+
 function _filterCompile<T extends Model>(filters: Filter<T>): FilterFn<T> {
-    let getter: PathGetter
-    const result: FilterFn<T>[] = []
-    for (const [pth, value] of Object.entries(filters)) {
-        switch (pth) {
-            case FilterOp.And:
-                if (!Array.isArray(value)) {
-                    throw new Error("Root '&' (AND) operator must have array type")
-                }
-                result.splice(result.length, 0, ...value.map(_filterCompile<T>))
-                break
-
-            case FilterOp.Or:
-                if (!Array.isArray(value)) {
-                    throw new Error("Root '|' (OR) operator must have array type")
-                }
-                result.push(or_(value.map(_filterCompile<T>)))
-                break
-
-            default:
-                getter = pathGetterCompile(pth)
-                if (isPlainObject(value)) {
-                    result.push(and_(Object.entries(value).map(([op, opv]) => filterCompileOp(getter, op as any, opv))))
-                } else {
-                    result.push(filterCompileOp(getter, FilterOp.Eq, value))
-                }
-
-                break
+    const pathCache: { [key: string]: PathGetter } = {}
+    const getPath = (pth: string) => {
+        if (pathCache[pth] != null) {
+            return pathCache[pth]
         }
+        return (pathCache[pth] = pathGetterCompile(pth))
     }
-    return and_(result)
+    const normalized = filterNormalize(filters)
+    return _filterCompileNorm(normalized, getPath)
 }
 
-function filterCompileOp(getter: PathGetter, op: FilterOp, value: any): FilterFn {
+function _filterCompileNorm(filter: FilterNormalized, getPath: GetPathFn): FilterFn<any> {
+    switch (filter.op) {
+        case FilterOp.And:
+            return and_(filter.value.map(v => _filterCompileNorm(v, getPath)))
+
+        case FilterOp.Or:
+            return or_(filter.value.map(v => _filterCompileNorm(v, getPath)))
+
+        default:
+            return _filterComplileNormPath(getPath(filter.path), filter.op, filter.value, getPath)
+    }
+}
+
+function _filterComplileNormPath(getter: PathGetter, op: FilterOp, value: any, getPath: GetPathFn): FilterFn<any> {
     let lower: string
     let regex: RegExp
     switch (op) {
+        case FilterOp.And:
+            return and_((value as NormEntry[]).map(v => _filterCompileNorm(v, getPath)))
+
+        case FilterOp.Or:
+            return or_((value as NormEntry[]).map(v => _filterCompileNorm(v, getPath)))
+
         case FilterOp.Eq:
             // eslint-disable-next-line eqeqeq
             return matcher(getter, v => v == value)
@@ -326,38 +326,6 @@ function filterCompileOp(getter: PathGetter, op: FilterOp, value: any): FilterFn
         case FilterOp.RegexpInsesitive:
             regex = value instanceof RegExp ? value : new RegExp(value, "msvi")
             return matcher(getter, v => regex.test(v))
-
-        case FilterOp.And:
-            if (!Array.isArray(value)) {
-                throw new Error("Root '&' (AND) operator must have array type")
-            }
-            return and_(
-                flattenDeep(
-                    value.map(v => {
-                        if (isPlainObject(v)) {
-                            return Object.entries(v).map(([op, opv]) => filterCompileOp(getter, op as any, opv))
-                        } else {
-                            return filterCompileOp(getter, FilterOp.Eq, v)
-                        }
-                    })
-                )
-            )
-
-        case FilterOp.Or:
-            if (!Array.isArray(value)) {
-                throw new Error("Root '|' (OR) operator must have array type")
-            }
-            return or_(
-                flattenDeep(
-                    value.map(v => {
-                        if (isPlainObject(v)) {
-                            return Object.entries(v).map(([op, opv]) => filterCompileOp(getter, op as any, opv))
-                        } else {
-                            return filterCompileOp(getter, FilterOp.Eq, v)
-                        }
-                    })
-                )
-            )
     }
 
     throw new Error(`Unexpected operator: ${op}`)
@@ -370,6 +338,10 @@ function matcher(getter: PathGetter, predict: (value: any) => boolean): FilterFn
 function and_(fns: FilterFn[]): FilterFn {
     if (fns.length === 0) {
         return _ => true
+    }
+
+    if (fns.length === 1) {
+        return fns[0]
     }
 
     return item => {
@@ -385,6 +357,10 @@ function and_(fns: FilterFn[]): FilterFn {
 function or_(fns: FilterFn[]): FilterFn {
     if (fns.length === 0) {
         return _ => true
+    }
+
+    if (fns.length === 1) {
+        return fns[0]
     }
 
     return item => {
