@@ -97,7 +97,6 @@ class BasicTable {
                 ),
                 take(1),
                 map(({ entry, sorter }) => {
-                    console.log(entry)
                     if (entry == null) {
                         sorter.normal.update([{ [field]: "asc" }])
                         return "asc"
