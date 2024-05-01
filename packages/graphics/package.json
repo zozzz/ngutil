@@ -1,17 +1,15 @@
 {
   "name": "@ngutil/graphics",
   "version": "0.0.18",
+  "peerDependencies": {
+    "@angular/common": "^17.3.6",
+    "@angular/core": "^17.3.6",
+    "@ngutil/common": "0.0.18",
+    "tslib": "^2.6.2"
+  },
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/graphics/"
-  },
-  "peerDependencies": {
-    "@angular/common": "^17.3.5",
-    "@angular/core": "^17.3.5",
-    "@ngutil/common": "workspace:*"
-  },
-  "dependencies": {
-    "tslib": "^2.6.2"
   },
   "sideEffects": false
 }

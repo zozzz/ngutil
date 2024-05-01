@@ -15,7 +15,7 @@ plugins:
   - "@typescript-eslint"
   - "prettier"
   - "unused-imports"
-  - "@nx"
+  # - "@nx"
 
 rules:
   # ESLINT

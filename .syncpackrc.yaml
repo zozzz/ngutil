@@ -1,0 +1,6 @@
+sortFirst:
+  - name
+  - version
+  - author
+  - description
+  - scripts

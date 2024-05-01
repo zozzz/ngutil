@@ -1,24 +1,24 @@
 {
   "name": "@ngutil/style",
   "version": "0.0.18",
-  "publishConfig": {
-    "access": "public",
-    "directory": "../../dist/packages/style/"
-  },
-  "peerDependencies": {
-    "@angular/common": "^17.3.5",
-    "@angular/core": "^17.3.5",
-    "rxjs": "^7.8.1",
-    "tslib": "^2.6.2"
-  },
   "devDependencies": {
-    "@ngutil/nx": "workspace:*"
+    "@ngutil/nx": "0.0.18"
   },
-  "sideEffects": false,
   "exports": {
     ".": {
       "sass": "./index.scss",
       "scss": "./index.scss"
     }
-  }
+  },
+  "peerDependencies": {
+    "@angular/common": "^17.3.6",
+    "@angular/core": "^17.3.6",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.6.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/style/"
+  },
+  "sideEffects": false
 }
