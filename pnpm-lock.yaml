@@ -253,8 +253,8 @@ importers:
         specifier: ^17.3.6
         version: 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
       '@ngutil/common':
-        specifier: 0.0.18
-        version: 0.0.18(@angular/cdk@17.3.6(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(lodash@4.17.21)(rxjs@7.8.1)(utility-types@3.11.0)
+        specifier: workspace:*
+        version: link:../../dist/packages/common
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -297,8 +297,8 @@ importers:
         specifier: ^17.3.6
         version: 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
       '@ngutil/common':
-        specifier: 0.0.18
-        version: 0.0.18(@angular/cdk@17.3.6(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(lodash@4.17.21)(rxjs@7.8.1)(utility-types@3.11.0)
+        specifier: workspace:*
+        version: link:../../dist/packages/common
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -322,8 +322,8 @@ importers:
         specifier: ^17.3.6
         version: 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
       '@ngutil/common':
-        specifier: 0.0.18
-        version: 0.0.18(@angular/cdk@17.3.6(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(lodash@4.17.21)(rxjs@7.8.1)(utility-types@3.11.0)
+        specifier: workspace:*
+        version: link:../../dist/packages/common
       tslib:
         specifier: ^2.6.2
         version: 2.6.2
@@ -338,11 +338,11 @@ importers:
         specifier: ^17.3.6
         version: 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
       '@ngutil/common':
-        specifier: 0.0.18
-        version: 0.0.18(@angular/cdk@17.3.6(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(lodash@4.17.21)(rxjs@7.8.1)(utility-types@3.11.0)
+        specifier: workspace:*
+        version: link:../../dist/packages/common
       '@ngutil/style':
-        specifier: 0.0.18
-        version: 0.0.18(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1)
+        specifier: workspace:*
+        version: link:../../dist/packages/style
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -405,8 +405,8 @@ importers:
         version: 2.6.2
     devDependencies:
       '@ngutil/nx':
-        specifier: 0.0.18
-        version: 0.0.18(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))
+        specifier: workspace:*
+        version: link:../../dist/packages/nx
     publishDirectory: ../../dist/packages/style/
 
 packages:
@@ -2061,25 +2061,6 @@ packages:
       typescript: '>=5.2 <5.5'
       webpack: ^5.54.0
 
-  '@ngutil/common@0.0.18':
-    resolution: {integrity: sha512-bmS1fSFx4bK+RcUegm0RggQjZYKP0PRYhjCkPVGb0Fxkx5tZdtrsdTRk79YITG6znos8U91f5omBWT9mUoh5fA==}
-    peerDependencies:
-      '@angular/cdk': ^17.3.6
-      '@angular/core': ^17.3.6
-      lodash: ^4.17.21
-      rxjs: ^7.8.1
-      utility-types: ^3.11.0
-
-  '@ngutil/nx@0.0.18':
-    resolution: {integrity: sha512-LeuuhB0V3CEOprdXIqiZpWGZO7mq1rLZNz+qiR81GOHqGedF0fFlYKsgnXCcqlS5dCYR+SibgaeWBsvxbae63Q==}
-
-  '@ngutil/style@0.0.18':
-    resolution: {integrity: sha512-IvMzstIomnGvWUkbunwFJL5i3aXiQrIbKM1pOIPIDFHGROGmv/MmZ0D6YpZ59sCTzHx2o8n0OupS7jz4+Ux4AQ==}
-    peerDependencies:
-      '@angular/common': ^17.3.5
-      '@angular/core': ^17.3.5
-      rxjs: ^7.8.1
-
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -2138,9 +2119,6 @@ packages:
   '@nrwl/devkit@18.2.4':
     resolution: {integrity: sha512-dLK8MMb3eEFWlhtI1kNDNbWIT1Xbrgg3eAQ+Ix/N5JDbxJkJhE28WsIJgQb1NTwe/N87O5JtOpxz4/TsSLJCsQ==}
 
-  '@nrwl/devkit@18.3.4':
-    resolution: {integrity: sha512-Fty9Huqm12OYueU3uLJl3uvBUl5BvEyPfvw8+rLiNx9iftdEattM8C+268eAbIRRSLSOVXlWsJH4brlc6QZYYw==}
-
   '@nrwl/eslint-plugin-nx@18.2.4':
     resolution: {integrity: sha512-hRHXkD9eAw9METYnlQiJUMNX04ofWN457JDhOMTvO1ympBO9pzKOT5XNX1oPcuiXpkYEIQRJxfPmoAhckbld8w==}
 
@@ -2194,11 +2172,6 @@ packages:
     resolution: {integrity: sha512-Ws3BcA/aeXuwsCQ5e7PYy2H7DswareTOEfgs7izxNyGugpydktVH9DZZTOFNDsc06yzgvyTucDbDQ+JsrJ9PcQ==}
     peerDependencies:
       nx: '>= 16 <= 18'
-
-  '@nx/devkit@18.3.4':
-    resolution: {integrity: sha512-M3htxl5WvlNKK5KNOndCAApbyBCZNTFFs+rtdwvudNZk5+84zAAPaWzSoX9C4XLAW78/f98LzF68/ch05aN12A==}
-    peerDependencies:
-      nx: '>= 16 <= 19'
 
   '@nx/eslint-plugin@18.2.4':
     resolution: {integrity: sha512-FxWu8aZITz8dBNsNyaCUAHq9X7W0782ReQD6pqHxX6q19G4PiqphE4DtivNwotBYoDsnYqWZII68tBGIIn3h6w==}
@@ -11870,37 +11843,6 @@ snapshots:
       typescript: 5.4.5
       webpack: 5.90.3(@swc/core@1.5.2(@swc/helpers@0.5.11))(esbuild@0.20.1)
 
-  '@ngutil/common@0.0.18(@angular/cdk@17.3.6(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(lodash@4.17.21)(rxjs@7.8.1)(utility-types@3.11.0)':
-    dependencies:
-      '@angular/cdk': 17.3.6(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1)
-      '@angular/core': 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
-      lodash: 4.17.21
-      rxjs: 7.8.1
-      tslib: 2.6.2
-      utility-types: 3.11.0
-
-  '@ngutil/nx@0.0.18(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))':
-    dependencies:
-      '@nx/devkit': 18.3.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))
-      favicons: 7.2.0
-      glob: 10.3.12
-      lodash: 4.17.21
-      object-path: 0.11.8
-      objectpath: 2.0.0
-      rimraf: 5.0.5
-      svgo: 3.2.0
-      tslib: 2.6.2
-      yaml: 2.4.2
-    transitivePeerDependencies:
-      - nx
-
-  '@ngutil/style@0.0.18(@angular/common@17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1))(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1)':
-    dependencies:
-      '@angular/common': 17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1)
-      '@angular/core': 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
-      rxjs: 7.8.1
-      tslib: 2.6.2
-
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -12035,12 +11977,6 @@ snapshots:
   '@nrwl/devkit@18.2.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))':
     dependencies:
       '@nx/devkit': 18.2.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))
-    transitivePeerDependencies:
-      - nx
-
-  '@nrwl/devkit@18.3.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))':
-    dependencies:
-      '@nx/devkit': 18.3.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))
     transitivePeerDependencies:
       - nx
 
@@ -12277,18 +12213,6 @@ snapshots:
   '@nx/devkit@18.2.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))':
     dependencies:
       '@nrwl/devkit': 18.2.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))
-      ejs: 3.1.10
-      enquirer: 2.3.6
-      ignore: 5.3.1
-      nx: 18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11))
-      semver: 7.6.0
-      tmp: 0.2.3
-      tslib: 2.6.2
-      yargs-parser: 21.1.1
-
-  '@nx/devkit@18.3.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))':
-    dependencies:
-      '@nrwl/devkit': 18.3.4(nx@18.2.4(@swc-node/register@1.9.1(@swc/core@1.5.2(@swc/helpers@0.5.11))(@swc/types@0.1.6)(typescript@5.4.5))(@swc/core@1.5.2(@swc/helpers@0.5.11)))
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.1
