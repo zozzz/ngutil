@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.0.19](https://github.com/zozzz/ngutil/compare/0.0.18...0.0.19) (2024-05-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **data:** QueryProperty emit normelized version of input
+* **data:** Rewrite query properties
+
+### Features
+
+* **data:** QueryProperty emit normelized version of input ([b7118d1](https://github.com/zozzz/ngutil/commit/b7118d1eca41a9e1562c147523f85d8d5031f8f7))
+* **data:** Rewrite query properties ([68bf671](https://github.com/zozzz/ngutil/commit/68bf671e0ccac0ed9dd174dfbf292b26e0773337))
+
+
+### Bug Fixes
+
+* **data:** DataSource.getItem/getItemPosition emit value once ([a1cad33](https://github.com/zozzz/ngutil/commit/a1cad3388288887adae4cc0f36a0fd7880b5b7f5))
+
+
+### Other changes
+
+* syncpack ([a6105ba](https://github.com/zozzz/ngutil/commit/a6105bab592ce1395e2da28125c5bdadad2e074d))
+
 ## [0.0.18](https://github.com/zozzz/ngutil/compare/0.0.17...0.0.18) (2024-04-28)
 
 
