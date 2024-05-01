@@ -1,3 +1,9 @@
+versionGroups:
+  - dependencies: ["@ngutil/**"]
+    dependencyTypes: ["!local"]
+    pinVersion: workspace:*
+    label: "@ngutil packages should only be under peerDependencies with workspace:*"
+
 sortFirst:
   - name
   - version

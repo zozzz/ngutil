@@ -4,8 +4,8 @@
   "peerDependencies": {
     "@angular/common": "^17.3.6",
     "@angular/core": "^17.3.6",
-    "@ngutil/common": "0.0.18",
-    "@ngutil/style": "0.0.18",
+    "@ngutil/common": "workspace:*",
+    "@ngutil/style": "workspace:*",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2"
   },

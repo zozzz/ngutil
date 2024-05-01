@@ -2,7 +2,7 @@
   "name": "@ngutil/style",
   "version": "0.0.19",
   "devDependencies": {
-    "@ngutil/nx": "0.0.18"
+    "@ngutil/nx": "workspace:*"
   },
   "exports": {
     ".": {
