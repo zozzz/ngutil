@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.21](https://github.com/zozzz/ngutil/compare/0.0.20...0.0.21) (2024-05-01)
+
+
+### Bug Fixes
+
+* update pnpm-lock.yaml ([707625e](https://github.com/zozzz/ngutil/commit/707625e54164e14f3e5564082d5402825a3b357e))
+
 ## [0.0.20](https://github.com/zozzz/ngutil/compare/0.0.19...0.0.20) (2024-05-01)
 
 
