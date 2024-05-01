@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.20](https://github.com/zozzz/ngutil/compare/0.0.19...0.0.20) (2024-05-01)
+
+
+### Bug Fixes
+
+* syncpack config ([cfcf203](https://github.com/zozzz/ngutil/commit/cfcf2030558902e5f988e3649474447258f7c444))
+
 ## [0.0.19](https://github.com/zozzz/ngutil/compare/0.0.18...0.0.19) (2024-05-01)
 
 
