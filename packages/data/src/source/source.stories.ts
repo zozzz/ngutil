@@ -38,12 +38,10 @@ const ITEMS = new ArrayProvider(
                         @for (head of header; track head.field) {
                             <td style="width:150px" (click)="sortBy(head.field)">
                                 {{ head.title }}
-                                <!-- TODO: better: source.directionOf(head.field) -->
-                                <!-- TODO: better: source.query.sorter.directionOf(head.field) -->
-                                @if (query.sorter.directionOf(head.field) | async; as dir) {
-                                    @if (dir === "asc") {
+                                @if (query.sorter.of(head.field) | async; as entry) {
+                                    @if (entry.isAsc === true) {
                                         ▲
-                                    } @else if (dir === "desc") {
+                                    } @else {
                                         ▼
                                     }
                                 }
@@ -91,21 +89,22 @@ class BasicTable {
             .pipe(
                 map(query => query.sorter),
                 switchMap(sorter =>
-                    sorter.directionOf(field).pipe(
-                        map(dir => {
-                            return { dir, sorter }
+                    sorter.of(field).pipe(
+                        map(entry => {
+                            return { entry, sorter }
                         })
                     )
                 ),
                 take(1),
-                map(({ dir, sorter }) => {
-                    if (dir == null) {
+                map(({ entry, sorter }) => {
+                    console.log(entry)
+                    if (entry == null) {
                         sorter.normal.update([{ [field]: "asc" }])
                         return "asc"
-                    } else if (dir === "asc") {
+                    } else if (entry.isAsc === true) {
                         sorter.normal.update([{ [field]: "desc" }])
                         return "desc"
-                    } else if (dir === "desc") {
+                    } else {
                         sorter.normal.update([{ [field]: undefined }])
                     }
                     return undefined

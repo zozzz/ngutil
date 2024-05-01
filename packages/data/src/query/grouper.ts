@@ -6,6 +6,7 @@ import { QueryProperty, QueryPropertySet } from "./query-property"
 export type GrouperFn<T = any> = (item: any) => Primitive
 
 export type Grouper<T extends Model, F = Flatten<T>> = any
+export type GrouperNormalized = any
 
 export function groupBy<T extends Model, F = Flatten<T>>(grouper: Grouper<T, F>): GrouperFn<T> {
     return grouperCompile<T, F>(grouper)
@@ -20,6 +21,8 @@ export function grouperMerge<T extends Model, F = Flatten<T>>(
 ): Grouper<T, F> | undefined {
     return undefined
 }
+
+export function grouperNormalize<T extends Model>(grouper: Grouper<T>): GrouperNormalized {}
 
 // import { Primitive } from "utility-types"
 
@@ -94,14 +97,18 @@ export function grouperMerge<T extends Model, F = Flatten<T>>(
 //     return undefined
 // }
 
-export class GrouperProperty<T extends Model> extends QueryProperty<Grouper<T>> {
+export class GrouperProperty<T extends Model> extends QueryProperty<Grouper<T>, GrouperNormalized> {
+    protected override norm(a: any) {
+        return grouperNormalize
+    }
+
     protected override merge(a?: any, b?: any) {
         return grouperMerge(a, b)
     }
 }
 
 export class GrouperPropertySet<T extends Model> extends QueryPropertySet<Grouper<T>> {
-    protected override newProperty(): QueryProperty<any> {
+    protected override newProperty() {
         return new GrouperProperty(undefined)
     }
 

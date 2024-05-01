@@ -1,6 +1,15 @@
-export { Filter, filterBy, filterMerge, FilterOp } from "./filter"
+export { Filter, FilterNormalized, filterBy, filterMerge, filterNormalize, FilterOp } from "./filter"
 export { Grouper, groupBy, grouperMerge } from "./grouper"
-export { Sorter, sortBy, sorterMerge, SortDir, SortDirection, SortDirExtra, sorterFind } from "./sorter"
+export {
+    Sorter,
+    SorterNormalized,
+    sortBy,
+    sorterMerge,
+    sorterNormalize,
+    SortDir,
+    SortDirection,
+    SortDirExtra
+} from "./sorter"
 export { Slimer, slimBy, slimerMerge } from "./slimer"
 export { Slice, sliceMerge, sliceApply, sliceInsert, sliceToPages, sliceClamp, sliceEq } from "./slice"
 export { pathGetterCompile } from "./path"

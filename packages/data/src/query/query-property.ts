@@ -4,35 +4,31 @@ import { isEqual } from "lodash"
 
 import { deepClone, deepFreeze } from "@ngutil/common"
 
-import { readonlyProp } from "./util"
+import { readonlyProp } from "./common"
 
-export interface QueryPropertyClass<T> {
-    new (value?: T): QueryProperty<T>
+export abstract class QueryProperty<I, O> extends BehaviorSubject<O | undefined> {
+    set(value?: I | O) {
+        this.#nextClone(value != null ? this.norm(value) : undefined)
+    }
 
-    merge<V>(...values: V[]): V | undefined
-}
-
-export abstract class QueryProperty<T> extends BehaviorSubject<T | undefined> {
-    set(value?: T) {
-        this.#nextClone(value)
+    update(value?: I | O): void {
+        const norm = value != null ? this.norm(value) : undefined
+        if (!isEqual(this.value, norm)) {
+            this.#next(this.merge(this.value, norm))
+        }
     }
 
     del(): void {
         this.set(undefined)
     }
 
-    update(value?: T): void {
-        if (!isEqual(this.value, value)) {
-            this.#next(this.merge(this.value, value))
-        }
-    }
-
     /**
      * Merge values and emit when changed (dont change original values)
      */
-    protected abstract merge(a?: T, b?: T): T | undefined
+    protected abstract merge(a?: O, b?: O): O | undefined
+    protected abstract norm(a: I | O): O | undefined
 
-    #next(value?: T) {
+    #next(value?: O) {
         if (!isEqual(this.value, value)) {
             if (value == null) {
                 this.next(undefined)
@@ -42,7 +38,7 @@ export abstract class QueryProperty<T> extends BehaviorSubject<T | undefined> {
         }
     }
 
-    #nextClone(value?: T) {
+    #nextClone(value?: O) {
         if (!isEqual(this.value, value)) {
             if (value == null) {
                 this.next(undefined)
@@ -53,8 +49,8 @@ export abstract class QueryProperty<T> extends BehaviorSubject<T | undefined> {
     }
 }
 
-export abstract class QueryPropertySet<T> extends Observable<T> {
-    readonly #combined: Observable<T>
+export abstract class QueryPropertySet<O> extends Observable<O> {
+    readonly #combined: Observable<O>
 
     constructor(...names: string[]) {
         super(dest => this.#combined.subscribe(dest))
@@ -78,7 +74,7 @@ export abstract class QueryPropertySet<T> extends Observable<T> {
         }
     }
 
-    protected abstract newProperty(): QueryProperty<T>
+    protected abstract newProperty(): QueryProperty<any, any>
     protected abstract merge(...args: any[]): any | undefined
 }
 

@@ -21,9 +21,9 @@ export type SortDirExtra = { dir: SortDir; emptyFirst: boolean }
 type _Sorter<F> = { [K in keyof F]: { [key in K]: SortDir | SortDirExtra } }[keyof F]
 // TODO: fix recursion
 // export type Sorter<T extends Model> = Array<_Sorter<Flatten<T>>>
-export type Sorter<T extends Model> = Array<{ [key: string]: SortDir | SortDirExtra | undefined }>
+export type Sorter<T extends Model> = Array<{ [key: string]: SortDir | SortDirExtra | NormalizedEntry | undefined }>
 
-type NormalizedEntry = { path: string; isAsc: boolean; emptyFirst: boolean }
+type NormalizedEntry = { path: string; isAsc: boolean; emptyFirst: boolean; remove?: boolean }
 export type SorterNormalized = Array<NormalizedEntry>
 
 /**
@@ -49,10 +49,27 @@ export function sortBy<T extends Model>(sorters: Sorter<T>): SorterFn<T> {
  * ```
  */
 export function sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNormalized {
+    return _sorterNormalize(sorters)
+}
+
+function _sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNormalized {
+    if (!Array.isArray(sorters)) {
+        sorters = [sorters]
+    }
+
     return flattenDeep(
-        (sorters as any).map((s: any) =>
-            Object.entries(s).map(([k, v]) => {
-                if (typeof v === "string") {
+        (sorters as any).map((s: any) => {
+            if (isPlainObject(s)) {
+                // entry is normalized
+                if (s["path"] != null && s["isAsc"] != null && s["emptyFirst"] != null) {
+                    return s
+                }
+            }
+
+            return Object.entries(s).map(([k, v]) => {
+                if (v == null) {
+                    return { path: k, remove: true }
+                } else if (typeof v === "string") {
                     const isAsc = v.toLowerCase() === "asc"
                     return { path: k, isAsc, emptyFirst: isAsc ? false : true }
                 } else if (isPlainObject(v)) {
@@ -65,7 +82,7 @@ export function sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNorm
                     throw new Error(`Invalid sorter: ${v}`)
                 }
             })
-        )
+        })
     )
 }
 
@@ -166,33 +183,29 @@ export function compare(a: any, b: any, emptyFirst: boolean): number {
     return a > b ? -1 : 1
 }
 
-export function sorterMerge<T extends Model>(...sorters: any[]): any | undefined {
-    let result: Sorter<T> | undefined
+export function sorterMerge(...sorters: (SorterNormalized | undefined | null)[]): SorterNormalized | undefined {
+    let result: SorterNormalized | undefined
 
     for (const sorter of sorters) {
         if (sorter == null) {
             continue
         }
+
         if (result == null) {
             result = deepClone(sorter)
             continue
         }
 
         for (const sentry of sorter) {
-            for (const [k, v] of Object.entries(sentry)) {
-                const existing = (result as any).find((value: any) => value[k] != null)
-                if (existing) {
-                    if (v == null) {
-                        delete (existing as any)[k]
-                        if (Object.keys(existing).length === 0) {
-                            result.splice(result.indexOf(existing), 1)
-                        }
-                    } else {
-                        ;(existing as any)[k] = deepClone(v)
-                    }
-                } else if (v != null) {
-                    result.push({ [k]: deepClone(v) } as any)
+            const existingIndex = result.findIndex(value => value.path === sentry.path)
+            if (existingIndex > -1) {
+                if (sentry.remove) {
+                    result.splice(existingIndex, 1)
+                } else {
+                    result[existingIndex] = deepClone(sentry)
                 }
+            } else if (!sentry.remove) {
+                result.push(deepClone(sentry))
             }
         }
     }
@@ -204,50 +217,29 @@ export function sorterMerge<T extends Model>(...sorters: any[]): any | undefined
     return result
 }
 
-export function sorterFind<T extends Model>(sorters: Sorter<T>, name: string): SortDir | SortDirExtra | undefined {
-    const sorter = sorters.find(v => v[name] != null)
-    if (sorter != null) {
-        return sorter[name]
+export class SorterProperty<T extends Model> extends QueryProperty<Sorter<T>, SorterNormalized> {
+    protected override norm(a: Sorter<T>): SorterNormalized | undefined {
+        return sorterNormalize(a)
     }
-    return undefined
-}
-
-type OfTypes<T extends Model> = ReturnType<typeof sorterFind<T>>
-
-export class SorterProperty<T extends Model> extends QueryProperty<Sorter<T>> {
-    protected override merge(a?: Sorter<T> | undefined, b?: Sorter<T> | undefined): Sorter<T> | undefined {
+    protected override merge(a?: SorterNormalized, b?: SorterNormalized): SorterNormalized | undefined {
         return sorterMerge(a, b)
     }
 }
 
-export class SorterPropertySet<T extends Model> extends QueryPropertySet<Sorter<T>> {
-    #of(name: string): Observable<OfTypes<T>> {
-        return this.pipe(map((sorters: any) => (sorters == null ? undefined : sorterFind(sorters, name))))
+export class SorterPropertySet extends QueryPropertySet<SorterNormalized> {
+    of(name: string): Observable<NormalizedEntry | undefined> {
+        return this.pipe(map(sorters => (sorters == null ? undefined : sorters.find(value => value.path === name))))
     }
 
-    directionOf(name: string) {
-        return this.#of(name).pipe(
-            map(value => {
-                if (value == null) {
-                    return undefined
-                } else if (typeof value === "string") {
-                    return value
-                } else {
-                    return value.dir
-                }
-            })
-        )
+    isAsc(name: string): Observable<boolean | undefined> {
+        return this.of(name).pipe(map(v => (v != null ? v.isAsc : undefined)))
     }
 
-    isAsc(name: string): Observable<boolean> {
-        return this.directionOf(name).pipe(map(v => v === SortDirection.Asc))
+    isDesc(name: string): Observable<boolean | undefined> {
+        return this.of(name).pipe(map(v => (v != null ? !v.isAsc : undefined)))
     }
 
-    isDesc(name: string): Observable<boolean> {
-        return this.directionOf(name).pipe(map(v => v === SortDirection.Desc))
-    }
-
-    protected override newProperty(): QueryProperty<Sorter<T>> {
+    protected override newProperty() {
         return new SorterProperty(undefined)
     }
     protected override merge(...args: any[]) {

@@ -152,83 +152,61 @@ export function filterBy<T extends Model>(filters: Filter<T>): FilterFn<T> {
 // type _Or = { "|": Array<_Filter> }
 // type _And = { "&": Array<_Filter> }
 // export type NormalizedFilter = _Or | _And
+type NormPath = { path: string; op: Exclude<FilterOp, FilterOp.Or | FilterOp.And>; value: any }
+type NormOr = { op: FilterOp.Or; value: Array<NormEntry> }
+type NormAnd = { op: FilterOp.And; value: Array<NormEntry> }
+type NormEntry = NormPath | NormOr | NormAnd
+export type FilterNormalized = NormEntry
 
-// /**
-//  * @example
-//  * ```ts
-//  * normalizeFilter({id: 2, name: {"=*": "AnyName"}}) -> {id: {"==": 2}, name: {"=*": "AnyName"}}}
-//  * normalizeFilter({id: {">": 0, "<": 10}}) -> {"&": [{id: {">": 0}}, {id: {"<": 10}}]}
-//  * ```
-//  */
-// export function normalizeFilter<T extends Model>(filters: Filters<T>): Filters<T> {
-//     return _normalizeFilter(filters)
-// }
+/**
+ * @example
+ * ```ts
+ * filterNormalize({id: {">": 0, "<": 10}})
+ * {op: "&", value: [{path: "id", op: ">", value: 0}, {path: "id", op: "<", value: 10}]}
+ * ```
+ */
+export function filterNormalize<T extends Model>(filters: Filter<T>): FilterNormalized {
+    return _normalizeFilter(filters)
+}
 
-// function _normalizeFilter(filters: any, path?: string): any {
-//     const result = {} as any
+function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string): any {
+    const norm = flattenDeep(
+        Object.entries(filters).map(([path, value]) => {
+            switch (path) {
+                case FilterOp.And:
+                    if (!Array.isArray(value)) {
+                        throw new Error(`Operator AND (${FilterOp.And}) must have array type`)
+                    }
+                    return { op: FilterOp.And, value: value.map(v => _normalizeFilter(v, parent)) }
 
-//     for (const [path, v] of Object.entries(filters)) {
-//         switch (path) {
-//             case FilterOp.And:
-//                 if (!Array.isArray(v)) {
-//                     throw new Error("The '&' (AND) operator must have array type")
-//                 }
+                case FilterOp.Or:
+                    if (!Array.isArray(value)) {
+                        throw new Error(`Operator OR (${FilterOp.Or}) must have array type`)
+                    }
+                    return { op: FilterOp.Or, value: value.map(v => _normalizeFilter(v, parent)) }
 
-//                 if (!result[FilterOp.And]) {
-//                     result[FilterOp.And] = []
-//                 }
+                // TODO: check all filter, and if not found filter key, taht object maybne not a filter
+                default:
+                    if (isPlainObject(value)) {
+                        return _normalizeFilter(value, path)
+                    }
+                    if (parent != null) {
+                        return { path: parent, op: path, value }
+                    } else {
+                        return { path, op: FilterOp.EqStrict, value }
+                    }
+            }
+        })
+    )
 
-//                 result[FilterOp.And] = result[FilterOp.And].concat(v.map(f => _normalizeFilter(f)))
-//                 break
-
-//             case FilterOp.Or:
-//                 if (!Array.isArray(v)) {
-//                     throw new Error("The '|' (OR) operator must have array type")
-//                 }
-
-//                 if (!result[FilterOp.Or]) {
-//                     result[FilterOp.Or] = []
-//                 }
-
-//                 result[FilterOp.Or] = result[FilterOp.Or].concat(v.map(f => _normalizeFilter(f)))
-//                 break
-
-//             default:
-//                 for (const entry of asOperators(v)) {
-//                     switch (entry.op) {
-//                         case FilterOp.And:
-//                             if (!result[FilterOp.And]) {
-//                                 result[FilterOp.And] = []
-//                             }
-
-//                             result[FilterOp.And] = result[FilterOp.And].concat(
-//                                 entry.value.map((v: any) => _normalizeFilter(v, path))
-//                             )
-//                             break
-
-//                         case FilterOp.Or:
-//                             if (!result[FilterOp.Or]) {
-//                                 result[FilterOp.Or] = []
-//                             }
-
-//                             result[FilterOp.Or] = result[FilterOp.Or].concat(
-//                                 entry.value.map((v: any) => _normalizeFilter(v, path))
-//                             )
-//                             break
-
-//                         default:
-//                             if (!result[FilterOp.And]) {
-//                                 result[FilterOp.And] = []
-//                             }
-
-//                             result[FilterOp.And].push({ path, ...entry })
-//                     }
-//                 }
-//         }
-//     }
-
-//     return result
-// }
+    if (norm.length === 0) {
+        return norm
+    } else if (norm.length === 1) {
+        return norm[0]
+    } else {
+        return { op: FilterOp.And, value: norm }
+    }
+}
 
 function _filterCompile<T extends Model>(filters: Filter<T>): FilterFn<T> {
     let getter: PathGetter
@@ -443,16 +421,20 @@ export function filterMerge(...filters: any[]): any | undefined {
     return result as any
 }
 
-export class FilterProperty<T extends Model> extends QueryProperty<Filter<T>> {
-    // static override merge = filterMerge
-
-    protected override merge(a?: Filter<T> | undefined, b?: Filter<T> | undefined): Filter<T> | undefined {
+export class FilterProperty<T extends Model> extends QueryProperty<Filter<T>, FilterNormalized> {
+    protected override merge(
+        a?: FilterNormalized | undefined,
+        b?: FilterNormalized | undefined
+    ): FilterNormalized | undefined {
         return filterMerge(a, b)
+    }
+    protected override norm(a: FilterNormalized | Filter<T>): FilterNormalized | undefined {
+        return filterNormalize(a)
     }
 }
 
 export class FilterPropertySet<T extends Model> extends QueryPropertySet<Filter<T>> {
-    protected override newProperty(): QueryProperty<Filter<T>> {
+    protected override newProperty() {
         return new FilterProperty(undefined)
     }
 
