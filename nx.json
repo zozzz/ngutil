@@ -18,11 +18,7 @@
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/tsconfig.storybook.json"
     ],
-    "sharedGlobals": [
-      {
-        "externalDependencies": ["jest"]
-      }
-    ]
+    "sharedGlobals": []
   },
   "targetDefaults": {
     "@angular-devkit/build-angular:application": {

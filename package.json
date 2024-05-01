@@ -2,9 +2,9 @@
   "name": "@ngutil/source",
   "version": "0.0.18",
   "scripts": {
-    "before:release": "pnpm before:release:format",
-    "before:release:syncpack": "pnpm syncpack format && pnpm syncpack fix-mismatches",
+    "before:release": "pnpm before:release:syncpack && pnpm before:release:format",
     "before:release:format": "pnpm nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Beautify files\")",
+    "before:release:syncpack": "pnpm syncpack fix-mismatches && pnpm syncpack format && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Sync pacakge versions\")",
     "before:release:test": "pnpm nx run-many -t test",
     "before:release:update-packages": "pnpm update -w -r --latest && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): Update pnpm-lock.yaml\")",
     "build:libs": "pnpm nx run-many -t build --projects=packages/*",
