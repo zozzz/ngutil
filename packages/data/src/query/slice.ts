@@ -72,9 +72,13 @@ export function sliceInsert(slice: Slice, array: readonly any[], newItems: reado
     result.length = slice.start
 
     result = result.concat(newItems)
-    result.length = slice.end
 
-    return result.concat(array.slice(slice.end))
+    if (!isNaN(slice.end) && isFinite(slice.end)) {
+        result.length = slice.end
+        result = result.concat(array.slice(slice.end))
+    }
+
+    return result
 }
 
 export function sliceClamp(slice: Slice, constraint: Slice): Slice {
