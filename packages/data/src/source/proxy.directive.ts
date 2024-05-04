@@ -1,6 +1,6 @@
 import { DataSource as CdkDataSource, CollectionViewer } from "@angular/cdk/collections"
-import { Directive, Input, OnDestroy, Optional } from "@angular/core"
-import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
+import { Directive, inject, input, Input, OnDestroy } from "@angular/core"
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop"
 
 import {
     combineLatest,
@@ -9,13 +9,11 @@ import {
     Observable,
     of,
     ReplaySubject,
-    share,
     shareReplay,
     Subject,
     Subscription,
     switchMap,
     takeUntil,
-    tap,
     throwError
 } from "rxjs"
 
@@ -26,7 +24,7 @@ import { DataProvider } from "../provider/provider"
 import { Filter, Grouper, Slimer, Sorter } from "../query"
 import { DataSource } from "./source"
 
-export type DataSourceInput<T extends Model> = any
+export type DataSourceProxyInput<T extends Model> = DataSourceProxy<T> | DataSource<T> | DataProvider<T>
 
 /**
  * @example
@@ -63,22 +61,14 @@ export type DataSourceInput<T extends Model> = any
     selector: "[nuDataSource]",
     exportAs: "nuDataSource"
 })
-export class DataSourceProxy<T extends Model = Model>
+export class DataSourceProxy<T extends Model>
     extends CdkDataSource<T | undefined>
     implements OnDestroy, ConnectProtocol
 {
     @Input({ required: true, alias: "nuDataSource" })
-    set value(value: DataSourceInput<T>) {
+    set value(value: DataSourceProxyInput<T>) {
         this.#valueSub?.unsubscribe()
-        this.#valueSub = coerceDataSource<T>(value)
-            .pipe(
-                tap(v => {
-                    if (v == null) {
-                        throw new Error("Missing DataSource")
-                    }
-                })
-            )
-            .subscribe(this.#value)
+        this.#valueSub = coerceDataSource<T>(value).subscribe(this.#value)
     }
 
     #valueSub?: Subscription
@@ -91,73 +81,8 @@ export class DataSourceProxy<T extends Model = Model>
 
     readonly items$ = this.value$.pipe(
         switchMap(value => value.items$),
-        share()
+        shareReplay(1)
     )
-
-    readonly busy$ = this.value$.pipe(
-        switchMap(value => value.busy$),
-        share()
-    )
-    readonly isBusy = toSignal(this.busy$, { rejectErrors: true, initialValue: false })
-
-    @Input()
-    set forcedFilterInput(value: Filter<T>) {
-        // this.query.filter.forced.update(value)
-        this.#filter.next(value)
-    }
-    readonly #filter = new ReplaySubject<Filter<T>>(1)
-
-    @Input()
-    set forcedSorterInput(value: Sorter<T>) {
-        this.#sorter.next(value)
-    }
-    readonly #sorter = new ReplaySubject<Sorter<T>>(1)
-
-    @Input()
-    set forcedGrouperInput(value: Grouper<T>) {
-        this.#grouper.next(value)
-    }
-    readonly #grouper = new ReplaySubject<Grouper<T>>(1)
-
-    @Input()
-    set forcedSlimerInput(value: Slimer<T>) {
-        this.#slimer.next(value)
-    }
-    readonly #slimer = new ReplaySubject<Slimer<T>>(1)
-
-    readonly #subs = new Subscription()
-
-    constructor(@Optional() busy?: Busy<any>) {
-        super()
-
-        if (busy != null) {
-            this.#subs.add(busy.connect(this.busy$).subscribe())
-        }
-
-        this.#subs.add(
-            combineLatest({ query: this.query$, filter: this.#filter }).subscribe(({ query, filter }) => {
-                query.filter.forced.set(filter)
-            })
-        )
-
-        this.#subs.add(
-            combineLatest({ query: this.query$, sorter: this.#sorter }).subscribe(({ query, sorter }) => {
-                query.sorter.forced.set(sorter)
-            })
-        )
-
-        this.#subs.add(
-            combineLatest({ query: this.query$, grouper: this.#grouper }).subscribe(({ query, grouper }) => {
-                query.grouper.forced.set(grouper)
-            })
-        )
-
-        this.#subs.add(
-            combineLatest({ query: this.query$, slimer: this.#slimer }).subscribe(({ query, slimer }) => {
-                query.slimer.forced.set(slimer)
-            })
-        )
-    }
 
     #cvSubs = new Map<CollectionViewer, Subject<void>>()
 
@@ -182,11 +107,92 @@ export class DataSourceProxy<T extends Model = Model>
     ngOnDestroy(): void {
         this.#valueSub?.unsubscribe()
         this.#valueSub = undefined
-        this.#subs.unsubscribe()
     }
 }
 
-function coerceDataSource<T extends Model>(value: DataSourceInput<T>): Observable<DataSource<T>> {
+@Directive({
+    standalone: true,
+    selector: "[nuDataSource][filter]"
+})
+export class DataSourceProxyFilter<T extends Model, F extends Filter<T>> {
+    readonly #proxy = inject<DataSourceProxy<T>>(DataSourceProxy)
+    readonly filter = input.required<F>()
+    readonly filter$ = toObservable(this.filter)
+
+    constructor() {
+        combineLatest({ query: this.#proxy.query$, filter: this.filter$ })
+            .pipe(takeUntilDestroyed())
+            .subscribe(({ query, filter }) => query.filter.forced.set(filter))
+    }
+}
+
+@Directive({
+    standalone: true,
+    selector: "[nuDataSource][sorter]"
+})
+export class DataSourceProxySorter<T extends Model, S extends Sorter<T>> {
+    readonly #proxy = inject<DataSourceProxy<T>>(DataSourceProxy)
+    readonly sorter = input.required<S>()
+    readonly sorter$ = toObservable(this.sorter)
+
+    constructor() {
+        combineLatest({ query: this.#proxy.query$, sorter: this.sorter$ })
+            .pipe(takeUntilDestroyed())
+            .subscribe(({ query, sorter }) => query.sorter.forced.set(sorter))
+    }
+}
+
+@Directive({
+    standalone: true,
+    selector: "[nuDataSource][slimer]"
+})
+export class DataSourceProxySlimer<T extends Model, S extends Slimer<T>> {
+    readonly #proxy = inject<DataSourceProxy<T>>(DataSourceProxy)
+    readonly slimer = input.required<S>()
+    readonly slimer$ = toObservable(this.slimer)
+
+    constructor() {
+        combineLatest({ query: this.#proxy.query$, slimer: this.slimer$ })
+            .pipe(takeUntilDestroyed())
+            .subscribe(({ query, slimer }) => query.slimer.forced.set(slimer))
+    }
+}
+
+@Directive({
+    standalone: true,
+    selector: "[nuDataSource][grouper]"
+})
+export class DataSourceProxyGrouper<T extends Model, G extends Grouper<T>> {
+    readonly #proxy = inject<DataSourceProxy<T>>(DataSourceProxy)
+    readonly grouper = input.required<G>()
+    readonly grouper$ = toObservable(this.grouper)
+
+    constructor() {
+        combineLatest({ query: this.#proxy.query$, grouper: this.grouper$ })
+            .pipe(takeUntilDestroyed())
+            .subscribe(({ query, grouper }) => query.grouper.forced.set(grouper))
+    }
+}
+
+@Directive({
+    standalone: true,
+    selector: "[nuDataSource][nuBusy]"
+})
+export class DataSourceProxyBusy {
+    readonly #proxy = inject<DataSourceProxy<any>>(DataSourceProxy)
+    readonly #busy = inject<Busy<any>>(Busy)
+
+    readonly busy$ = this.#proxy.value$.pipe(
+        switchMap(value => value.busy$),
+        shareReplay(1)
+    )
+
+    constructor() {
+        this.#busy.connect(this.busy$).pipe(takeUntilDestroyed()).subscribe()
+    }
+}
+
+function coerceDataSource<T extends Model>(value: DataSourceProxyInput<T>): Observable<DataSource<T>> {
     if (value instanceof DataSourceProxy) {
         return value.value$
     } else if (value instanceof DataSource) {

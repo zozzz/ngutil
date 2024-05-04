@@ -1,2 +1,10 @@
 export { DataSource } from "./source"
-export { DataSourceProxy } from "./proxy.directive"
+export {
+    DataSourceProxy,
+    DataSourceProxyBusy,
+    DataSourceProxyFilter,
+    DataSourceProxyGrouper,
+    DataSourceProxySlimer,
+    DataSourceProxySorter,
+    DataSourceProxyInput
+} from "./proxy.directive"
