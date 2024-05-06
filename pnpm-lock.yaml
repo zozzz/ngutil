@@ -54,16 +54,16 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       rxjs:
-        specifier: ^7.8.1
+        specifier: ~7.8.0
         version: 7.8.1
       tslib:
-        specifier: ^2.6.2
+        specifier: ^2.3.0
         version: 2.6.2
       utility-types:
         specifier: ^3.11.0
         version: 3.11.0
       zone.js:
-        specifier: ~0.14.4
+        specifier: ~0.14.3
         version: 0.14.5
     devDependencies:
       '@angular-devkit/build-angular':
@@ -388,6 +388,18 @@ importers:
         specifier: ^14.0.0
         version: 14.0.0
     publishDirectory: ../../dist/packages/nx/
+
+  packages/pwa:
+    dependencies:
+      '@angular/common':
+        specifier: ^17.3.0
+        version: 17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1)
+      '@angular/core':
+        specifier: ^17.3.0
+        version: 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
+      tslib:
+        specifier: ^2.3.0
+        version: 2.6.2
 
   packages/style:
     dependencies:
