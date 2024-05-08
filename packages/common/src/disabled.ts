@@ -1,9 +1,46 @@
-import { Directive, inject, input } from "@angular/core"
-import { toObservable, toSignal } from "@angular/core/rxjs-interop"
-
-import { combineLatest, map, Observable, of, shareReplay } from "rxjs"
+import { computed, Directive, effect, inject, input, signal, Signal } from "@angular/core"
 
 import { Busy } from "./busy"
+
+const INPUT = Symbol("INPUT")
+
+/**
+ * @example
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   hostDirectives: [DisabledState],
+ *   template: `<button [disabled]="disabledState.isDisabled()">Submit</button>`,
+ * })
+ * export class Button {
+ *   readonly disabledState = inject(DisabledState)
+ * }
+ * ```
+ */
+@Directive({
+    standalone: true,
+    exportAs: "nuDisabled",
+    host: {
+        "[attr.disabled]": "isDisabled()"
+    }
+})
+export class DisabledState {
+    readonly #parent = inject(DisabledState, { skipSelf: true, optional: true })
+    readonly #busy = inject(Busy, { self: true, optional: true })
+    readonly #disabled = signal<boolean>(false)
+
+    readonly isDisabled: Signal<boolean> = computed(
+        () => !!(this.#parent?.isDisabled() || this.#busy?.isOthersBusy() || this.#disabled())
+    )
+
+    constructor() {
+        effect(() => this.isDisabled())
+    }
+
+    set(value: boolean) {
+        this.#disabled.set(value)
+    }
+}
 
 /**
  * @example
@@ -14,21 +51,15 @@ import { Busy } from "./busy"
  * ```
  */
 @Directive({
+    standalone: true,
     selector: "[nuDisabled]",
-    exportAs: "nuDisabled"
+    hostDirectives: [DisabledState]
 })
 export class Disabled {
-    readonly #parent = inject(Disabled, { skipSelf: true, optional: true })
-    readonly #busy = inject(Busy, { self: true, optional: true })
-    readonly #value = input(false, { alias: "nuDisabled" })
+    readonly #state = inject(DisabledState, { self: true })
+    readonly nuDisabled = input(false)
 
-    readonly isDisabled$: Observable<boolean> = combineLatest({
-        parent: this.#parent ? this.#parent.isDisabled$ : of(false),
-        busy: this.#busy ? this.#busy.isOthersBusy$ : of(false),
-        self: toObservable(this.#value)
-    }).pipe(
-        map(({ parent, busy, self }) => !!(parent || busy || self)),
-        shareReplay(1)
-    )
-    readonly isDisabled = toSignal(this.isDisabled$)
+    constructor() {
+        effect(() => this.#state.set(this.nuDisabled()))
+    }
 }
