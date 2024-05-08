@@ -1,69 +1,50 @@
-import { Directive, ElementRef, inject, NgZone } from "@angular/core"
+import { Attribute, computed, Directive, effect, inject, input } from "@angular/core"
 
-import { map, Observable, shareReplay } from "rxjs"
+import { DisabledState } from "@ngutil/common"
 
-import { Destructible, FastDOM } from "@ngutil/common"
+import { FocusState } from "./focus-state.directive"
 
-import { type FocusableEvent, type FocusOrigin, FocusService } from "./focus.service"
+// TODO: what happens when disabled is changed
 
-// TODO: set [attr.focused]="[mouse | keyboard | program] [exact | child]"
-@Directive({ standalone: true })
-export class Focusable extends Destructible {
-    #service = inject(FocusService)
-    #elRef = inject(ElementRef<Node>)
-    #el = this.#elRef.nativeElement
+@Directive({
+    standalone: true,
+    selector: "[nuFocusable]",
+    exportAs: "nuFocusable",
+    host: {
+        "[attr.tabindex]": "tabindex()"
+    },
+    hostDirectives: [FocusState]
+})
+export class Focusable {
+    readonly #disabled = inject(DisabledState, { optional: true, self: true })
 
-    readonly events!: Observable<FocusableEvent>
-    readonly origin!: Observable<FocusOrigin>
-    // readonly origin = new BehaviorSubject<FocusOrigin>(null)
-    readonly exact!: Observable<boolean>
+    readonly focusable = input<boolean | number>(true, { alias: "nuFocusable" })
 
-    constructor(zone: NgZone) {
-        super()
+    readonly #tabindex?: number
+    readonly tabindex = computed(() => {
+        const focusable = this.focusable()
 
-        zone.runOutsideAngular(() => {
-            const events = this.#service.watch(this.#el)
+        if (focusable === false || this.#disabled?.isDisabled()) {
+            return -1
+        }
 
-            ;(this as { events: Observable<FocusableEvent> }).events = events.pipe(
-                map(event => {
-                    const self = this.#el
-                    let exact: boolean | null = null
-                    let focused: HTMLElement | null = event.element
+        if (typeof focusable === "number") {
+            return focusable
+        }
 
-                    while (focused) {
-                        if (focused === self) {
-                            if (exact === null) {
-                                exact = true
-                            }
-                            break
-                        } else {
-                            const attr = focused.getAttribute("focused")
-                            if (attr && attr.length > 0) {
-                                exact = false
-                                break
-                            }
+        if (focusable === true && this.#tabindex != null && !isNaN(this.#tabindex)) {
+            return this.#tabindex
+        }
 
-                            focused = focused.parentElement
-                        }
-                    }
-                    return { origin: event.origin, exact, node: event.element } as FocusableEvent
-                }),
-                shareReplay(1)
-            )
-            ;(this as { origin: Observable<FocusOrigin> }).origin = this.events.pipe(
-                map(event => event.origin),
-                shareReplay(1)
-            )
-            ;(this as { exact: Observable<boolean> }).exact = this.events.pipe(
-                map(event => event.exact),
-                shareReplay(1)
-            )
+        return 0
+    })
 
-            this.d.sub(this.events).subscribe(event => {
-                FastDOM.setAttributes(this.#el, {
-                    focused: event.origin ? `${event.origin} ${event.exact ? "exact" : "child"}` : null
-                })
-            })
-        })
+    constructor(@Attribute("tabindex") tabindex?: string | number) {
+        if (tabindex != null) {
+            this.#tabindex = Number(tabindex)
+        }
+
+        // TODO: miért kell ez?, ha nincs itt akkor nem frissül
+        effect(() => this.tabindex(), { allowSignalWrites: false })
     }
 }

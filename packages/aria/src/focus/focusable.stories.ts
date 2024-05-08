@@ -1,19 +1,15 @@
 /* eslint-disable max-len */
-import { Meta, StoryFn, StoryObj } from "@storybook/angular/"
+import { Meta, StoryFn, StoryObj } from "@storybook/angular"
 
-import { AsyncPipe } from "@angular/common"
 import { Component, inject } from "@angular/core"
 
+import { FocusState } from "./focus-state.directive"
 import { Focusable } from "./focusable.directive"
 
 @Component({
     standalone: true,
     selector: "story-focusable",
-    imports: [AsyncPipe],
-    providers: [Focusable],
-    host: {
-        "[attr.tabindex]": "0"
-    },
+    hostDirectives: [Focusable],
     styles: `
         :host {
             display: block;
@@ -41,22 +37,33 @@ import { Focusable } from "./focusable.directive"
                 }
             }
 
-            &[focused~="mouse"] pre {
+            &[focus~="mouse"] > pre {
                 background: red;
+                color: #fff;
             }
 
-            &[focused~="keyboard"] pre {
+            &[focus~="program"] > pre {
+                background: green;
+                color: #fff;
+            }
+
+            &[focus~="keyboard"] > pre {
                 background: blue;
+                color: #fff;
+            }
+
+            &[focusWithin] > pre {
+                opacity: 0.8;
             }
         }
     `,
     template: `
-        <pre>origin = {{ focus.origin | async }} - exact: {{ focus.exact | async }}</pre>
+        <pre>origin = {{ focus.origin() }} - within: {{ focus.within() }}</pre>
         <div><ng-content /></div>
     `
 })
 class FocusableComponent {
-    focus = inject(Focusable)
+    focus = inject(FocusState)
 }
 
 export default {
@@ -83,8 +90,17 @@ type Story = StoryObj<FocusableComponent>
 export const Basic: StoryFn<Story> = args => {
     const template = `
         <story-focusable></story-focusable>
+        <story-focusable tabindex="42"></story-focusable>
         <story-focusable></story-focusable>
-        <story-focusable></story-focusable>
+        <story-focusable>
+            <story-focusable>
+                <story-focusable></story-focusable>
+                <story-focusable></story-focusable>
+                <story-focusable></story-focusable>
+            </story-focusable>
+            <story-focusable></story-focusable>
+            <story-focusable></story-focusable>
+        </story-focusable>
     `
 
     return {
