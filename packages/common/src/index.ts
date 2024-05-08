@@ -1,5 +1,6 @@
 export { ConnectProtocol } from "./connect-protocol"
 export { Destruct, Destructible, IDisposable } from "./destruct"
+export { DisabledState, Disabled } from "./disabled"
 export { NumberWithUnit, NumberWithUnitInput, UNIT_REGEX, NUMBER_REGEX } from "./number-with-unit"
 export { coerceBoolAttr, BooleanInput } from "./bool-attr"
 export {
@@ -11,7 +12,7 @@ export {
     rawSetTimeout
 } from "./unngzone"
 export { FastDOM } from "./dom"
-export { Busy, BusyEvent, BusyEventParams, BusyProgress, BusyState, BusyTracker } from "./busy"
+export { Busy, BusyEvent, BusyEventParams, BusyProgress, BusyTrackerState, BusyTracker } from "./busy"
 
 export { Concat } from "./types/concat"
 export { Eval, IfAny, IsAny, IfTuple, IsTuple, TupleItems, ObjectKey, MaxRecursion } from "./types/util"

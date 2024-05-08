@@ -9,6 +9,9 @@
     "tabbable": "^6.2.0",
     "tslib": "^2.6.2"
   },
+  "devDependencies": {
+    "@storybook/angular": "^8.0.10"
+  },
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/aria/"
