@@ -1,7 +1,7 @@
 import { DOCUMENT } from "@angular/common"
 import { inject, Inject, Injectable, NgZone } from "@angular/core"
 
-import { combineLatest, filter, map, merge, Observable, shareReplay, startWith, Subject } from "rxjs"
+import { BehaviorSubject, combineLatest, filter, map, merge, Observable, ReplaySubject, shareReplay } from "rxjs"
 
 import { focusable, type FocusableElement, isFocusable } from "tabbable"
 
@@ -15,7 +15,6 @@ const EVENT_OPTIONS: AddEventListenerOptions = {
 }
 
 export type FocusOrigin = ActivityOrigin | null
-// export type FocusTarget = null | "self" | "child"
 
 export interface FocusChanges {
     origin: FocusOrigin
@@ -30,22 +29,19 @@ export interface FocusableEvent {
 
 @Injectable({ providedIn: "root" })
 export class FocusService extends Destructible {
-    #activity = inject(ActivityService)
-    #focus = new Subject<Node>()
-    #blur = new Subject<Node>()
-    events!: Observable<FocusChanges>
+    readonly #activity = inject(ActivityService)
+    readonly #focus = new ReplaySubject<Node>(1)
+    readonly #blur = new BehaviorSubject<Node | null>(null)
+    readonly events: Observable<FocusChanges>
 
     constructor(@Inject(DOCUMENT) document: Document, @Inject(NgZone) zone: NgZone) {
         super()
 
-        zone.runOutsideAngular(() => {
-            const blur = this.#blur.pipe(startWith(null), shareReplay(1))
-            const focus = this.#focus.pipe(shareReplay(1))
-
+        this.events = zone.runOutsideAngular(() => {
             const events = combineLatest({
                 activity: this.#activity.events,
-                focus: focus,
-                blur: blur
+                focus: this.#focus,
+                blur: this.#blur
             }).pipe(
                 map(({ activity, focus, blur }) => {
                     // console.log({ activity, focus, blur })
@@ -76,18 +72,8 @@ export class FocusService extends Destructible {
                         return { origin: "program", element: focus }
                     }
                 }),
-                filter(v => !!v),
-                shareReplay(1)
+                filter(v => !!v)
             ) as any
-
-            this.events = merge(
-                blur.pipe(
-                    map(element => {
-                        return { origin: null, element }
-                    })
-                ),
-                events
-            ).pipe(shareReplay(1)) as any
 
             document.addEventListener("focus", this.#onFocus, EVENT_OPTIONS)
             document.addEventListener("blur", this.#onBlur, EVENT_OPTIONS)
@@ -96,6 +82,16 @@ export class FocusService extends Destructible {
                 document.removeEventListener("focus", this.#onFocus, EVENT_OPTIONS)
                 document.removeEventListener("blur", this.#onBlur, EVENT_OPTIONS)
             })
+
+            return merge(
+                events,
+                this.#blur.pipe(
+                    filter(node => !!node),
+                    map(element => {
+                        return { origin: null, element }
+                    })
+                )
+            ).pipe(shareReplay(1)) as any
         })
     }
 
@@ -109,12 +105,19 @@ export class FocusService extends Destructible {
 
     watch(node: Node) {
         return this.events.pipe(
-            filter(event => event.element && (event.element === node || node.contains(event.element))),
-            shareReplay(1)
+            map(event => {
+                if (
+                    event.element &&
+                    (event.element === node || (typeof node.contains === "function" && node.contains(event.element)))
+                ) {
+                    return event
+                }
+                return { element: node, origin: null }
+            })
         )
     }
 
-    focus(node: HTMLElement, _origon: FocusOrigin | null) {
+    focus(node: HTMLElement, _origin: FocusOrigin | null) {
         // TODO: focus origin
         node.focus()
     }
