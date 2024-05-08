@@ -1,11 +1,10 @@
 import { DOCUMENT } from "@angular/common"
 import { inject, Inject, Injectable, NgZone } from "@angular/core"
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 
-import { BehaviorSubject, combineLatest, filter, map, merge, Observable, ReplaySubject, shareReplay } from "rxjs"
+import { combineLatest, filter, fromEvent, map, Observable, shareReplay, startWith } from "rxjs"
 
 import { focusable, type FocusableElement, isFocusable } from "tabbable"
-
-import { Destructible } from "@ngutil/common"
 
 import { ActivityOrigin, ActivityService } from "../activity"
 
@@ -28,21 +27,24 @@ export interface FocusableEvent {
 }
 
 @Injectable({ providedIn: "root" })
-export class FocusService extends Destructible {
+export class FocusService {
     readonly #activity = inject(ActivityService)
-    readonly #focus = new ReplaySubject<Node>(1)
-    readonly #blur = new BehaviorSubject<Node | null>(null)
     readonly events: Observable<FocusChanges>
 
     constructor(@Inject(DOCUMENT) document: Document, @Inject(NgZone) zone: NgZone) {
-        super()
-
         this.events = zone.runOutsideAngular(() => {
-            const events = combineLatest({
+            const focus = fromEvent(document, "focus", EVENT_OPTIONS).pipe(map(e => e.target as Node))
+            const blur = fromEvent(document, "blur", EVENT_OPTIONS).pipe(
+                startWith(null),
+                map(e => (e?.target as Node) || null)
+            )
+
+            return combineLatest({
                 activity: this.#activity.events,
-                focus: this.#focus,
-                blur: this.#blur
+                focus: focus,
+                blur: blur
             }).pipe(
+                takeUntilDestroyed(),
                 map(({ activity, focus, blur }) => {
                     // console.log({ activity, focus, blur })
 
@@ -72,35 +74,10 @@ export class FocusService extends Destructible {
                         return { origin: "program", element: focus }
                     }
                 }),
-                filter(v => !!v)
+                filter(v => !!v),
+                shareReplay(1)
             ) as any
-
-            document.addEventListener("focus", this.#onFocus, EVENT_OPTIONS)
-            document.addEventListener("blur", this.#onBlur, EVENT_OPTIONS)
-
-            this.d.any(() => {
-                document.removeEventListener("focus", this.#onFocus, EVENT_OPTIONS)
-                document.removeEventListener("blur", this.#onBlur, EVENT_OPTIONS)
-            })
-
-            return merge(
-                events,
-                this.#blur.pipe(
-                    filter(node => !!node),
-                    map(element => {
-                        return { origin: null, element }
-                    })
-                )
-            ).pipe(shareReplay(1)) as any
         })
-    }
-
-    #onFocus = (event: FocusEvent) => {
-        this.#focus.next(event.target as Node)
-    }
-
-    #onBlur = (event: FocusEvent) => {
-        this.#blur.next(event.target as Node)
     }
 
     watch(node: Node) {
