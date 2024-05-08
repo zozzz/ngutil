@@ -2,7 +2,7 @@
   "name": "@ngutil/source",
   "version": "0.0.22",
   "scripts": {
-    "before:release": "pnpm before:release:syncpack && before:release:update-lockfile && pnpm before:release:format",
+    "before:release": "pnpm before:release:syncpack && pnpm before:release:update-lockfile && pnpm before:release:format",
     "before:release:format": "pnpm nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Beautify files\")",
     "before:release:syncpack": "pnpm syncpack fix-mismatches && pnpm syncpack format && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Sync pacakge versions\")",
     "before:release:test": "pnpm nx run-many -t test",
