@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.0.22](https://github.com/zozzz/ngutil/compare/0.0.21...0.0.22) (2024-05-08)
+
+
+### Features
+
+* **common:** Split Disabled into 2 directives ([e9b984d](https://github.com/zozzz/ngutil/commit/e9b984d71e25b1843a2064531b71f20959b6bc26))
+* **data:** DataSourceModule ([5060a52](https://github.com/zozzz/ngutil/commit/5060a5234d7b4b83f202a6d1b9200a99b2889084))
+* **pwa:** add pwa package ([32315df](https://github.com/zozzz/ngutil/commit/32315df92ad97225468f1f6283d1c697f3f3fc55))
+
+
+### Bug Fixes
+
+* **aria:** Focusable directive split into 2 directives ([b942269](https://github.com/zozzz/ngutil/commit/b942269986d3484f8ac1fc8e1401add257b02eeb))
+* **aria:** FocusService improvements ([1156017](https://github.com/zozzz/ngutil/commit/115601724bccdb9bb17ed0942b63bce1316723fd))
+* **data:** Handle infinity slice.end in sliceInsert ([bffa2a1](https://github.com/zozzz/ngutil/commit/bffa2a137d57d5986eb8763285154d272ef92514))
+* NumberRange move under types ([ad50484](https://github.com/zozzz/ngutil/commit/ad504847ac21d212191cd17be1ec703825db2489))
+
+
+### Other changes
+
+* **common:** Rename BusyState -> BusyTrackerState ([5e6b8b1](https://github.com/zozzz/ngutil/commit/5e6b8b1da3ad1814aaf1ff3e4b552731ce13c458))
+
 ## [0.0.21](https://github.com/zozzz/ngutil/compare/0.0.20...0.0.21) (2024-05-01)
 
 
