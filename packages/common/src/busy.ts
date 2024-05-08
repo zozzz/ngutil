@@ -39,7 +39,7 @@ export type BusyEvent = { name: string } & BusyEventParams
 
 export type BusyConnectable = Observable<boolean | BusyEventParams> | BusyTracker<any> | Signal<boolean>
 
-export class BusyState<T extends string> implements ConnectProtocol {
+export class BusyTrackerState<T extends string> implements ConnectProtocol {
     readonly #events = new BehaviorSubject<BusyEvent | null>(null)
 
     #data: { [key: string]: BusyEventParams } = {}
@@ -116,7 +116,7 @@ export class BusyState<T extends string> implements ConnectProtocol {
     }
 
     connect(o: Observable<typeof this> | typeof this, prefix?: string): Observable<unknown> {
-        if (o instanceof BusyState) {
+        if (o instanceof BusyTrackerState) {
             return this.connect(o.current$, prefix)
         } else {
             return new Observable(() => {
@@ -163,12 +163,12 @@ export class BusyTracker<T extends string> implements ConnectProtocol {
     private readonly destroyRef = inject(DestroyRef)
 
     private readonly _state = this.parent
-        ? (this.parent as unknown as { _state: BusyState<T> })._state
-        : new BusyState()
+        ? (this.parent as unknown as { _state: BusyTrackerState<T> })._state
+        : new BusyTrackerState()
 
     readonly state$ = this._state.current$
 
-    readonly state: Signal<BusyState<T>> = toSignal(this.state$, { requireSync: true })
+    readonly state: Signal<BusyTrackerState<T>> = toSignal(this.state$, { requireSync: true })
 
     readonly any = computed(() => this.state().isBusy)
 
@@ -232,6 +232,8 @@ export class BusyTracker<T extends string> implements ConnectProtocol {
         return throwError(() => new Error("Unsupported Busy source"))
     }
 }
+
+// TODO: BusyState directive
 
 /**
  * ```ts
