@@ -1,17 +1,17 @@
 {
   "name": "@ngutil/pwa",
   "version": "0.0.1",
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
   "peerDependencies": {
-    "@angular/common": "^17.3.0",
-    "@angular/core": "^17.3.0",
+    "@angular/common": "^17.3.6",
+    "@angular/core": "^17.3.6",
     "@ngutil/common": "workspace:*"
   },
-  "dependencies": {
-    "tslib": "^2.3.0"
-  },
-  "sideEffects": false,
   "publishConfig": {
     "access": "public",
     "directory": "../../dist/packages/pwa/"
-  }
+  },
+  "sideEffects": false
 }
