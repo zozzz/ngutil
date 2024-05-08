@@ -1,2 +1,2 @@
 export { ActivityEvent, ActivityOrigin, ActivityService } from "./activity"
-export { FocusOrigin, FocusService, FocusTrap, Focusable, FocusableEvent, FocusChanges } from "./focus"
+export { FocusOrigin, FocusService, FocusTrap, Focusable, FocusState, FocusableEvent, FocusChanges } from "./focus"
