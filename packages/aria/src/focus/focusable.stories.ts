@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Meta, StoryFn, StoryObj } from "@storybook/angular"
+import { Meta, moduleMetadata, StoryFn, StoryObj } from "@storybook/angular"
 
 import { Component, inject } from "@angular/core"
 
@@ -66,9 +66,44 @@ class FocusableComponent {
     focus = inject(FocusState)
 }
 
+@Component({
+    standalone: true,
+    selector: "story-form-field",
+    hostDirectives: [FocusState],
+    styles: `
+        :host {
+            display: block;
+            padding: 4px;
+            margin: 4px;
+
+            &[focus~="mouse"] {
+                background: red;
+                color: #fff;
+            }
+
+            &[focus~="program"] {
+                background: green;
+                color: #fff;
+            }
+
+            &[focus~="keyboard"] {
+                background: blue;
+                color: #fff;
+            }
+
+            &[focusWithin] {
+                opacity: 0.8;
+            }
+        }
+    `,
+    template: ` <ng-content></ng-content> `
+})
+class FormField {}
+
 export default {
     title: "Focus / Focusable",
-    component: FocusableComponent
+    component: FocusableComponent,
+    decorators: [moduleMetadata({ imports: [FormField] })]
     // parameters: {
     //     layout: "fullscreen",
     //     controls: { include: [] }
@@ -100,6 +135,11 @@ export const Basic: StoryFn<Story> = args => {
             </story-focusable>
             <story-focusable></story-focusable>
             <story-focusable></story-focusable>
+        </story-focusable>
+        <story-focusable>
+            <story-form-field>
+                <input type="text" />
+            </story-form-field>
         </story-focusable>
     `
 
