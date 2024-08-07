@@ -5,7 +5,8 @@
     "@angular/common": "^17.3.6",
     "@angular/core": "^17.3.6",
     "@ngutil/common": "workspace:*",
-    "tslib": "^2.6.2"
+    "tslib": "^2.6.2",
+    "rxjs": "^7.8.1"
   },
   "publishConfig": {
     "access": "public",
