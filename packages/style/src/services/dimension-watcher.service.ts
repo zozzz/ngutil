@@ -1,34 +1,41 @@
-import { ElementRef, inject, Injectable, NgZone } from "@angular/core"
+import { inject, Injectable, NgZone } from "@angular/core"
 
 import { distinctUntilChanged, Observable, shareReplay, Subscriber } from "rxjs"
+
+import { coerceElement, ElementInput } from "@ngutil/common"
 
 import { Dimension } from "../util/rect"
 
 export type WatchBox = ResizeObserverBoxOptions | "scroll-box"
-export type Watches = Map<HTMLElement, Observable<Dimension>>
+export type Watches = Map<HTMLElement | Window, Observable<Dimension>>
 
 @Injectable({ providedIn: "root" })
 export class DimensionWatcher {
     readonly #zone = inject(NgZone)
     readonly #watches: { [key in WatchBox]?: Watches } = {}
 
-    watch(element: HTMLElement | ElementRef<HTMLElement>, box: WatchBox): Observable<Dimension> {
+    watch(element: ElementInput | Window, box: WatchBox): Observable<Dimension> {
+        element = coerceElement(element)
+
         let watches = this.#watches[box]
         if (watches == null) {
             watches = new Map()
             this.#watches[box] = watches
         }
 
-        const el = element instanceof ElementRef ? element.nativeElement : element
-
-        let watcher = watches.get(el)
+        let watcher = watches.get(element)
         if (watcher == null) {
-            if (box === "scroll-box") {
-                watcher = this.#createScollWatcher(watches, el)
+            if (element instanceof Window) {
+                watcher = this.#createWindowResizeWatcher()
             } else {
-                watcher = this.#createResizeWatcher(watches, el, box)
+                if (box === "scroll-box") {
+                    watcher = this.#createScollWatcher(watches, element)
+                } else {
+                    watcher = this.#createResizeWatcher(watches, element, box)
+                }
             }
-            watches.set(el, watcher)
+
+            watches.set(element, watcher)
         }
 
         return watcher
@@ -97,6 +104,24 @@ export class DimensionWatcher {
                     dimSum.unsubscribe()
                     mutation.disconnect()
                     watches.delete(el)
+                }
+            }).pipe(distinctUntilChanged(dimensionIsEq), shareReplay(1))
+        )
+    }
+
+    #createWindowResizeWatcher(): Observable<Dimension> {
+        return this.#zone.runOutsideAngular(() =>
+            new Observable((sub: Subscriber<Dimension>) => {
+                const onResize = () => {
+                    sub.next({
+                        width: window.innerWidth,
+                        height: window.innerHeight
+                    })
+                }
+                onResize()
+                window.addEventListener("resize", onResize)
+                return () => {
+                    window.removeEventListener("resize", onResize)
                 }
             }).pipe(distinctUntilChanged(dimensionIsEq), shareReplay(1))
         )

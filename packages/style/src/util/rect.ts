@@ -3,7 +3,9 @@ export interface Dimension {
     height: number
 }
 
-export interface Rect extends Dimension {
+export interface Position {
     x: number
     y: number
 }
+
+export interface Rect extends Dimension, Position {}
