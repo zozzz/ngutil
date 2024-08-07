@@ -2,14 +2,20 @@ export { ConnectProtocol } from "./connect-protocol"
 export { Destruct, Destructible, IDisposable } from "./destruct"
 export { DisabledState, Disabled } from "./disabled"
 export { NumberWithUnit, NumberWithUnitInput, UNIT_REGEX, NUMBER_REGEX } from "./number-with-unit"
-export { coerceBoolAttr, BooleanInput } from "./bool-attr"
+
+export { coerceBoolAttr, BooleanInput } from "./coerce/bool-attr"
+export { coerceElement, ElementInput } from "./coerce/element"
+
+export { StateChain, StateChainHandler } from "./state-chain"
+
 export {
     rawCancelAnimationFrame,
     rawClearInterval,
     rawClearTimeout,
     rawRequestAnimationFrame,
     rawSetInterval,
-    rawSetTimeout
+    rawSetTimeout,
+    __zone_symbol__
 } from "./unngzone"
 export { FastDOM } from "./dom"
 export { Busy, BusyEvent, BusyEventParams, BusyProgress, BusyTrackerState, BusyTracker } from "./busy"

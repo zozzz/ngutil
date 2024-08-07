@@ -60,6 +60,6 @@ export class Disabled {
     readonly nuDisabled = input(false)
 
     constructor() {
-        effect(() => this.#state.set(this.nuDisabled()))
+        effect(() => this.#state.set(this.nuDisabled()), { allowSignalWrites: true })
     }
 }
