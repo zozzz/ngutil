@@ -1,10 +1,16 @@
-import { concat, EMPTY, filter, map, Observable, ReplaySubject, shareReplay, Subscription } from "rxjs"
+import { Inject, Injectable, InjectionToken } from "@angular/core"
+
+import { EMPTY, filter, map, merge, Observable, ReplaySubject, shareReplay, takeUntil } from "rxjs"
 
 import { StateChain } from "@ngutil/common"
 
-import { type ContainerRef } from "../layer/container-ref"
-import { type LayerService } from "../layer/layer.service"
+import { ContainerRef } from "../layer/container-ref"
+import { LayerService } from "../layer/layer.service"
 import { FloatingTrait } from "./traits/_base"
+
+export type Traits = { [key: string]: FloatingTrait }
+
+export const TRAITS = new InjectionToken<Traits>("TRAITS")
 
 export interface FloatingChannel {
     type: string
@@ -16,6 +22,7 @@ export interface FloatingTraitEvent {
     data: object
 }
 
+@Injectable()
 export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends HTMLElement = HTMLElement> {
     readonly channel = new ReplaySubject<C>(1)
 
@@ -25,17 +32,27 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         shown: {},
         closing: { cancellable: false, order: "sequential" },
         disposing: { cancellable: false },
-        disposed: { cancellable: false, order: "sequential" }
+        disposed: { cancellable: false, order: "sequential" },
+        cleanup: { cancellable: false, order: "sequential" }
     })
 
-    readonly #traits: { [key: string]: FloatingTrait } = {}
+    readonly #traits: Traits = {}
     readonly traitState$: Observable<FloatingTraitEvent>
-    #traitStateSub?: Subscription
+
+    readonly #untilCleanup = this.state.current$.pipe(
+        filter(state => state === "cleanup"),
+        shareReplay(1)
+    )
+
+    readonly #untilDisposed = this.state.current$.pipe(
+        filter(state => state === "cleanup"),
+        shareReplay(1)
+    )
 
     constructor(
         readonly layerSvc: LayerService,
         readonly container: ContainerRef,
-        traits: { [key: string]: FloatingTrait }
+        @Inject(TRAITS) traits: Traits
     ) {
         this.#traits = traits
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
@@ -44,10 +61,9 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
             this.channel.next({ type: state } as any)
         })
         this.state.on("init", () => {
-            this.#traitStateSub = this.traitState$.subscribe()
+            this.traitState$.pipe(takeUntil(this.#untilCleanup)).subscribe()
         })
         this.state.on("disposed", () => {
-            this.#traitStateSub?.unsubscribe()
             sub.unsubscribe()
         })
         this.state.control(container.state)
@@ -58,15 +74,16 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
     }
 
     hide() {
-        return this.state.run(["disposing", "disposed"])
+        return this.state.run(["disposing", "disposed", "cleanup"])
     }
 
     close() {
-        return this.state.run(["closing", "disposing", "disposed"])
+        return this.state.run(["closing", "disposing", "disposed", "cleanup"])
     }
 
     watchTrait<T>(name: string): Observable<T> {
         return this.traitState$.pipe(
+            takeUntil(this.#untilDisposed),
             filter(event => event.name === name),
             map(event => event.data as T),
             shareReplay(1)
@@ -79,6 +96,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         for (const [k, v] of Object.entries(this.#traits)) {
             src.push(
                 v.connect(this).pipe(
+                    takeUntil(this.#untilCleanup),
                     map(result => {
                         return { name: k, data: result }
                     })
@@ -91,7 +109,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         } else if (src.length === 1) {
             return src[0]
         } else {
-            return concat(...src)
+            return merge(...src)
         }
     }
 }

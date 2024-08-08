@@ -1,12 +1,13 @@
 import { ComponentType } from "@angular/cdk/portal"
-import { inject, Injectable, TemplateRef } from "@angular/core"
+import { inject, Injectable, Provider, TemplateRef } from "@angular/core"
 
 import { Observable, Subscriber } from "rxjs"
 
 import { LayerService } from "../layer/layer.service"
 import { ComponentPortalOptions, TemplatePortalOptions } from "../layer/portal-ref"
-import { FloatingChannel, FloatingRef } from "./floating-ref"
+import { FloatingChannel, FloatingRef, TRAITS } from "./floating-ref"
 import { type FloatingTrait } from "./traits/_base"
+import { type FloatingPositionOptions, position } from "./traits/position"
 
 // export type FloatingTrait = (...args: any[]) => (traits: object) => Observable<object>
 
@@ -60,9 +61,26 @@ export abstract class FloatingFactory {
 
     subscribe = (...args: any[]) => this.show().subscribe(...args)
 
+    protected providers(providers?: Provider[]): Provider[] {
+        if (!providers) {
+            providers = []
+        }
+
+        providers = [
+            ...providers,
+            { provide: TRAITS, useValue: this.traits },
+            { provide: LayerService, useValue: this.layer },
+            FloatingRef
+        ]
+
+        return providers
+    }
+
     protected abstract create(): FloatingRef<FloatingChannel>
 
-    // placement: typeof placement = (...args: any[]) => placement(...args)
+    position(options: FloatingPositionOptions) {
+        return this.trait(position(options))
+    }
 }
 
 export class FloatingTemplateFactory<T extends object> extends FloatingFactory {
@@ -76,12 +94,13 @@ export class FloatingTemplateFactory<T extends object> extends FloatingFactory {
 
     protected override create(): FloatingRef<FloatingChannel> {
         const options: TemplatePortalOptions<T> = { ...this.options }
+        options.providers = this.providers(options.providers)
         const container = this.layer.newTemplatePortal(this.tpl, options)
-        return new FloatingRef<FloatingChannel>(this.layer, container, this.traits)
+        return container.injector.get(FloatingRef)
     }
 }
 
-export class FloatingComponentFactory<T extends ComponentType<T>> extends FloatingFactory {
+export class FloatingComponentFactory<T extends ComponentType<any>> extends FloatingFactory {
     constructor(
         layer: LayerService,
         public readonly component: T,
@@ -92,8 +111,9 @@ export class FloatingComponentFactory<T extends ComponentType<T>> extends Floati
 
     protected override create(): FloatingRef<FloatingChannel> {
         const options: ComponentPortalOptions<T> = { ...this.options }
+        options.providers = this.providers(options.providers)
         const container = this.layer.newComponentPortal(this.component, options)
-        return new FloatingRef<FloatingChannel>(this.layer, container, this.traits)
+        return container.injector.get(FloatingRef)
     }
 }
 
@@ -115,10 +135,7 @@ export class FloatingService {
     readonly #layer = inject(LayerService)
     // readonly parent = inject(FloatingRef, { skipSelf: true, optional: true })
 
-    from<T extends ComponentType<T>>(
-        component: ComponentType<T>,
-        opts?: ComponentPortalOptions<T>
-    ): FloatingComponentFactory<T>
+    from<T extends ComponentType<any>>(component: T, opts?: ComponentPortalOptions<T>): FloatingComponentFactory<T>
 
     from<T extends object>(tpl: TemplateRef<T>, opts?: TemplatePortalOptions<T>): FloatingTemplateFactory<T>
 

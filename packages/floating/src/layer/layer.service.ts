@@ -1,6 +1,7 @@
 import { ComponentType } from "@angular/cdk/portal"
 import { Directive, ElementRef, inject, Inject, InjectionToken, Injector, Optional, TemplateRef } from "@angular/core"
 
+import { toSorted } from "@ngutil/common"
 import { CoverService } from "@ngutil/graphics"
 
 import { BackdropOptions, BackdropRef } from "./backdrop-ref"
@@ -55,14 +56,15 @@ export abstract class LayerService {
     }
 
     newBackdrop(options: BackdropOptions): BackdropRef {
-        return this.append(BackdropRef.from(this.#cover, options, this.#injector))
+        return this.append(BackdropRef.from(this.#cover, this.#injector, options))
     }
 
     append<T extends ChildRef>(ref: T): T {
         if (!this.#children.includes(ref)) {
             this.#children.push(ref)
-            ref.state.on("disposed", () => this.#remove(ref))
             this.#update()
+            this.root.nativeElement.appendChild(ref.nativeElement)
+            ref.state.on("disposed", () => this.#remove(ref))
         }
         return ref
     }
@@ -76,12 +78,22 @@ export abstract class LayerService {
     }
 
     #update() {
-        this.#children.sort(sortChildren)
+        const children = toSorted(this.#children, sortByBackdrop)
 
         let zIndex = this.#zIndexStart
-        for (const child of this.#children) {
+        for (const child of children) {
             child.zIndex = zIndex
             zIndex += 1
+        }
+
+        children.sort(sortByZIndexDesc)
+
+        let hasBackdrop = false
+        for (const child of children) {
+            if (child instanceof BackdropRef && child.options.type === "solid") {
+                child.visible = !hasBackdrop
+                hasBackdrop = true
+            }
         }
     }
 }
@@ -89,20 +101,26 @@ export abstract class LayerService {
 @Directive({
     selector: "body",
     exportAs: "nuRootLayer",
+    standalone: true,
     providers: [{ provide: LayerService, useExisting: RootLayer }]
 })
 export class RootLayer extends LayerService {}
 
 @Directive({
+    standalone: true,
     providers: [{ provide: LayerService, useExisting: IndividualLayer }]
 })
 export class IndividualLayer extends LayerService {}
 
-function sortChildren(a: ChildRef, b: ChildRef) {
+function sortByBackdrop(a: ChildRef, b: ChildRef) {
     if (a instanceof BackdropRef && a.under === b) {
         return -1
     } else if (b instanceof BackdropRef && b.under === a) {
         return 1
     }
     return 0
+}
+
+function sortByZIndexDesc(a: ChildRef, b: ChildRef) {
+    return b.zIndex - a.zIndex
 }

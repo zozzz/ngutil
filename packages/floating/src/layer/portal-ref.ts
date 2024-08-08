@@ -1,5 +1,5 @@
 import { ComponentPortal, ComponentType, DomPortalOutlet, PortalOutlet, TemplatePortal } from "@angular/cdk/portal"
-import { Provider, TemplateRef, ViewContainerRef } from "@angular/core"
+import { ComponentFactoryResolver, Provider, TemplateRef, ViewContainerRef } from "@angular/core"
 
 import { ContainerOptions, ContainerRef } from "./container-ref"
 
@@ -37,7 +37,11 @@ export class ComponentPortalRef<T = any> extends PortalRef {
         options: ComponentPortalOptions<T>
     ) {
         super(options)
-        this.portal = new ComponentPortal(component, options.viewContainerRef)
+
+        const resolver = this.injector.get(ComponentFactoryResolver)
+        const vcr = this.injector.get(ViewContainerRef)
+
+        this.portal = new ComponentPortal(component, options.viewContainerRef || vcr, this.injector, resolver)
         this.outlet.attach(this.portal)
 
         this.state.on("disposed", () => {

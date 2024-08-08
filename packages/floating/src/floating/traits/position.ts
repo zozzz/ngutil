@@ -74,31 +74,27 @@ export class PositionTrait extends FloatingTrait<FloatingPosition> {
             const rectWatcher = injector.get(RectWatcher)
 
             const watches: Watches = {
-                floating: dimWatcher.watch(floatingRef.container, "content-box"),
+                floating: dimWatcher.watch(floatingRef.container, "border-box"),
                 anchor: refWatcher(rectWatcher, this.options.anchor!.ref, floatingRef),
                 placement: refWatcher(rectWatcher, this.options.placement!.ref, floatingRef)
             }
 
-            const watching = combineLatest(watches).subscribe(({ floating, anchor, placement }) => {
+            return combineLatest(watches).subscribe(({ floating, anchor, placement }) => {
                 const res = new FloatingPosition(this.options, floating, anchor, placement)
                 res.apply(floatingRef)
                 dest.next(res)
             })
-
-            return () => {
-                watching.unsubscribe()
-            }
         })
     }
 }
 
 function refWatcher(rectWatcher: RectWatcher, ref: FloatingTargetElementRef, floatingRef: FloatingRef<any>) {
     if (ref === "layer") {
-        return rectWatcher.watch(floatingRef.layerSvc.root, "content-box")
+        return rectWatcher.watch(floatingRef.layerSvc.root, "border-box")
     } else if (ref === "viewport" || ref instanceof Window) {
-        return rectWatcher.watch(window, "content-box")
+        return rectWatcher.watch(window, "border-box")
     } else {
-        return rectWatcher.watch(ref, "content-box")
+        return rectWatcher.watch(ref, "border-box")
     }
 }
 
@@ -111,8 +107,8 @@ export class FloatingPosition {
     constructor(
         readonly options: FloatingPositionOptions,
         readonly floating: Dimension,
-        readonly anchor?: Rect,
-        readonly placement?: Rect
+        readonly anchor: Rect,
+        readonly placement: Rect
     ) {
         this.computed = computePosition({ floating, anchor, placement, options })
     }
@@ -121,5 +117,9 @@ export class FloatingPosition {
         if (this.computed == null) {
             return
         }
+
+        const floatingEl = floatingRef.container.nativeElement
+        floatingEl.style.left = `${this.computed.floating.current.x}px`
+        floatingEl.style.top = `${this.computed.floating.current.y}px`
     }
 }

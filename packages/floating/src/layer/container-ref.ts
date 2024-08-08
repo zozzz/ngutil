@@ -42,5 +42,14 @@ export class ContainerRef extends ChildRef {
 
 function createElement(options: ContainerOptions): HTMLDivElement {
     const div = document.createElement("div")
+    div.style.position = "absolute"
+    div.style.top = "0"
+    div.style.left = "0"
+    div.style.width = "max-content"
+
+    if (options.classes) {
+        div.classList.add(...options.classes)
+    }
+
     return div
 }

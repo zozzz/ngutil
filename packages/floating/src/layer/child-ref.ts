@@ -33,6 +33,10 @@ export abstract class ChildRef<T extends HTMLElement = HTMLElement> extends Elem
     constructor(nativeElement: T) {
         super(nativeElement)
         this.state.on("disposed", () => this.destroy())
+
+        // this.state.current$.subscribe(state => {
+        //     console.log(this, state)
+        // })
     }
 
     dispose() {
