@@ -1,3 +1,4 @@
+import { FocusTrapFactory } from "@angular/cdk/a11y"
 import { DOCUMENT } from "@angular/common"
 import { inject, Inject, Injectable, NgZone } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
@@ -29,6 +30,7 @@ export interface FocusableEvent {
 @Injectable({ providedIn: "root" })
 export class FocusService {
     readonly #activity = inject(ActivityService)
+    readonly #focusTrap = inject(FocusTrapFactory)
     readonly events: Observable<FocusChanges>
 
     constructor(@Inject(DOCUMENT) document: Document, @Inject(NgZone) zone: NgZone) {
@@ -109,6 +111,10 @@ export class FocusService {
 
     isFocusable(node: Element): boolean {
         return isFocusable(node)
+    }
+
+    focusTrap(inside: HTMLElement, deferCaptureElements: boolean = false) {
+        return this.#focusTrap.create(inside, deferCaptureElements)
     }
 }
 
