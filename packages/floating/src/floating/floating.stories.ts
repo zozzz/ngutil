@@ -91,7 +91,9 @@ class Floatings {
         this.#floating
             .from(FloatingCmp, {})
             .trait(modal({ closeOnBackdropClick: true }), style({ borderRadius: "3px" }))
-            .subscribe(console.log)
+            .subscribe(event => {
+                console.log(event)
+            })
     }
 }
 

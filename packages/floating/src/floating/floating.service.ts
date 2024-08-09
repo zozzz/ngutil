@@ -61,7 +61,7 @@ export abstract class FloatingFactory {
         })
     }
 
-    subscribe = (...args: any[]) => this.show().subscribe(...args)
+    subscribe: Observable<FloatingChannel>["subscribe"] = (...args: any[]) => this.show().subscribe(...args)
 
     protected providers(providers?: Provider[]): Provider[] {
         if (!providers) {
