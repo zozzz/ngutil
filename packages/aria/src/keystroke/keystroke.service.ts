@@ -52,7 +52,6 @@ export class KeystrokeService {
 
     constructor() {
         this.#activatedKs.pipe(takeUntilDestroyed()).subscribe(({ event, keystrokes, keystroke }) => {
-            console.log({ event, keystrokes, keystroke })
             for (const ks of keystrokes) {
                 if (event.defaultPrevented) {
                     return
