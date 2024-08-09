@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.30](https://github.com/zozzz/ngutil/compare/0.0.29...0.0.30) (2024-08-09)
+
+
+### Bug Fixes
+
+* **common:** Disabled directive ([a60c95d](https://github.com/zozzz/ngutil/commit/a60c95dbd0446839ff26937cf5024bcbf1ce28ec))
+
+
+### Other changes
+
+* remove logging ([2d3fc2e](https://github.com/zozzz/ngutil/commit/2d3fc2e0e6f64558f0de84b1217bf6c12a3a368c))
+
 ## [0.0.29](https://github.com/zozzz/ngutil/compare/0.0.28...0.0.29) (2024-08-09)
 
 
