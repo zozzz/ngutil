@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/data",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "peerDependencies": {
     "@angular/cdk": "^17.3.6",
     "@angular/core": "^17.3.6",

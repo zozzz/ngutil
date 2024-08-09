@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.28](https://github.com/zozzz/ngutil/compare/0.0.27...0.0.28) (2024-08-09)
+
+
+### Features
+
+* **floating:** style trait ([7f4cc3a](https://github.com/zozzz/ngutil/commit/7f4cc3af7652dc4c594470fcc761e0062fd1e29b))
+
 ## [0.0.27](https://github.com/zozzz/ngutil/compare/0.0.26...0.0.27) (2024-08-09)
 
 
