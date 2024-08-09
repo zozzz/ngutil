@@ -31,6 +31,7 @@ import { style } from "./traits/style"
         <br />
         <button (click)="close()">close</button>
         <button (click)="newModal()">new modal</button>
+        <button (click)="setResult()">set result</button>
     `
 })
 class FloatingCmp {
@@ -45,6 +46,11 @@ class FloatingCmp {
             .from(FloatingCmp, {})
             .trait(modal({ closeOnBackdropClick: true }))
             .subscribe()
+    }
+
+    setResult() {
+        this.floatingRef.channel.next({ type: "result", data: "RESULT FROM POPUP" })
+        this.floatingRef.hide().subscribe()
     }
 }
 
@@ -85,7 +91,7 @@ class Floatings {
         this.#floating
             .from(FloatingCmp, {})
             .trait(modal({ closeOnBackdropClick: true }), style({ borderRadius: "3px" }))
-            .subscribe()
+            .subscribe(console.log)
     }
 }
 
