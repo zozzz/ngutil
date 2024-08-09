@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.27](https://github.com/zozzz/ngutil/compare/0.0.26...0.0.27) (2024-08-09)
+
+
+### Other changes
+
+* **floating:** Fix floating package publish config ([e048af3](https://github.com/zozzz/ngutil/commit/e048af3e6d6a8b6b9824aefd7a4b825f200d6c49))
+* **tools:** Update pnpm-lock.yaml ([517cf96](https://github.com/zozzz/ngutil/commit/517cf96ac745e517b125182d1155b4f5787ae492))
+
 ## [0.0.26](https://github.com/zozzz/ngutil/compare/0.0.25...0.0.26) (2024-08-09)
 
 ## [0.0.25](https://github.com/zozzz/ngutil/compare/0.0.24...0.0.25) (2024-08-09)
