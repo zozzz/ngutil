@@ -100,7 +100,6 @@ export abstract class LayerService {
 
 @Directive({
     selector: "body",
-    exportAs: "nuRootLayer",
     standalone: true,
     providers: [{ provide: LayerService, useExisting: RootLayer }]
 })
