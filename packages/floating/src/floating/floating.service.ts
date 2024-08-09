@@ -14,6 +14,8 @@ import { type FloatingPositionOptions, position } from "./traits/position"
 export abstract class FloatingFactory {
     protected readonly traits: { [key: string]: FloatingTrait } = {}
 
+    #providers: Provider[] = []
+
     constructor(protected readonly layer: LayerService) {}
 
     trait(...traits: Array<FloatingTrait | FloatingTrait[]>) {
@@ -70,7 +72,8 @@ export abstract class FloatingFactory {
             ...providers,
             { provide: TRAITS, useValue: this.traits },
             { provide: LayerService, useValue: this.layer },
-            FloatingRef
+            FloatingRef,
+            ...this.#providers
         ]
 
         return providers
@@ -80,6 +83,15 @@ export abstract class FloatingFactory {
 
     position(options: FloatingPositionOptions) {
         return this.trait(position(options))
+    }
+
+    provides(providers: Provider | Provider[]) {
+        if (Array.isArray(providers)) {
+            this.#providers = [...this.#providers, ...providers]
+        } else {
+            this.#providers = [...this.#providers, providers]
+        }
+        return this
     }
 }
 

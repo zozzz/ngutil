@@ -54,6 +54,8 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         readonly container: ContainerRef,
         @Inject(TRAITS) traits: Traits
     ) {
+        container.nativeElement.style.overflow = "hidden"
+
         this.#traits = traits
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
 

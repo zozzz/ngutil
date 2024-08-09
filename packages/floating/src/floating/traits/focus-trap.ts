@@ -6,7 +6,7 @@ import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
 
 export class FocusTrapTrait extends FloatingTrait<unknown> {
-    override name = "focusTrap"
+    override name = "focus-trap"
     override connect(floatingRef: FloatingRef): Observable<unknown> {
         return new Observable(() => {
             const svc = floatingRef.container.injector.get(FocusService)

@@ -10,6 +10,7 @@ import { FloatingService } from "./floating.service"
 import { backdrop } from "./traits/backdrop"
 import { focusTrap } from "./traits/focus-trap"
 import { modal } from "./traits/modal"
+import { style } from "./traits/style"
 
 @Component({
     selector: "floating-cmp",
@@ -83,7 +84,7 @@ class Floatings {
     showModal() {
         this.#floating
             .from(FloatingCmp, {})
-            .trait(modal({ closeOnBackdropClick: true }))
+            .trait(modal({ closeOnBackdropClick: true }), style({ borderRadius: "3px" }))
             .subscribe()
     }
 }
