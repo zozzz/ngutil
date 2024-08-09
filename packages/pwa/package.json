@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/pwa",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "dependencies": {
     "tslib": "^2.6.2"
   },

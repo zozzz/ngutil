@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.29](https://github.com/zozzz/ngutil/compare/0.0.28...0.0.29) (2024-08-09)
+
+
+### Features
+
+* **floating:** NuFloating module ([5ffd13d](https://github.com/zozzz/ngutil/commit/5ffd13d0c60880ee02f94fd55da0bed5d00690d2))
+
+
+### Bug Fixes
+
+* **floating:** FloatingFactory.subscribe type ([2b7b435](https://github.com/zozzz/ngutil/commit/2b7b4359d9f4ba7ea190664ecfe9d59c56da83a7))
+
 ## [0.0.28](https://github.com/zozzz/ngutil/compare/0.0.27...0.0.28) (2024-08-09)
 
 
