@@ -1,7 +1,7 @@
-import { computed, Directive, Directive, effect, inject, input, signal, Signal } from "@angular/core"
+import { computed, Directive, effect, inject, input, signal, Signal } from "@angular/core"
+import { NgControl } from "@angular/forms"
 
 import { Busy } from "./busy"
-import { NgControl } from "@angular/forms"
 
 /**
  * @example
@@ -76,10 +76,6 @@ export class Disabled {
         })
     }
 }
-
-
-
-
 
 // @Directive({
 //     standalone: true,
