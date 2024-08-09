@@ -1,8 +1,7 @@
-import { computed, Directive, effect, inject, input, signal, Signal } from "@angular/core"
+import { computed, Directive, Directive, effect, inject, input, signal, Signal } from "@angular/core"
 
 import { Busy } from "./busy"
-
-const INPUT = Symbol("INPUT")
+import { NgControl } from "@angular/forms"
 
 /**
  * @example
@@ -57,9 +56,53 @@ export class DisabledState {
 })
 export class Disabled {
     readonly #state = inject(DisabledState, { self: true })
+    readonly #control = inject(NgControl, { self: true, optional: true })
     readonly nuDisabled = input(false)
 
     constructor() {
         effect(() => this.#state.set(this.nuDisabled()), { allowSignalWrites: true })
+        effect(() => {
+            const control = this.#control?.control
+            if (!control) {
+                // TODO: retry
+                return
+            }
+
+            if (this.#state.isDisabled()) {
+                control.enabled && control.disable()
+            } else {
+                control.disabled && control.enable()
+            }
+        })
     }
 }
+
+
+
+
+
+// @Directive({
+//     standalone: true,
+//     // eslint-disable-next-line max-len
+//     selector: "[nuDisabled][formControl],[nuDisabled][formControlName],[nuDisabled][formGroup],[nuDisabled][formGroupName]"
+// })
+// export class FormControlDisabled {
+//     readonly #disabled = inject(DisabledState, { self: true })
+//     readonly #control = inject(NgControl, { self: true })
+
+//     constructor() {
+//         effect(() => {
+//             const control = this.#control.control
+//             if (!control) {
+//                 // TODO: retry
+//                 return
+//             }
+
+//             if (this.#disabled.isDisabled()) {
+//                 control.enabled && control.disable()
+//             } else {
+//                 control.disabled && control.enable()
+//             }
+//         })
+//     }
+// }
