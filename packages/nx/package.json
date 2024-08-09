@@ -7,7 +7,7 @@
     "schema-to-ts": "pnpm json2ts --declareExternallyReferenced --format=true"
   },
   "dependencies": {
-    "@nx/devkit": "^18.2.4",
+    "@nx/devkit": "19.0.2",
     "favicons": "^7.2.0",
     "glob": "^10.3.12",
     "lodash": "^4.17.21",

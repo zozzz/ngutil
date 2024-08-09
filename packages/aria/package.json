@@ -5,10 +5,10 @@
     "@storybook/angular": "^8.0.10"
   },
   "peerDependencies": {
+    "@angular/cdk": "^17.3.6",
     "@angular/common": "^17.3.6",
     "@angular/core": "^17.3.6",
     "@ngutil/common": "workspace:*",
-    "@angular/cdk": "^17.3.6",
     "rxjs": "^7.8.1",
     "tabbable": "^6.2.0",
     "tslib": "^2.6.2"
