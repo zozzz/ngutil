@@ -12,5 +12,9 @@
     "@ngutil/common": "workspace:*",
     "@ngutil/style": "workspace:*"
   },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/floating/"
+  },
   "sideEffects": false
 }
