@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.25](https://github.com/zozzz/ngutil/compare/0.0.24...0.0.25) (2024-08-09)
+
+
+### Features
+
+* **aria:** KeystrokeService ([3f755c4](https://github.com/zozzz/ngutil/commit/3f755c4d675bbdde962ecea3402e77f2a2e42cd1))
+* **common:** StateChain ([8023ca0](https://github.com/zozzz/ngutil/commit/8023ca0138241724558c824dd0b79bf842551ab2))
+* **floating:** Floating ui components ([6e531de](https://github.com/zozzz/ngutil/commit/6e531def07dacceec7cbc0b79f3b5105c1942d8d))
+* **graphics:** animationObservable ([c696d2b](https://github.com/zozzz/ngutil/commit/c696d2b0534eab6b2f6f242207431de22714a73e))
+* **style:** watchers + utility ([e164bb0](https://github.com/zozzz/ngutil/commit/e164bb021991d131393e9e7250f42257727e1786))
+
+
+### Other changes
+
+* **aria:** More stories ([9ad3f2d](https://github.com/zozzz/ngutil/commit/9ad3f2d0e9bebad255e89c2920354286e470aac0))
+* **tools:** Update pnpm-lock.yaml ([13811e9](https://github.com/zozzz/ngutil/commit/13811e932c85d7f30098d0de01b3de2b9eb960e4))
+* Update nx ([6bafc77](https://github.com/zozzz/ngutil/commit/6bafc77df9de0ca761e0e253f1e99b7bda2a7a8d))
+
 ## [0.0.24](https://github.com/zozzz/ngutil/compare/0.0.23...0.0.24) (2024-05-08)
 
 ## [0.0.23](https://github.com/zozzz/ngutil/compare/0.0.22...0.0.23) (2024-05-08)
