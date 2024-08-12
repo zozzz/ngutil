@@ -13,6 +13,7 @@ export type Traits = { [key: string]: FloatingTrait }
 export const TRAITS = new InjectionToken<Traits>("TRAITS")
 
 export interface FloatingChannel {
+    floatingRef: FloatingRef
     type: string
     data?: any
 }
@@ -24,7 +25,7 @@ export interface FloatingTraitEvent {
 
 @Injectable()
 export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends HTMLElement = HTMLElement> {
-    readonly channel = new ReplaySubject<C>(1)
+    readonly channel = new ReplaySubject<FloatingChannel>(1)
 
     readonly state = new StateChain({
         init: {},
@@ -60,7 +61,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
 
         const sub = this.state.current$.subscribe(state => {
-            this.channel.next({ type: state } as any)
+            this.emit({ type: state } as C)
         })
         this.state.on("init", () => {
             this.traitState$.pipe(takeUntil(this.#untilCleanup)).subscribe()
@@ -81,6 +82,15 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
 
     close() {
         return this.state.run(["closing", "disposing", "disposed", "cleanup"])
+    }
+
+    emit(event: Omit<C, "floatingRef">) {
+        this.channel.next({ ...event, floatingRef: this } as any)
+    }
+
+    setResult(data: any) {
+        this.emit({ type: "result", data } as C)
+        this.hide().subscribe()
     }
 
     watchTrait<T>(name: string): Observable<T> {

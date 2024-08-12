@@ -7,6 +7,7 @@ import { provideAnimations } from "@angular/platform-browser/animations"
 import { IndividualLayer } from "../layer/layer.service"
 import { FloatingRef } from "./floating-ref"
 import { FloatingService } from "./floating.service"
+import { attribute } from "./traits/attribute"
 import { backdrop } from "./traits/backdrop"
 import { focusTrap } from "./traits/focus-trap"
 import { modal } from "./traits/modal"
@@ -49,8 +50,7 @@ class FloatingCmp {
     }
 
     setResult() {
-        this.floatingRef.channel.next({ type: "result", data: "RESULT FROM POPUP" })
-        this.floatingRef.hide().subscribe()
+        this.floatingRef.setResult("RESULT FROM POPUP")
     }
 }
 
@@ -90,7 +90,11 @@ class Floatings {
     showModal() {
         this.#floating
             .from(FloatingCmp, {})
-            .trait(modal({ closeOnBackdropClick: true }), style({ borderRadius: "3px" }))
+            .trait(
+                modal({ closeOnBackdropClick: true }),
+                style({ borderRadius: "3px" }),
+                attribute({ valami: "nice", dataset: { x: 0 } })
+            )
             .subscribe(event => {
                 console.log(event)
             })

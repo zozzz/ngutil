@@ -32,13 +32,15 @@ export abstract class FloatingFactory {
 
     show(): Observable<FloatingChannel> {
         return new Observable((dest: Subscriber<FloatingChannel>) => {
-            let disposed = false
+            let disposing = false
 
             const ref = this.create()
             const channelSub = ref.channel.subscribe(event => {
                 dest.next(event)
-                if (event.type === "disposed") {
-                    disposed = true
+                if (event.type === "disposing") {
+                    disposing = true
+                }
+                if (event.type === "cleanup") {
                     dest.complete()
                 }
             })
@@ -48,14 +50,8 @@ export abstract class FloatingFactory {
             return () => {
                 showSub.unsubscribe()
                 channelSub.unsubscribe()
-                if (!disposed) {
-                    const dispose$ = ref.channel.subscribe(event => {
-                        if (event.type === "disposed") {
-                            hideSub.unsubscribe()
-                            dispose$.unsubscribe()
-                        }
-                    })
-                    const hideSub = ref.hide().subscribe()
+                if (!disposing) {
+                    ref.hide().subscribe()
                 }
             }
         })
