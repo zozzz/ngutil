@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.31](https://github.com/zozzz/ngutil/compare/0.0.30...0.0.31) (2024-08-12)
+
+
+### Features
+
+* **floating:** Attribute trait ([f30a0d1](https://github.com/zozzz/ngutil/commit/f30a0d104a55b188de318a0ad7a1cd21722019ba))
+
 ## [0.0.30](https://github.com/zozzz/ngutil/compare/0.0.29...0.0.30) (2024-08-09)
 
 
