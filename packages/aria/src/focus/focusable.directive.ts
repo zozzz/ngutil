@@ -1,4 +1,4 @@
-import { Attribute, computed, Directive, effect, inject, input } from "@angular/core"
+import { computed, Directive, effect, inject, input } from "@angular/core"
 
 import { DisabledState } from "@ngutil/common"
 
@@ -11,7 +11,7 @@ import { FocusState } from "./focus-state.directive"
     selector: "[nuFocusable]",
     exportAs: "nuFocusable",
     host: {
-        "[attr.tabindex]": "tabindex()"
+        "[attr.tabindex]": "_tabindex()"
     },
     hostDirectives: [FocusState]
 })
@@ -19,12 +19,14 @@ export class Focusable {
     readonly #disabled = inject(DisabledState, { optional: true, self: true })
 
     readonly focusable = input<boolean | number>(true, { alias: "nuFocusable" })
+    readonly tabindex = input(0, { transform: Number })
 
-    readonly #tabindex?: number
-    readonly tabindex = computed(() => {
+    readonly _tabindex = computed(() => {
         const focusable = this.focusable()
+        const tabindex = this.tabindex()
+        const isDisabled = this.#disabled?.isDisabled()
 
-        if (focusable === false || this.#disabled?.isDisabled()) {
+        if (focusable === false || isDisabled) {
             return -1
         }
 
@@ -32,19 +34,15 @@ export class Focusable {
             return focusable
         }
 
-        if (focusable === true && this.#tabindex != null && !isNaN(this.#tabindex)) {
-            return this.#tabindex
+        if (focusable === true && tabindex != null && !isNaN(tabindex)) {
+            return tabindex
         }
 
         return 0
     })
 
-    constructor(@Attribute("tabindex") tabindex?: string | number) {
-        if (tabindex != null) {
-            this.#tabindex = Number(tabindex)
-        }
-
+    constructor() {
         // TODO: miért kell ez?, ha nincs itt akkor nem frissül
-        effect(() => this.tabindex(), { allowSignalWrites: false })
+        effect(() => this._tabindex(), { allowSignalWrites: false })
     }
 }
