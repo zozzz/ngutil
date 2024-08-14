@@ -1,16 +1,18 @@
 /* eslint-disable max-len */
 import { applicationConfig, Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
-import { Component, inject } from "@angular/core"
+import { Component, ElementRef, inject, viewChild } from "@angular/core"
 import { provideAnimations } from "@angular/platform-browser/animations"
 
 import { IndividualLayer } from "../layer/layer.service"
 import { FloatingRef } from "./floating-ref"
 import { FloatingService } from "./floating.service"
-import { attribute } from "./traits/attribute"
+import { fadeAnimation } from "./traits/animation"
 import { backdrop } from "./traits/backdrop"
+import { maxWidth, minWidth } from "./traits/dim-contraint"
 import { focusTrap } from "./traits/focus-trap"
 import { modal } from "./traits/modal"
+import { position } from "./traits/position"
 import { style } from "./traits/style"
 
 @Component({
@@ -75,10 +77,13 @@ class FloatingCmp {
     template: `
         <button (click)="showDialog()">dialog</button>
         <button (click)="showModal()">modal</button>
+        <button (click)="dropDown()" #ddEl style="width: 100px;">drop down</button>
     `
 })
 class Floatings {
     readonly #floating = inject(FloatingService)
+    readonly ddEl = viewChild.required("ddEl", { read: ElementRef })
+
     showDialog() {
         this.#floating
             .from(FloatingCmp, {})
@@ -90,10 +95,22 @@ class Floatings {
     showModal() {
         this.#floating
             .from(FloatingCmp, {})
+            .trait(modal({ closeOnBackdropClick: true }), style({ borderRadius: "3px" }))
+            .subscribe(event => {
+                console.log(event)
+            })
+    }
+
+    dropDown() {
+        this.#floating
+            .from(FloatingCmp, {})
             .trait(
-                modal({ closeOnBackdropClick: true }),
+                position({ anchor: { ref: this.ddEl(), align: "center top" }, content: { align: "center bottom" } }),
+                // minWidth(3243524),
+                maxWidth(this.ddEl()),
+                minWidth(this.ddEl()),
                 style({ borderRadius: "3px" }),
-                attribute({ valami: "nice", dataset: { x: 0 } })
+                fadeAnimation()
             )
             .subscribe(event => {
                 console.log(event)

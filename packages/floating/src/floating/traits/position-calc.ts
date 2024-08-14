@@ -1,12 +1,14 @@
+import { rectContract, rectExpand, rectMoveOrigin, rectOrigin } from "packages/style/src/util/rect"
+
 import { Alignment, Dimension, Position, Rect } from "@ngutil/style"
 
-import type { FloatingPositionOptions } from "./position"
+import type { FloatingPositionOptionsNormalized } from "./position"
 
 export interface ComputePositionInput {
     floating: Dimension
     anchor: Rect
     placement: Rect
-    options: FloatingPositionOptions
+    options: FloatingPositionOptionsNormalized
 }
 
 export interface ComputedFloating {
@@ -36,18 +38,23 @@ export function computePosition({
     placement,
     options
 }: ComputePositionInput): ComputedPositon | undefined {
-    // TODO: jelenleg csak center van
+    if (options.anchor.margin) {
+        anchor = rectExpand(anchor, options.anchor.margin)
+    }
+    const anchorPoint = rectOrigin(anchor, options.anchor.align)
 
-    const maxWidth = placement.width
-    const maxHeight = placement.height
+    // if (options.content.margin) {
+    //     floating = rectExpand(floating, options.content.margin)
+    // }
+
+    const content = rectMoveOrigin(floating, options.content.align, anchorPoint)
+    if (options.placement.padding) {
+        placement = rectContract(placement, options.placement.padding)
+    }
+
     const cf: ComputedFloating = {
-        current: {
-            x: (maxWidth - floating.width) / 2,
-            y: (maxHeight - floating.height) / 2,
-            width: Math.min(maxHeight, floating.width),
-            height: Math.min(maxHeight, floating.height)
-        },
-        max: { width: maxWidth, height: maxHeight },
+        current: content,
+        max: { width: placement.width - content.x, height: placement.height - content.y },
         min: { width: 0, height: 0 }
     }
 

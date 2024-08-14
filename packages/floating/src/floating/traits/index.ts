@@ -1,6 +1,7 @@
 export * from "./_base"
 export * from "./animation"
 export * from "./backdrop"
+export * from "./dim-contraint"
 export * from "./focus-trap"
 export * from "./keystroke"
 export * from "./modal"

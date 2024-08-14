@@ -4,7 +4,7 @@ export { DisabledState, Disabled } from "./disabled"
 export { NumberWithUnit, NumberWithUnitInput, UNIT_REGEX, NUMBER_REGEX } from "./number-with-unit"
 
 export { coerceBoolAttr, BooleanInput } from "./coerce/bool-attr"
-export { coerceElement, ElementInput } from "./coerce/element"
+export { coerceElement, ElementInput, isElementInput } from "./coerce/element"
 
 export { StateChain, StateChainHandler } from "./state-chain"
 

@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from "@angular/core"
 
-import { EMPTY, filter, map, merge, Observable, ReplaySubject, shareReplay, takeUntil } from "rxjs"
+import { debounceTime, EMPTY, filter, map, merge, Observable, ReplaySubject, shareReplay, takeUntil } from "rxjs"
 
 import { StateChain } from "@ngutil/common"
 
@@ -56,6 +56,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         @Inject(TRAITS) traits: Traits
     ) {
         container.nativeElement.style.overflow = "hidden"
+        container.nativeElement.style.visibility = "hidden"
 
         this.#traits = traits
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
@@ -63,8 +64,18 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         const sub = this.state.current$.subscribe(state => {
             this.emit({ type: state } as C)
         })
-        this.state.on("init", () => {
-            this.traitState$.pipe(takeUntil(this.#untilCleanup)).subscribe()
+        this.state.on(
+            "init",
+            () =>
+                new Observable(dst => {
+                    // TODO: angular render is stabilized
+                    this.traitState$.pipe(takeUntil(this.#untilCleanup), debounceTime(5)).subscribe(() => {
+                        dst.complete()
+                    })
+                })
+        )
+        this.state.on("showing", () => {
+            container.nativeElement.style.visibility = "visible"
         })
         this.state.on("disposed", () => {
             sub.unsubscribe()

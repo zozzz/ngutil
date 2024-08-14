@@ -13,7 +13,7 @@ import { ComputedPositon, computePosition } from "./position-calc"
 export type FloatingTargetElementRef = ElementInput | Window | "layer" | "viewport"
 
 export interface FloatingAlign {
-    align?: AlignmentInput
+    align: AlignmentInput
 }
 
 export interface FloatingAnchorPosition extends FloatingAlign {
@@ -30,6 +30,8 @@ export interface FloatingContentPosition extends FloatingAlign {
     margin?: SidesInput
 }
 
+export interface FloatingContent extends FloatingContentPosition {}
+
 export interface FloatingPlacementPosition {
     padding?: SidesInput
 }
@@ -42,8 +44,14 @@ export class FloatingPlacementRef<T extends LayerService["root"]["nativeElement"
 
 export interface FloatingPositionOptions {
     anchor?: FloatingAnchor
-    content?: FloatingContentPosition
+    content?: FloatingContent
     placement?: FloatingPlacement
+}
+
+export type FloatingPositionOptionsNormalized = FloatingPositionOptions & {
+    anchor: FloatingAnchor
+    content: FloatingContent
+    placement: FloatingPlacement
 }
 
 type Watches = {
@@ -55,16 +63,25 @@ type Watches = {
 export class PositionTrait extends FloatingTrait<FloatingPosition> {
     name = "position"
 
-    constructor(readonly options: FloatingPositionOptions) {
+    readonly options: FloatingPositionOptionsNormalized
+
+    constructor(options: FloatingPositionOptions) {
         super()
+        const cloned = { ...options }
 
-        if (!options.anchor) {
-            options.anchor = { ref: "viewport", align: "center middle" }
+        if (!cloned.placement) {
+            cloned.placement = { ref: "viewport" }
         }
 
-        if (!options.placement) {
-            options.placement = { ref: "viewport" }
+        if (!cloned.anchor) {
+            cloned.anchor = { ref: cloned.placement.ref, align: "center middle" }
         }
+
+        if (!cloned.content) {
+            cloned.content = { align: "center middle" }
+        }
+
+        this.options = cloned as any
     }
 
     connect(floatingRef: FloatingRef<any>): Observable<FloatingPosition> {
@@ -75,8 +92,8 @@ export class PositionTrait extends FloatingTrait<FloatingPosition> {
 
             const watches: Watches = {
                 floating: dimWatcher.watch(floatingRef.container, "border-box"),
-                anchor: refWatcher(rectWatcher, this.options.anchor!.ref, floatingRef),
-                placement: refWatcher(rectWatcher, this.options.placement!.ref, floatingRef)
+                anchor: refWatcher(rectWatcher, this.options.anchor.ref, floatingRef),
+                placement: refWatcher(rectWatcher, this.options.placement.ref, floatingRef)
             }
 
             return combineLatest(watches).subscribe(({ floating, anchor, placement }) => {
@@ -105,7 +122,7 @@ export function position(options: FloatingPositionOptions) {
 export class FloatingPosition {
     readonly computed?: ComputedPositon
     constructor(
-        readonly options: FloatingPositionOptions,
+        readonly options: FloatingPositionOptionsNormalized,
         readonly floating: Dimension,
         readonly anchor: Rect,
         readonly placement: Rect

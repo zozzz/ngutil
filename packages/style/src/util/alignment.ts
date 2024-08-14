@@ -1,4 +1,6 @@
-const HORIZONTAL = ["start", "center", "end", "max-width"] as const
+import { isPlainObject } from "@ngutil/common"
+
+const HORIZONTAL = ["start", "left", "center", "end", "right", "max-width"] as const
 export type AlignHorizontal = (typeof HORIZONTAL)[number]
 
 const VERTICAL = ["top", "middle", "bottom", "max-height"] as const
@@ -9,6 +11,7 @@ export type AlignmentInput =
     | `${AlignVertical} ${AlignHorizontal}`
     | AlignVertical
     | AlignHorizontal
+    | Alignment
 
 export interface Alignment {
     horizontal: AlignHorizontal
@@ -20,6 +23,14 @@ const DEFAULT: Alignment = { horizontal: "center", vertical: "middle" }
 export function alignmentNormalize(value?: AlignmentInput): Alignment {
     if (value == null) {
         return DEFAULT
+    }
+
+    if (isPlainObject(value)) {
+        if ("horizontal" in value && "vertical" in value) {
+            return value
+        } else {
+            throw new Error(`Invalid alignment: ${value}`)
+        }
     }
 
     if (typeof value !== "string") {

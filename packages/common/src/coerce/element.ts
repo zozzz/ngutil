@@ -8,3 +8,7 @@ export function coerceElement<T>(value: T | ElementRef<T>): T {
     }
     return value
 }
+
+export function isElementInput(value: any): value is ElementInput {
+    return value instanceof Element || value instanceof ElementRef
+}
