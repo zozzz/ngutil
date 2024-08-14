@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.32](https://github.com/zozzz/ngutil/compare/0.0.31...0.0.32) (2024-08-14)
+
+
+### Features
+
+* **floating:** minWidth, maxWidth, minHeight, maxHeight ([827df74](https://github.com/zozzz/ngutil/commit/827df7455a7de59867bb4c733b32726c225584ab))
+
+
+### Bug Fixes
+
+* **aria:** Focusable tabindex is changebla on the fly ([533b26f](https://github.com/zozzz/ngutil/commit/533b26fee09e7c137af6fde4f6d597b06a0e7724))
+
 ## [0.0.31](https://github.com/zozzz/ngutil/compare/0.0.30...0.0.31) (2024-08-12)
 
 
