@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.34](https://github.com/zozzz/ngutil/compare/0.0.33...0.0.34) (2024-08-15)
+
+
+### Bug Fixes
+
+* **floating:** Fix margin ([10e3b2e](https://github.com/zozzz/ngutil/commit/10e3b2e357b2c66c06c2e58868774ea48409d00b))
+
 ## [0.0.33](https://github.com/zozzz/ngutil/compare/0.0.32...0.0.33) (2024-08-15)
 
 
