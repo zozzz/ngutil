@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.33](https://github.com/zozzz/ngutil/compare/0.0.32...0.0.33) (2024-08-15)
+
+
+### Bug Fixes
+
+* **floating:** resolve build errors ([a7147a4](https://github.com/zozzz/ngutil/commit/a7147a4a3b1b1be592da6c21cd28b09180efbb85))
+
 ## [0.0.32](https://github.com/zozzz/ngutil/compare/0.0.31...0.0.32) (2024-08-14)
 
 
