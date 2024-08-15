@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.35](https://github.com/zozzz/ngutil/compare/0.0.34...0.0.35) (2024-08-15)
+
+
+### Features
+
+* **aria:** Focusable.connect, FocusState.connect ([3c3f2bd](https://github.com/zozzz/ngutil/commit/3c3f2bd47942127d59df417cbf2f7c9c9e1c46da))
+
+
+### Other changes
+
+* **floating:** Optimalize traits ([b1751b0](https://github.com/zozzz/ngutil/commit/b1751b0c39530a2f153ec10d6320bcedf848c07a))
+
 ## [0.0.34](https://github.com/zozzz/ngutil/compare/0.0.33...0.0.34) (2024-08-15)
 
 
