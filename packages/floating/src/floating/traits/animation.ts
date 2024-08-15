@@ -14,14 +14,12 @@ export type AnimationSet = { show: AnimationMetadata[]; hide: AnimationMetadata[
 
 const transitionDuration = Duration.FastMs
 
-export class AnimationTrait extends FloatingTrait<unknown> {
-    override name = "animation"
+export class AnimationTrait implements FloatingTrait<unknown> {
+    readonly name = "animation"
 
-    constructor(readonly animation: AnimationSet) {
-        super()
-    }
+    constructor(readonly animation: AnimationSet) {}
 
-    override connect(floatingRef: FloatingRef): Observable<unknown> {
+    connect(floatingRef: FloatingRef): Observable<unknown> {
         return new Observable((dst: Subscriber<unknown>) => {
             const builder = floatingRef.container.injector.get(AnimationBuilder)
             const element = floatingRef.container.nativeElement

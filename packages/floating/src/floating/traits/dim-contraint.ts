@@ -23,19 +23,18 @@ const DIM_MAP: { [key: string]: DimMapEntry } = {
     minHeight: { computedRef: "min", dimension: "height" }
 }
 
-export class DimensionConstraintTrait extends FloatingTrait<number> {
+export class DimensionConstraintTrait implements FloatingTrait<number> {
     readonly name: string
     readonly #map: DimMapEntry
     constructor(
         name: keyof typeof DIM_MAP,
         readonly value: DimensionConstraintInput
     ) {
-        super()
         this.name = name as string
         this.#map = DIM_MAP[name]
     }
 
-    override connect(floatingRef: FloatingRef<any>): Observable<number> {
+    connect(floatingRef: FloatingRef<any>): Observable<number> {
         return new Observable((dst: Subscriber<number>) => {
             if (isElementInput(this.value)) {
                 const watcher = floatingRef.container.injector.get(DimensionWatcher)

@@ -1,8 +1,11 @@
 /* eslint-disable max-len */
 import { applicationConfig, Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
-import { Component, ElementRef, inject, viewChild } from "@angular/core"
+import { Component, ElementRef, HostListener, inject } from "@angular/core"
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 import { provideAnimations } from "@angular/platform-browser/animations"
+
+import { Focusable, FocusState } from "@ngutil/aria"
 
 import { IndividualLayer } from "../layer/layer.service"
 import { FloatingRef } from "./floating-ref"
@@ -10,7 +13,7 @@ import { FloatingService } from "./floating.service"
 import { fadeAnimation } from "./traits/animation"
 import { backdrop } from "./traits/backdrop"
 import { maxWidth, minWidth } from "./traits/dim-contraint"
-import { focusTrap } from "./traits/focus-trap"
+import { focus } from "./traits/focus"
 import { modal } from "./traits/modal"
 import { position } from "./traits/position"
 import { style } from "./traits/style"
@@ -57,9 +60,52 @@ class FloatingCmp {
 }
 
 @Component({
+    selector: ".drop-down-trigger",
+    standalone: true,
+    hostDirectives: [Focusable],
+    template: `
+        <ng-content />
+        &nbsp;( origin: {{ focus.origin() }} with: {{ focus.within() }} )
+    `
+})
+class DropDownTrigger {
+    readonly floating = inject(FloatingService)
+    readonly focus = inject(FocusState)
+    readonly el = inject(ElementRef)
+
+    constructor() {
+        this.focus.event$.pipe(takeUntilDestroyed()).subscribe(console.log)
+    }
+
+    @HostListener("click")
+    onClick() {
+        this.floating
+            .from(FloatingCmp, {})
+            .trait(
+                position({
+                    anchor: { ref: this.el, align: "bottom left" },
+                    content: { align: "top left", margin: { top: 10 } }
+                }),
+                // minWidth(3243524),
+                maxWidth(this.el),
+                minWidth(this.el),
+                style({ borderRadius: "3px" }),
+                fadeAnimation(),
+                focus({ connect: this.focus })
+            )
+            .subscribe(event => {
+                if (event.type === "disposing") {
+                    this.el.nativeElement.focus()
+                }
+                console.log(event)
+            })
+    }
+}
+
+@Component({
     standalone: true,
     selector: "floatings",
-    imports: [FloatingCmp],
+    imports: [FloatingCmp, DropDownTrigger],
     providers: [FloatingService],
     hostDirectives: [IndividualLayer],
     styles: [
@@ -77,18 +123,17 @@ class FloatingCmp {
     template: `
         <button (click)="showDialog()">dialog</button>
         <button (click)="showModal()">modal</button>
-        <button (click)="dropDown()" #ddEl style="width: 100px;">drop down</button>
+        <button class="drop-down-trigger" style="width: 300px;">drop down</button>
     `
 })
 class Floatings {
     readonly #floating = inject(FloatingService)
-    readonly ddEl = viewChild.required("ddEl", { read: ElementRef })
 
     showDialog() {
         this.#floating
             .from(FloatingCmp, {})
             .position({})
-            .trait(backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)", closeOnClick: true }), focusTrap())
+            .trait(backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)", closeOnClick: true }), focus({ trap: true }))
             .subscribe()
     }
 
@@ -101,24 +146,7 @@ class Floatings {
             })
     }
 
-    dropDown() {
-        this.#floating
-            .from(FloatingCmp, {})
-            .trait(
-                position({
-                    anchor: { ref: this.ddEl(), align: "bottom left" },
-                    content: { align: "top left", margin: { top: 10 } }
-                }),
-                // minWidth(3243524),
-                maxWidth(this.ddEl()),
-                minWidth(this.ddEl()),
-                style({ borderRadius: "3px" }),
-                fadeAnimation()
-            )
-            .subscribe(event => {
-                console.log(event)
-            })
-    }
+    dropDown() {}
 }
 
 export default {

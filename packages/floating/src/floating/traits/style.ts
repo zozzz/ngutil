@@ -3,14 +3,12 @@ import { Observable, of } from "rxjs"
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
 
-export class StyleTrait extends FloatingTrait<Partial<CSSStyleDeclaration>> {
-    override name = "style"
+export class StyleTrait implements FloatingTrait<Partial<CSSStyleDeclaration>> {
+    readonly name = "style"
 
-    constructor(readonly styles: Partial<CSSStyleDeclaration>) {
-        super()
-    }
+    constructor(readonly styles: Partial<CSSStyleDeclaration>) {}
 
-    override connect(floatingRef: FloatingRef): Observable<Partial<CSSStyleDeclaration>> {
+    connect(floatingRef: FloatingRef): Observable<Partial<CSSStyleDeclaration>> {
         Object.assign(floatingRef.container.nativeElement.style, this.styles)
         return of(this.styles)
     }

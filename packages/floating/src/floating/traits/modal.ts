@@ -1,6 +1,6 @@
 import { fallAnimation } from "./animation"
 import { backdrop } from "./backdrop"
-import { focusTrap } from "./focus-trap"
+import { focus } from "./focus"
 import { keystroke } from "./keystroke"
 import { position } from "./position"
 
@@ -21,7 +21,7 @@ export function modal(options: ModalOptions = {}) {
             }
         }),
         backdrop({ type: "solid", color: "rgba(0, 0, 0, .3)", closeOnClick: options.closeOnBackdropClick }),
-        focusTrap(),
+        focus({ trap: true }),
         keystroke(),
         fallAnimation()
     ]

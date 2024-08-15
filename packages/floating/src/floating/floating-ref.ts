@@ -77,6 +77,9 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         this.state.on("showing", () => {
             container.nativeElement.style.visibility = "visible"
         })
+        this.state.on("disposing", () => {
+            container.nativeElement.style.pointerEvents = "none"
+        })
         this.state.on("disposed", () => {
             sub.unsubscribe()
         })

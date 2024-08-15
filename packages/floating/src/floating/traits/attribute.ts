@@ -7,14 +7,12 @@ import { FloatingTrait } from "./_base"
 
 export type Attributes = { [key: string]: Primitive } | { dataset: { [key: string]: Primitive } }
 
-export class AttributeTrait extends FloatingTrait<Attributes> {
-    override name = "attribute"
+export class AttributeTrait implements FloatingTrait<Attributes> {
+    readonly name = "attribute"
 
-    constructor(readonly attrs: Attributes) {
-        super()
-    }
+    constructor(readonly attrs: Attributes) {}
 
-    override connect(floatingRef: FloatingRef): Observable<Attributes> {
+    connect(floatingRef: FloatingRef): Observable<Attributes> {
         const el = floatingRef.container.nativeElement
 
         for (const [k, v] of Object.entries(this.attrs)) {

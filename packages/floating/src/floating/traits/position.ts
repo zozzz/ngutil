@@ -60,13 +60,12 @@ type Watches = {
     placement: Observable<Rect>
 }
 
-export class PositionTrait extends FloatingTrait<FloatingPosition> {
-    name = "position"
+export class PositionTrait implements FloatingTrait<FloatingPosition> {
+    readonly name = "position"
 
     readonly options: FloatingPositionOptionsNormalized
 
     constructor(options: FloatingPositionOptions) {
-        super()
         const cloned = { ...options }
 
         if (!cloned.placement) {

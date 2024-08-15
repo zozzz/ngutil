@@ -21,14 +21,12 @@ export class BackdropState {
     onClick: Observable<void> = new Subject<void>()
 }
 
-export class BackdropTrait extends FloatingTrait<BackdropState> {
-    override name = "backdrop"
+export class BackdropTrait implements FloatingTrait<BackdropState> {
+    readonly name = "backdrop"
 
-    constructor(readonly options: BackdropTraitOptions) {
-        super()
-    }
+    constructor(readonly options: BackdropTraitOptions) {}
 
-    override connect(floatingRef: FloatingRef<any>): Observable<BackdropState> {
+    connect(floatingRef: FloatingRef<any>): Observable<BackdropState> {
         return new Observable((dest: Subscriber<BackdropState>) => {
             const animationBuilder = floatingRef.container.injector.get(AnimationBuilder)
             const options: BackdropOptions = {

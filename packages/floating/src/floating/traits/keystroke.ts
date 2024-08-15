@@ -5,9 +5,10 @@ import { KeystrokeService } from "@ngutil/aria"
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
 
-export class KeystrokeTrait extends FloatingTrait<unknown> {
-    override name = "keystroke"
-    override connect(floatingRef: FloatingRef): Observable<unknown> {
+export class KeystrokeTrait implements FloatingTrait<unknown> {
+    name = "keystroke"
+
+    connect(floatingRef: FloatingRef): Observable<unknown> {
         const ks = floatingRef.container.injector.get(KeystrokeService)
         return ks
             .watch(floatingRef.container.nativeElement, { key: "Escape", state: "up" })
