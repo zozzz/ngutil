@@ -1,6 +1,13 @@
-import { rectContract, rectExpand, rectMoveOrigin, rectOrigin } from "packages/style/src/util/rect"
-
-import { Alignment, Dimension, Position, Rect } from "@ngutil/style"
+import {
+    Alignment,
+    Dimension,
+    Position,
+    Rect,
+    rectContract,
+    rectExpand,
+    rectMoveOrigin,
+    rectOrigin
+} from "@ngutil/style"
 
 import type { FloatingPositionOptionsNormalized } from "./position"
 

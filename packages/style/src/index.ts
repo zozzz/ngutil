@@ -7,5 +7,14 @@ export { RectWatcher } from "./services/rect-watcher.service"
 
 export { AlignmentInput, alignmentNormalize, Alignment, AlignHorizontal, AlignVertical } from "./util/alignment"
 export { inAnimation, inTransition, isAnimating } from "./util/in-animation"
-export { Dimension, Rect, Position } from "./util/rect"
+export {
+    Dimension,
+    Rect,
+    Position,
+    rectConstraint,
+    rectContract,
+    rectExpand,
+    rectMoveOrigin,
+    rectOrigin
+} from "./util/rect"
 export { SidesInput, sidesNormalize, Sides } from "./util/sides"
