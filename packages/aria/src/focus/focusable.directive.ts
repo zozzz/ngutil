@@ -1,6 +1,6 @@
 import { computed, Directive, effect, inject, input } from "@angular/core"
 
-import { DisabledState } from "@ngutil/common"
+import { ConnectProtocol, DisabledState, ElementInput, isElementInput } from "@ngutil/common"
 
 import { FocusState } from "./focus-state.directive"
 
@@ -15,8 +15,9 @@ import { FocusState } from "./focus-state.directive"
     },
     hostDirectives: [FocusState]
 })
-export class Focusable {
+export class Focusable implements ConnectProtocol {
     readonly #disabled = inject(DisabledState, { optional: true, self: true })
+    readonly state = inject(FocusState)
 
     readonly focusable = input<boolean | number>(true, { alias: "nuFocusable" })
     readonly tabindex = input(0, { transform: Number })
@@ -44,5 +45,13 @@ export class Focusable {
     constructor() {
         // TODO: miért kell ez?, ha nincs itt akkor nem frissül
         effect(() => this._tabindex(), { allowSignalWrites: false })
+    }
+
+    connect(value: Focusable | FocusState | ElementInput) {
+        if (value instanceof FocusState || isElementInput(value)) {
+            return this.state.connect(value)
+        } else {
+            return this.state.connect(value.state)
+        }
     }
 }

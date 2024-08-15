@@ -7,6 +7,8 @@ import { combineLatest, filter, fromEvent, map, Observable, shareReplay, startWi
 
 import { focusable, type FocusableElement, isFocusable } from "tabbable"
 
+import { coerceElement, ElementInput } from "@ngutil/common"
+
 import { ActivityOrigin, ActivityService } from "../activity"
 
 const EVENT_OPTIONS: AddEventListenerOptions = {
@@ -82,16 +84,17 @@ export class FocusService {
         })
     }
 
-    watch(node: Node) {
+    watch(element: ElementInput) {
+        const el = coerceElement(element)
         return this.events.pipe(
             map(event => {
                 if (
                     event.element &&
-                    (event.element === node || (typeof node.contains === "function" && node.contains(event.element)))
+                    (event.element === el || (typeof el.contains === "function" && el.contains(event.element)))
                 ) {
                     return event
                 }
-                return { element: node, origin: null }
+                return { element: el, origin: null } as FocusChanges
             })
         )
     }

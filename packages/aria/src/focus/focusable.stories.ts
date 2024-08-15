@@ -148,3 +148,30 @@ export const Basic: StoryFn<Story> = args => {
         template
     }
 }
+
+export const Group: StoryFn<Story> = args => {
+    const template = `
+        <story-focusable></story-focusable>
+        <story-focusable tabindex="42"></story-focusable>
+        <story-focusable></story-focusable>
+        <story-focusable>
+            <story-focusable>
+                <story-focusable></story-focusable>
+                <story-focusable></story-focusable>
+                <story-focusable></story-focusable>
+            </story-focusable>
+            <story-focusable></story-focusable>
+            <story-focusable></story-focusable>
+        </story-focusable>
+        <story-focusable>
+            <story-form-field>
+                <input type="text" />
+            </story-form-field>
+        </story-focusable>
+    `
+
+    return {
+        props: args,
+        template
+    }
+}
