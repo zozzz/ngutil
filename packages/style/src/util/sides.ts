@@ -9,16 +9,23 @@ export interface Sides {
 
 export type SidesUnit = "px" | "%"
 export type SidesNumber = `${number}${SidesUnit}` | number
+export type SidesInputObj = { top?: SidesNumber; right?: SidesNumber; bottom?: SidesNumber; left?: SidesNumber }
 export type SidesInput =
     | Sides
     | SidesNumber
+    | SidesInputObj
     | `${SidesNumber} ${SidesNumber}`
     | `${SidesNumber} ${SidesNumber} ${SidesNumber}`
     | `${SidesNumber} ${SidesNumber} ${SidesNumber} ${SidesNumber}`
 
 export function sidesNormalize(value: SidesInput): Sides {
     if (isPlainObject(value)) {
-        return value
+        return {
+            top: NumberWithUnit.coerce(value.top || 0, "px"),
+            right: NumberWithUnit.coerce(value.right || 0, "px"),
+            bottom: NumberWithUnit.coerce(value.bottom || 0, "px"),
+            left: NumberWithUnit.coerce(value.left || 0, "px")
+        }
     } else if (typeof value === "number") {
         return sidesNormalize(`${value}px`)
     } else if (typeof value !== "string") {

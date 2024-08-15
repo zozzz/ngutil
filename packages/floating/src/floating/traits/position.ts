@@ -127,6 +127,7 @@ export class FloatingPosition {
         readonly anchor: Rect,
         readonly placement: Rect
     ) {
+        // const frect: Rect = { x: 0, y: 0, ...floating }
         this.computed = computePosition({ floating, anchor, placement, options })
     }
 

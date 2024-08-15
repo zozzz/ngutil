@@ -50,11 +50,11 @@ export function computePosition({
     }
     const anchorPoint = rectOrigin(anchor, options.anchor.align)
 
-    // if (options.content.margin) {
-    //     floating = rectExpand(floating, options.content.margin)
-    // }
+    let content = rectMoveOrigin(floating, options.content.align, anchorPoint)
+    if (options.content.margin) {
+        content = rectContract(content, options.content.margin)
+    }
 
-    const content = rectMoveOrigin(floating, options.content.align, anchorPoint)
     if (options.placement.padding) {
         placement = rectContract(placement, options.placement.padding)
     }

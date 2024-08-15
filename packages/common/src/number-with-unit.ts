@@ -9,7 +9,9 @@ const regex = new RegExp(`^(${NUMBER_REGEX})\\s*(${UNIT_REGEX})?$`)
 
 export class NumberWithUnit {
     static coerce(value: any, defaultUnit?: string) {
-        if (specials.includes(value)) {
+        if (value instanceof NumberWithUnit) {
+            return value
+        } else if (specials.includes(value)) {
             return new NumberWithUnit(NaN, value)
         } else if (typeof value === "string") {
             const match = value.match(regex)

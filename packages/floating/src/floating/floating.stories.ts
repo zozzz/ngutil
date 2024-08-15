@@ -105,7 +105,10 @@ class Floatings {
         this.#floating
             .from(FloatingCmp, {})
             .trait(
-                position({ anchor: { ref: this.ddEl(), align: "center top" }, content: { align: "center bottom" } }),
+                position({
+                    anchor: { ref: this.ddEl(), align: "bottom left" },
+                    content: { align: "top left", margin: { top: 10 } }
+                }),
                 // minWidth(3243524),
                 maxWidth(this.ddEl()),
                 minWidth(this.ddEl()),
