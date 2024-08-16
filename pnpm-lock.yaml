@@ -303,6 +303,9 @@ importers:
       '@angular/core':
         specifier: ^17.3.6
         version: 17.3.6(rxjs@7.8.1)(zone.js@0.14.5)
+      '@ngutil/aria':
+        specifier: workspace:*
+        version: link:../../dist/packages/aria
       '@ngutil/common':
         specifier: workspace:*
         version: link:../../dist/packages/common
