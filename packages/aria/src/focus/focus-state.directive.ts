@@ -1,7 +1,7 @@
 import { Directive, effect, ElementRef, inject } from "@angular/core"
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
 
-import { BehaviorSubject, combineLatest, debounceTime, map, Observable, shareReplay, switchMap } from "rxjs"
+import { BehaviorSubject, combineLatest, debounceTime, map, Observable, of, shareReplay, switchMap } from "rxjs"
 
 import { ElementInput } from "dist/packages/common"
 
@@ -26,7 +26,7 @@ export class FocusState implements ConnectProtocol {
 
     readonly #connected = new BehaviorSubject<Observable<FocusChanges>[]>([])
     readonly #connEvent = this.#connected.pipe(
-        switchMap(values => combineLatest(values)),
+        switchMap(values => (values.length === 0 ? of([]) : combineLatest(values))),
         takeUntilDestroyed(),
         map(values => values.filter(v => v.origin != null)),
         map(values => values[0] || this.#default),
