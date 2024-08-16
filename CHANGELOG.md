@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.37](https://github.com/zozzz/ngutil/compare/0.0.36...0.0.37) (2024-08-16)
+
+
+### Bug Fixes
+
+* **aria:** focus ([3e0a073](https://github.com/zozzz/ngutil/commit/3e0a0737644fb1c02a841d3128ce11b6d938c312))
+
+
+### Other changes
+
+* **data:** selection model plan ([8fa00e2](https://github.com/zozzz/ngutil/commit/8fa00e2334d4ae4197b32c5e50861c2811550f78))
+* **tools:** Update pnpm-lock.yaml ([c5f6aab](https://github.com/zozzz/ngutil/commit/c5f6aab2243a3e3ce3849e98131aada77f990c19))
+
 ## [0.0.36](https://github.com/zozzz/ngutil/compare/0.0.35...0.0.36) (2024-08-16)
 
 
