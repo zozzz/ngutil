@@ -19,6 +19,7 @@ import { FocusChanges, FocusService } from "./focus.service"
 export class FocusState implements ConnectProtocol {
     readonly #focus = inject(FocusService)
     readonly #el = inject<ElementRef<HTMLElement>>(ElementRef)
+    readonly #parent = inject(FocusState, { optional: true, skipSelf: true })
     readonly #default: FocusChanges = { element: this.#el.nativeElement, origin: null }
 
     readonly #self = this.#focus.watch(this.#el).pipe(takeUntilDestroyed(), shareReplay(1))
@@ -48,6 +49,7 @@ export class FocusState implements ConnectProtocol {
     constructor() {
         // TODO: miért kell ez?, ha nincs itt akkor nem frissül
         effect(() => this.origin(), { allowSignalWrites: false })
+        this.#parent?.connect(this).pipe(takeUntilDestroyed()).subscribe()
     }
 
     connect(value: FocusState | ElementInput) {
