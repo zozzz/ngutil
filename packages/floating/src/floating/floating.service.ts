@@ -11,6 +11,8 @@ import { type FloatingPositionOptions, position } from "./traits/position"
 
 // export type FloatingTrait = (...args: any[]) => (traits: object) => Observable<object>
 
+export type FloatingTraitInput = FloatingTrait | Array<FloatingTraitInput>
+
 export abstract class FloatingFactory {
     protected readonly traits: { [key: string]: FloatingTrait } = {}
 
@@ -18,7 +20,7 @@ export abstract class FloatingFactory {
 
     constructor(protected readonly layer: LayerService) {}
 
-    trait(...traits: Array<FloatingTrait | FloatingTrait[]>) {
+    trait(...traits: Array<FloatingTraitInput>) {
         for (const trait of traits) {
             if (Array.isArray(trait)) {
                 this.trait(...trait)

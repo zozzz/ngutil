@@ -7,7 +7,7 @@ import { Dimension, DimensionWatcher } from "@ngutil/style"
 
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
-import { type FloatingPosition } from "./position"
+import type { FloatingPosition } from "./position"
 
 export type DimensionConstraintInput = ElementInput | number
 
@@ -44,24 +44,34 @@ export class DimensionConstraintTrait implements FloatingTrait<number> {
                     position: floatingRef.watchTrait<FloatingPosition>("position")
                 }).subscribe(({ refDim, position }) => {
                     const floating = position.computed?.floating
+                    if (!floating) {
+                        return
+                    }
                     dst.next(
                         clamp(
                             refDim,
-                            floating?.min[this.#map.dimension] || 0,
-                            floating?.max[this.#map.dimension] || Infinity
+                            floating.min[this.#map.dimension] || 0,
+                            floating.max[this.#map.dimension] || Infinity
                         )
                     )
                 })
             } else {
                 return floatingRef.watchTrait<FloatingPosition>("position").subscribe(position => {
                     const floating = position.computed?.floating
-                    dst.next(
-                        clamp(
-                            this.value as number,
-                            floating?.min[this.#map.dimension] || 0,
-                            floating?.max[this.#map.dimension] || Infinity
+                    if (!floating) {
+                        return
+                    }
+                    if (isNaN(this.value as number)) {
+                        dst.next(floating[this.#map.computedRef][this.#map.dimension])
+                    } else {
+                        dst.next(
+                            clamp(
+                                this.value as number,
+                                floating?.min[this.#map.dimension] || 0,
+                                floating?.max[this.#map.dimension] || Infinity
+                            )
                         )
-                    )
+                    }
                 })
             }
         }).pipe(

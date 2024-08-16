@@ -8,6 +8,7 @@ import { AlignmentInput, Dimension, DimensionWatcher, Rect, RectWatcher, SidesIn
 import { LayerService } from "../../layer/layer.service"
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
+import { maxHeight, maxWidth } from "./dim-contraint"
 import { ComputedPositon, computePosition } from "./position-calc"
 
 export type FloatingTargetElementRef = ElementInput | Window | "layer" | "viewport"
@@ -115,7 +116,7 @@ function refWatcher(rectWatcher: RectWatcher, ref: FloatingTargetElementRef, flo
 }
 
 export function position(options: FloatingPositionOptions) {
-    return new PositionTrait(options)
+    return [new PositionTrait(options), maxWidth(NaN), maxHeight(NaN)]
 }
 
 export class FloatingPosition {
