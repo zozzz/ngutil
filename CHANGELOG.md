@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.36](https://github.com/zozzz/ngutil/compare/0.0.35...0.0.36) (2024-08-16)
+
+
+### Bug Fixes
+
+* **aria:** FocusState inheritance ([1349d49](https://github.com/zozzz/ngutil/commit/1349d4901476826996df5541408519b1c51054b5))
+* **floating:** default maxWidth, maxHeight ([7994ea3](https://github.com/zozzz/ngutil/commit/7994ea35875509bc7d914f7dcbaef1731ba36f50))
+
 ## [0.0.35](https://github.com/zozzz/ngutil/compare/0.0.34...0.0.35) (2024-08-15)
 
 
