@@ -18,7 +18,7 @@ export abstract class FloatingFactory {
 
     #providers: Provider[] = []
 
-    constructor(protected readonly layer: LayerService) {}
+    constructor(protected readonly floatingSvc: FloatingService) {}
 
     trait(...traits: Array<FloatingTraitInput>) {
         for (const trait of traits) {
@@ -69,7 +69,8 @@ export abstract class FloatingFactory {
         providers = [
             ...providers,
             { provide: TRAITS, useValue: this.traits },
-            { provide: LayerService, useValue: this.layer },
+            { provide: LayerService, useValue: this.floatingSvc.layer },
+            { provide: FloatingService, useValue: this.floatingSvc },
             FloatingRef,
             ...this.#providers
         ]
@@ -95,34 +96,34 @@ export abstract class FloatingFactory {
 
 export class FloatingTemplateFactory<T extends object> extends FloatingFactory {
     constructor(
-        layer: LayerService,
+        floatingSvc: FloatingService,
         public readonly tpl: TemplateRef<T>,
         public readonly options: TemplatePortalOptions<T>
     ) {
-        super(layer)
+        super(floatingSvc)
     }
 
     protected override create(): FloatingRef<FloatingChannel> {
         const options: TemplatePortalOptions<T> = { ...this.options }
         options.providers = this.providers(options.providers)
-        const container = this.layer.newTemplatePortal(this.tpl, options)
+        const container = this.floatingSvc.layer.newTemplatePortal(this.tpl, options)
         return container.injector.get(FloatingRef)
     }
 }
 
 export class FloatingComponentFactory<T extends ComponentType<any>> extends FloatingFactory {
     constructor(
-        layer: LayerService,
+        floatingSvc: FloatingService,
         public readonly component: T,
         public readonly options: ComponentPortalOptions<T>
     ) {
-        super(layer)
+        super(floatingSvc)
     }
 
     protected override create(): FloatingRef<FloatingChannel> {
         const options: ComponentPortalOptions<T> = { ...this.options }
         options.providers = this.providers(options.providers)
-        const container = this.layer.newComponentPortal(this.component, options)
+        const container = this.floatingSvc.layer.newComponentPortal(this.component, options)
         return container.injector.get(FloatingRef)
     }
 }
@@ -142,7 +143,7 @@ export class FloatingComponentFactory<T extends ComponentType<any>> extends Floa
  */
 @Injectable()
 export class FloatingService {
-    readonly #layer = inject(LayerService)
+    readonly layer = inject(LayerService)
     // readonly parent = inject(FloatingRef, { skipSelf: true, optional: true })
 
     from<T extends ComponentType<any>>(component: T, opts?: ComponentPortalOptions<T>): FloatingComponentFactory<T>
@@ -151,9 +152,9 @@ export class FloatingService {
 
     from<T>(value: ComponentType<T> | TemplateRef<T>, opts: any): FloatingFactory {
         if (value instanceof TemplateRef) {
-            return new FloatingTemplateFactory(this.#layer, value as any, opts)
+            return new FloatingTemplateFactory(this, value as any, opts)
         } else {
-            return new FloatingComponentFactory(this.#layer, value as any, opts)
+            return new FloatingComponentFactory(this, value as any, opts)
         }
     }
 }
