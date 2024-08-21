@@ -46,6 +46,10 @@ function createElement(options: ContainerOptions): HTMLDivElement {
     div.style.top = "0"
     div.style.left = "0"
     div.style.width = "max-content"
+    div.style.display = "inline-flex"
+    div.style.flexDirection = "column"
+    div.style.alignItems = "stretch"
+    div.style.justifyContent = "stretch"
 
     if (options.classes) {
         div.classList.add(...options.classes)
