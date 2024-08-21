@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.38](https://github.com/zozzz/ngutil/compare/0.0.37...0.0.38) (2024-08-21)
+
+
+### Bug Fixes
+
+* **floating:** Auto sizing floatings ([ee29a88](https://github.com/zozzz/ngutil/commit/ee29a884388b2701176d9ed7a0db9a0a81986171))
+* **floating:** Inject FloatingService into floating component ([7457e3a](https://github.com/zozzz/ngutil/commit/7457e3a5150e23840357ffc129c74fa9614d6848))
+
 ## [0.0.37](https://github.com/zozzz/ngutil/compare/0.0.36...0.0.37) (2024-08-16)
 
 

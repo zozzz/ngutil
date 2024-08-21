@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/graphics",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "peerDependencies": {
     "@angular/animations": "^17.3.6",
     "@angular/common": "^17.3.6",
