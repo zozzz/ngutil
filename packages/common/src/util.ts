@@ -77,3 +77,7 @@ export function isFalsy(value: any): value is boolean {
     }
     return false
 }
+
+export function isTruthy(value: any): value is boolean {
+    return !isFalsy(value)
+}
