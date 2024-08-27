@@ -84,6 +84,16 @@ export class DataSourceProxy<T extends Model>
         shareReplay(1)
     )
 
+    readonly isBusy$ = this.value$.pipe(
+        switchMap(value => value.isBusy$),
+        shareReplay(1)
+    )
+
+    readonly isEmpty$ = this.value$.pipe(
+        switchMap(value => value.isEmpty$),
+        shareReplay(1)
+    )
+
     #cvSubs = new Map<CollectionViewer, Subject<void>>()
 
     override connect(collectionViewer: CollectionViewer): Observable<readonly (T | undefined)[]> {
@@ -182,13 +192,13 @@ export class DataSourceProxyBusy {
     readonly #proxy = inject<DataSourceProxy<any>>(DataSourceProxy)
     readonly #busy = inject<Busy<any>>(Busy)
 
-    readonly busy$ = this.#proxy.value$.pipe(
-        switchMap(value => value.busy$),
+    readonly isBusy$ = this.#proxy.value$.pipe(
+        switchMap(value => value.isBusy$),
         shareReplay(1)
     )
 
     constructor() {
-        this.#busy.connect(this.busy$).pipe(takeUntilDestroyed()).subscribe()
+        this.#busy.connect(this.isBusy$).pipe(takeUntilDestroyed()).subscribe()
     }
 }
 

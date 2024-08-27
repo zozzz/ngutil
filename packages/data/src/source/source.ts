@@ -32,7 +32,7 @@ import { type CollectionStore, MemoryStore, type PartialCollection } from "../st
 const DEBOUNCE_TIME = 50
 
 export class DataSource<T extends Model> extends CdkDataSource<T | undefined> implements ConnectProtocol {
-    readonly busy$ = new BehaviorSubject<boolean>(false)
+    readonly isBusy$ = new BehaviorSubject<boolean>(false)
     readonly total$ = new BehaviorSubject<number | undefined>(undefined)
 
     readonly #slice = new ReplaySubject<Slice>(1)
@@ -92,7 +92,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         shareReplay(1)
     )
 
-    readonly isEmpty$ = combineLatest({ busy: this.busy$, items: this.items$ }).pipe(
+    readonly isEmpty$ = combineLatest({ busy: this.isBusy$, items: this.items$ }).pipe(
         map(({ busy, items }) => !busy && items?.some(isTruthy)),
         shareReplay(1)
     )
@@ -165,8 +165,8 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     #setBusy(busy: boolean) {
         if (this.provider.isAsync) {
-            if (this.busy$.value !== busy) {
-                this.busy$.next(busy)
+            if (this.isBusy$.value !== busy) {
+                this.isBusy$.next(busy)
             }
         }
     }
