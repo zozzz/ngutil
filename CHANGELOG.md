@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.39](https://github.com/zozzz/ngutil/compare/0.0.38...0.0.39) (2024-08-27)
+
+
+### Features
+
+* **common:** isFalsy ([abb5add](https://github.com/zozzz/ngutil/commit/abb5add67046aab845c0900246767433ef73ba02))
+* **common:** isTruthy ([f5bc1be](https://github.com/zozzz/ngutil/commit/f5bc1be4d5aa7cd262318128101bab170780f8e1))
+* **common:** observable FormControl properties ([0c61e69](https://github.com/zozzz/ngutil/commit/0c61e6951d55cd08ae0da0db4d69297afadf4d67))
+
+
+### Bug Fixes
+
+* **common:** if StateChain is deystroyed, error raised when no handlers ([c7c1083](https://github.com/zozzz/ngutil/commit/c7c10831eca847ebea5d5ffdccadf5fdd0ea7aed))
+* **data:** Filter merge ([79a7056](https://github.com/zozzz/ngutil/commit/79a7056213ff3e572170e19204a1a465e62bf79b))
+
 ## [0.0.38](https://github.com/zozzz/ngutil/compare/0.0.37...0.0.38) (2024-08-21)
 
 
