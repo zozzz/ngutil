@@ -1,6 +1,6 @@
 import { flattenDeep, intersection } from "lodash"
 
-import { AsPrimitive, deepClone, isPlainObject, MaxRecursion } from "@ngutil/common"
+import { AsPrimitive, deepClone, isFalsy, isPlainObject, isTruthy, MaxRecursion } from "@ngutil/common"
 
 import { Model } from "../model"
 import { PathGetter, pathGetterCompile } from "./path"
@@ -170,6 +170,15 @@ export function filterNormalize<T extends Model>(filters: Filter<T>): FilterNorm
 }
 
 function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string): any {
+    if ("op" in filters && "value" in filters) {
+        if (filters["op"] === FilterOp.Or || filters["op"] === FilterOp.And) {
+            return { op: filters["op"], value: filters["value"].map((v: any) => _normalizeFilter(v, parent)) }
+        }
+        if ("path" in filters) {
+            return filters
+        }
+    }
+
     const norm = flattenDeep(
         Object.entries(filters).map(([path, value]) => {
             switch (path) {
@@ -374,27 +383,11 @@ function or_(fns: FilterFn[]): FilterFn {
 }
 
 export function filterMerge(...filters: any[]): any | undefined {
-    let result: { [key: string]: any } | undefined = undefined
+    const value = filters
+        .filter(v => v && ((Array.isArray(v) && v.length > 0) || (isPlainObject(v) && Object.keys(v).length > 0)))
+        .map(filter => deepClone(filter))
 
-    for (const filter of filters) {
-        if (filter == null) {
-            continue
-        }
-        if (result == null) {
-            result = deepClone(filter)
-        } else {
-            for (const [k, v] of Object.entries(filter)) {
-                if (v === undefined) {
-                    delete result[k]
-                    continue
-                }
-
-                result[k] = deepClone(v)
-            }
-        }
-    }
-
-    return result as any
+    return compact({ op: FilterOp.And, value })
 }
 
 export class FilterProperty<T extends Model> extends QueryProperty<Filter<T>, FilterNormalized> {
@@ -417,4 +410,70 @@ export class FilterPropertySet<T extends Model> extends QueryPropertySet<Filter<
     protected override merge(...args: any[]) {
         return filterMerge(...args)
     }
+}
+
+export function filterSimplify(filters: any): object | null {
+    if (isTruthy(filters)) {
+        filters = compact(filterNormalize(filters))
+        const result: { [key: string]: any } = {}
+        if (filters["op"] === FilterOp.And) {
+            filters = filters["value"]
+            if (filters == null) {
+                return result
+            }
+        }
+        if (!Array.isArray(filters)) {
+            filters = [filters]
+        }
+
+        for (const f of filters) {
+            if (
+                f["value"] != null &&
+                (f["op"] === FilterOp.Eq || f["op"] === FilterOp.EqStrict || f["op"] === FilterOp.EqInsesitive)
+            ) {
+                result[f["path"] as string] = f["value"]
+            }
+        }
+        return result
+    } else {
+        return null
+    }
+}
+
+function compact(filters: FilterNormalized): any {
+    if (filters.op === FilterOp.And || filters.op === FilterOp.Or) {
+        if (isFalsy(filters.value)) {
+            return null
+        }
+
+        let value = filters.value.map(compact).filter(isTruthy)
+        if (value.length === 0) {
+            return null
+        }
+
+        // remove subfilters with the same operator
+        value = value.reduce((acc, value) => {
+            if (value.op === filters.op) {
+                return acc.concat(value.value)
+            } else {
+                acc.push(value)
+                return acc
+            }
+        }, [])
+
+        // deduplicate, and latest filter is the most priority
+        value = value
+            .reverse()
+            .filter((v, i, a) => a.findIndex(v2 => v.path === v2.path && v.op === v2.op) === i)
+            .reverse()
+
+        if (value.length === 1) {
+            return value[0]
+        }
+
+        return { op: filters.op, value }
+    } else if (filters.value == null) {
+        return null
+    }
+    return filters
 }

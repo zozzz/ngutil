@@ -3,8 +3,12 @@ import { Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
 import { AsyncPipe } from "@angular/common"
 import { Component, inject } from "@angular/core"
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
+import { FormControl, ReactiveFormsModule } from "@angular/forms"
 
-import { map, switchMap, take } from "rxjs"
+import { combineLatest, map, switchMap, take } from "rxjs"
+
+import { fcObservableValue } from "@ngutil/common"
 
 import { ArrayProvider } from "../provider"
 import { DataSourceProxy } from "./proxy.directive"
@@ -29,8 +33,18 @@ const ITEMS = new ArrayProvider(
 @Component({
     standalone: true,
     selector: "basic-table",
-    imports: [AsyncPipe],
+    imports: [AsyncPipe, ReactiveFormsModule],
     template: `
+        <label>
+            Normal:
+            <input type="text" [formControl]="normalFilter" />
+        </label>
+
+        <label>
+            Forced:
+            <input type="text" [formControl]="forcedFilter" />
+        </label>
+
         <table>
             <thead>
                 <tr>
@@ -53,10 +67,12 @@ const ITEMS = new ArrayProvider(
             <tbody>
                 @if (source.items$ | async; as items) {
                     @for (item of items; track $index) {
-                        <tr>
-                            <td>{{ item.id }}</td>
-                            <td>{{ item.name }}</td>
-                        </tr>
+                        @if (item) {
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.name }}</td>
+                            </tr>
+                        }
                     }
                 }
             </tbody>
@@ -71,9 +87,36 @@ class BasicTable {
         { field: "name", title: "Name" }
     ]
 
+    readonly normalFilter = new FormControl()
+    readonly normFV = fcObservableValue(this.normalFilter)
+    readonly forcedFilter = new FormControl()
+    readonly forcedFV = fcObservableValue(this.forcedFilter)
+
     // constructor() {
     //     this.source.query$.subscribe(q => console.log(q))
     // }
+
+    constructor() {
+        combineLatest({
+            query: this.source.query$,
+            normal: this.normFV,
+            forced: this.forcedFV
+        })
+            .pipe(takeUntilDestroyed())
+            .subscribe(({ query, normal, forced }) => {
+                query.filter.normal.set({ normal })
+                query.filter.forced.set({ forced })
+                query.filter.normal.set({ normal })
+                query.filter.forced.set({ op: "&", value: [{ forced }, { forced }, { forced }, { forced: "NO" }] })
+            })
+
+        this.source.query$
+            .pipe(
+                switchMap(q => q.filter)
+                // map(filterSimplify)
+            )
+            .subscribe(filter => console.log("XXX", filter))
+    }
 
     sortBy(field: string) {
         // TODO: Plans

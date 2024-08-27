@@ -1,4 +1,4 @@
-export { Filter, FilterNormalized, filterBy, filterMerge, filterNormalize, FilterOp } from "./filter"
+export { Filter, FilterNormalized, filterBy, filterMerge, filterNormalize, FilterOp, filterSimplify } from "./filter"
 export { Grouper, groupBy, grouperMerge } from "./grouper"
 export {
     Sorter,
