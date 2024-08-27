@@ -75,6 +75,12 @@ const ITEMS = new ArrayProvider(
                         }
                     }
                 }
+
+                @if (source.isEmpty$ | async) {
+                    <tr>
+                        <td colspan="2">EMPTY</td>
+                    </tr>
+                }
             </tbody>
         </table>
     `
@@ -107,7 +113,8 @@ class BasicTable {
                 query.filter.normal.set({ normal })
                 query.filter.forced.set({ forced })
                 query.filter.normal.set({ normal })
-                query.filter.forced.set({ op: "&", value: [{ forced }, { forced }, { forced }, { forced: "NO" }] })
+                // query.filter.forced.set({ op: "&", value: [{ forced }, { forced }, { forced }, { forced: "NO" }] })
+                query.filter.forced.set({ op: "&", value: [{ forced }, { forced }, { forced }] })
             })
 
         this.source.query$

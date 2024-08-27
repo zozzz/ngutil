@@ -21,7 +21,7 @@ import {
 
 import { isEqual } from "lodash"
 
-import { ConnectProtocol, deepClone, deepFreeze, isTruthy } from "@ngutil/common"
+import { ConnectProtocol, deepClone, deepFreeze, isFalsy } from "@ngutil/common"
 
 import type { Model, ModelRef } from "../model"
 import type { DataProvider } from "../provider/provider"
@@ -93,7 +93,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     )
 
     readonly isEmpty$ = combineLatest({ busy: this.isBusy$, items: this.items$ }).pipe(
-        map(({ busy, items }) => !busy && items?.some(isTruthy)),
+        map(({ busy, items }) => !busy && items.every(isFalsy)),
         shareReplay(1)
     )
 
