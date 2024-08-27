@@ -6,6 +6,8 @@ export { NumberWithUnit, NumberWithUnitInput, UNIT_REGEX, NUMBER_REGEX } from ".
 export { coerceBoolAttr, BooleanInput } from "./coerce/bool-attr"
 export { coerceElement, ElementInput, isElementInput } from "./coerce/element"
 
+export * from "./form"
+
 export { StateChain, StateChainHandler } from "./state-chain"
 
 export {
