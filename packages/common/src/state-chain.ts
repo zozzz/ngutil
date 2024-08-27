@@ -89,6 +89,9 @@ export class StateChain<T extends StateOptions, S extends string | number | symb
     }
 
     #run(state: S): Observable<S | null> {
+        if (this.#handlers == null) {
+            return of(null)
+        }
         const options = this.states[state as any]
 
         return new Observable(dst => {
