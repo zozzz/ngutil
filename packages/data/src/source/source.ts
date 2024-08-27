@@ -5,7 +5,6 @@ import {
     combineLatest,
     debounceTime,
     distinctUntilChanged,
-    finalize,
     map,
     Observable,
     of,
@@ -88,7 +87,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                 })
             )
         ),
-        finalize(() => this.#setBusy(false)),
+        tap(() => this.#setBusy(false)),
         shareReplay(1)
     )
 
