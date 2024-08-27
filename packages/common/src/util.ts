@@ -58,3 +58,22 @@ export function toSorted<T>(items: readonly T[], fn: (a: T, b: T) => number): T[
         return items.slice(0).sort(fn)
     }
 }
+
+export function isFalsy(value: any): value is boolean {
+    if (value == null) {
+        return true
+    } else if (Array.isArray(value)) {
+        return value.length === 0
+    } else if (isPlainObject(value)) {
+        return Object.keys(value).length === 0
+    } else if (value instanceof Set) {
+        return value.size === 0
+    } else if (value instanceof Map) {
+        return value.size === 0
+    } else if (typeof value === "string") {
+        return value.length === 0
+    } else if (typeof value === "number") {
+        return isNaN(value) || value === 0
+    }
+    return false
+}
