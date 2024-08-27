@@ -1,7 +1,7 @@
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 import { FormControl } from "@angular/forms"
 
-import { debounceTime, distinctUntilChanged, map, Observable, startWith } from "rxjs"
+import { debounceTime, distinctUntilChanged, map, Observable, shareReplay, startWith } from "rxjs"
 
 import { isEqual } from "lodash"
 
@@ -74,5 +74,5 @@ function handleCommonOptions<T>(o: Observable<T>, opts: ObservableOptions): Obse
         o = o.pipe(takeUntilDestroyed())
     }
 
-    return o
+    return o.pipe(shareReplay(1))
 }
