@@ -375,6 +375,9 @@ importers:
 
   packages/layout:
     dependencies:
+      '@angular/animations':
+        specifier: ^17.3.6
+        version: 17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))
       '@angular/common':
         specifier: ^17.3.6
         version: 17.3.6(@angular/core@17.3.6(rxjs@7.8.1)(zone.js@0.14.5))(rxjs@7.8.1)
