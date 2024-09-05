@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.43](https://github.com/zozzz/ngutil/compare/0.0.42...0.0.43) (2024-09-05)
+
+
+### Features
+
+* **layout:** Sliding layout ([d66a2e2](https://github.com/zozzz/ngutil/commit/d66a2e2e2a4e7b62c82bddd54a3f6ff7e685dec2))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([d08f768](https://github.com/zozzz/ngutil/commit/d08f7686d3592cde8244e11ed94754eaf845e396))
+
 ## [0.0.42](https://github.com/zozzz/ngutil/compare/0.0.41...0.0.42) (2024-08-27)
 
 ## [0.0.41](https://github.com/zozzz/ngutil/compare/0.0.40...0.0.41) (2024-08-27)
