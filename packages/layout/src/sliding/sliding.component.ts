@@ -4,11 +4,13 @@ import { Component, computed, contentChildren, effect, input, output, signal } f
 
 import { clamp } from "lodash"
 
-import { Duration } from "@ngutil/style"
+import { Duration, Ease } from "@ngutil/style"
 
 import { ItemAnimationState, SlidingItemDirective } from "./sliding-item.directive"
 
 const absolute = { position: "absolute", top: "0px", left: "0px" }
+
+const anim = `${Duration.Fast} ${Ease.Acceleration}`
 
 @Component({
     selector: "nu-sliding",
@@ -44,19 +46,19 @@ const absolute = { position: "absolute", top: "0px", left: "0px" }
 
             transition(`* => ${ItemAnimationState.LeftOut}`, [
                 style({ width: "*", ...absolute, transform: "translateX(0)", pointerEvents: "none" }),
-                animate(Duration.MediumMs, style({ transform: "translateX(-100%)" }))
+                animate(anim, style({ transform: "translateX(-100%)" }))
             ]),
             transition(`* => ${ItemAnimationState.RightOut}`, [
                 style({ width: "*", ...absolute, transform: "translateX(0)", pointerEvents: "none" }),
-                animate(Duration.MediumMs, style({ transform: "translateX(100%)" }))
+                animate(anim, style({ transform: "translateX(100%)" }))
             ]),
             transition(`* => ${ItemAnimationState.LeftIn}`, [
                 style({ display: "flex", position: "relative", transform: "translateX(-100%)" }),
-                animate(Duration.MediumMs, style({ transform: "translateX(0)" }))
+                animate(anim, style({ transform: "translateX(0)" }))
             ]),
             transition(`* => ${ItemAnimationState.RightIn}`, [
                 style({ display: "flex", position: "relative", transform: "translateX(100%)" }),
-                animate(Duration.MediumMs, style({ transform: "translateX(0%)" }))
+                animate(anim, style({ transform: "translateX(0%)" }))
             ])
         ])
     ],
