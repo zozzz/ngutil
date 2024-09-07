@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.44](https://github.com/zozzz/ngutil/compare/0.0.43...0.0.44) (2024-09-07)
+
+
+### Bug Fixes
+
+* **layout:** Add `overflow: hidden` to slideing item ([2f236ca](https://github.com/zozzz/ngutil/commit/2f236cadd024564066ea2c08c34fd1d71be26f18))
+
 ## [0.0.43](https://github.com/zozzz/ngutil/compare/0.0.42...0.0.43) (2024-09-05)
 
 
