@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.45](https://github.com/zozzz/ngutil/compare/0.0.44...0.0.45) (2024-09-10)
+
+
+### Bug Fixes
+
+* **layout:** Remove sliding item pointer-events: none ([8c42236](https://github.com/zozzz/ngutil/commit/8c4223681fb979eec235b78d11e692f3023d6e60))
+
 ## [0.0.44](https://github.com/zozzz/ngutil/compare/0.0.43...0.0.44) (2024-09-07)
 
 
