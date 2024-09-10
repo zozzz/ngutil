@@ -98,6 +98,7 @@ export class Ripple implements IDisposable {
         zone.runOutsideAngular(() => {
             el.addEventListener("transitionstart", this.#transBegin)
             el.addEventListener("transitionend", this.#transEnd)
+            el.addEventListener("transitioncancel", this.#transEnd)
             document.addEventListener("mouseup", this.autoDestroy, { capture: true, passive: true })
             document.addEventListener("dragend", this.autoDestroy, { capture: true, passive: true })
         })
@@ -123,6 +124,7 @@ export class Ripple implements IDisposable {
     dispose(): void {
         this.el.removeEventListener("transitionstart", this.#transBegin)
         this.el.removeEventListener("transitionend", this.#transEnd)
+        this.el.removeEventListener("transitioncancel", this.#transEnd)
         document.removeEventListener("mouseup", this.autoDestroy, { capture: true })
         this.el.parentNode?.removeChild(this.el)
         this.onDestroy()
