@@ -1,13 +1,6 @@
 import { Directive, effect, inject, output, signal, TemplateRef } from "@angular/core"
 
-export const enum ItemAnimationState {
-    LeftIn = "left-in",
-    LeftOut = "left-out",
-    RightIn = "right-in",
-    RightOut = "right-out",
-    FastOut = "fast-out",
-    FastIn = "fast-in"
-}
+import type { ItemAnimationState } from "./sliding-item.component"
 
 @Directive({
     selector: "ng-template[nuSlidingItem]",
@@ -18,7 +11,7 @@ export class SlidingItemDirective {
 
     readonly rendered = signal(false)
     readonly active = signal(false)
-    readonly animation = signal<{ value: ItemAnimationState } | null>(null)
+    readonly animation = signal<ItemAnimationState | null>(null)
     readonly activated = output<boolean>()
 
     constructor() {
