@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.0.46](https://github.com/zozzz/ngutil/compare/0.0.45...0.0.46) (2024-09-11)
+
+
+### Features
+
+* **aria:** GestureService ([15dbd37](https://github.com/zozzz/ngutil/commit/15dbd37947f194921e76aa6df04c12000761b6f0))
+
+
+### Bug Fixes
+
+* **graphics:** Ripple is not destroyed when in animation context ([49e7e5d](https://github.com/zozzz/ngutil/commit/49e7e5dabc046d94bb7e6acc4cb6e9618c58c953))
+
+
+### Other changes
+
+* **tools:** Update pnpm-lock.yaml ([05340ef](https://github.com/zozzz/ngutil/commit/05340ef83442363cb91f3d3b3d8037b8f422572d))
+
 ## [0.0.45](https://github.com/zozzz/ngutil/compare/0.0.44...0.0.45) (2024-09-10)
 
 
