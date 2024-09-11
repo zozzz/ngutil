@@ -258,6 +258,9 @@ importers:
       '@ngutil/common':
         specifier: workspace:*
         version: link:../../dist/packages/common
+      '@ngutil/style':
+        specifier: workspace:*
+        version: link:../../dist/packages/style
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -267,6 +270,9 @@ importers:
       tslib:
         specifier: ^2.6.2
         version: 2.6.2
+      utility-types:
+        specifier: ^3.11.0
+        version: 3.11.0
     devDependencies:
       '@storybook/angular':
         specifier: ^8.0.10
