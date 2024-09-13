@@ -11,7 +11,7 @@ export interface Gesture<T extends GestureEvent> {
     handler: GestureHandler<T>
 }
 
-export type GestureHandler<T extends GestureEvent> = (events: Observable<GestureMatchState>) => Observable<T>
+export type GestureHandler<T extends GestureEvent> = (events: Observable<GestureMatchState<T>>) => Observable<T>
 
 export type GestureListener = {
     name: keyof DocumentEventMap
@@ -51,7 +51,7 @@ export const enum GesturePhase {
     End = "end"
 }
 
-export type GestureMatchState = Partial<Mutable<GestureEvent>> & {
+export type GestureMatchState<T extends GestureEvent = GestureEvent> = Partial<Mutable<T>> & {
     readonly pending?: Array<string>
 }
 

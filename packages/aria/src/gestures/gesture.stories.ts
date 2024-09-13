@@ -55,7 +55,7 @@ class GestureTest {
                 .watch(drag, Dragging)
                 .pipe(takeUntil(this.destroy))
                 .subscribe(dragEvent => {
-                    // console.log("xxx", dragEvent)
+                    // console.log(dragEvent)
                     const target = dragEvent.target
 
                     if (dragEvent.phase === "end") {

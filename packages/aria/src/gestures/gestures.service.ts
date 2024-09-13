@@ -12,10 +12,8 @@ import {
     of,
     scan,
     share,
-    shareReplay,
     startWith,
-    Subject,
-    takeUntil,
+    takeWhile,
     tap
 } from "rxjs"
 
@@ -47,13 +45,11 @@ export class GesturesService {
 
     watch<T extends GestureEvent>(el: ElementInput, ...gestures: Gesture<T>[]): Observable<T> {
         return this.#zone.runOutsideAngular(() => {
-            const signal = new Subject<Signal>()
             const listeners = flatten(gestures.map(v => v.listeners || []))
             const { trigger, watch } = this.#getListeners(coerceElement(el), listeners)
 
             let pointerType: GesturePointerType | undefined
-            const events = trigger.pipe(
-                takeUntil(signal.pipe(filter(v => v === Signal.Destroy))),
+            return trigger.pipe(
                 filter(state => {
                     if (pointerType == null) {
                         pointerType = state.pointerType
@@ -61,27 +57,16 @@ export class GesturesService {
                     return pointerType === state.pointerType
                 }),
                 concatMap(v =>
-                    this.#zone.runOutsideAngular(() => watch[pointerType!].pipe(startWith(v), takeUntil(signal)))
-                ),
-                scan((state, curr) => {
-                    const result = { ...state, ...curr }
-                    updatePointers(result)
-                    return result
-                }, {} as GestureMatchState),
-                tap(state => {
-                    if (state.phase === GesturePhase.End) {
-                        pointerType = undefined
-                        signal.next(Signal.Rewatch)
-                    }
-                }),
-                shareReplay(1)
-            )
-
-            return merge(...gestures.map(v => v.handler(events))).pipe(
-                finalize(() => {
-                    signal.next(Signal.Destroy)
-                    signal.complete()
-                })
+                    this.#zone.runOutsideAngular(() => {
+                        const watching = watch[pointerType!].pipe(
+                            startWith(v),
+                            scan((state, curr) => updatePointers({ ...state, ...curr }), {} as GestureMatchState<T>),
+                            takeWhile(state => state.phase !== GesturePhase.End, true),
+                            share()
+                        )
+                        return merge(...gestures.map(v => v.handler(watching)))
+                    })
+                )
             )
         })
     }
@@ -184,7 +169,7 @@ function pointersFromEvent(event: MouseEvent | TouchEvent): Position[] {
     }
 }
 
-function updatePointers(state: GestureMatchState) {
+function updatePointers<T extends GestureMatchState>(state: T): T {
     if (state.phase === GesturePhase.Start) {
         state.pointers = pointersFromEvent(state.origin!).map(v => {
             return { start: v, current: v, distance: { x: 0, y: 0 }, direction: { x: 0, y: 0 } }
@@ -192,7 +177,7 @@ function updatePointers(state: GestureMatchState) {
     } else if (state.pointers) {
         const pointers = pointersFromEvent(state.origin!)
         if (pointers.length === 0) {
-            return
+            return state
         }
 
         state.pointers = state.pointers.map((v, i) => {
@@ -205,6 +190,8 @@ function updatePointers(state: GestureMatchState) {
             }
         })
     }
+
+    return state
 }
 
 function direction(prev: number, curr: number): -1 | 0 | 1 {
