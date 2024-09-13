@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.47](https://github.com/zozzz/ngutil/compare/0.0.46...0.0.47) (2024-09-13)
+
+
+### Bug Fixes
+
+* **aria:** Optimize gestures ([c5fb7a6](https://github.com/zozzz/ngutil/commit/c5fb7a6169bb6b4ed1f8cded7b81783c36af41c5))
+
 ## [0.0.46](https://github.com/zozzz/ngutil/compare/0.0.45...0.0.46) (2024-09-11)
 
 
