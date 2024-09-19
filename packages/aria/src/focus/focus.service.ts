@@ -3,7 +3,7 @@ import { DOCUMENT } from "@angular/common"
 import { inject, Inject, Injectable, NgZone } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 
-import { combineLatest, filter, fromEvent, map, Observable, shareReplay, startWith } from "rxjs"
+import { combineLatest, distinctUntilChanged, filter, fromEvent, map, Observable, shareReplay, startWith } from "rxjs"
 
 import { focusable, type FocusableElement, isFocusable } from "tabbable"
 
@@ -44,7 +44,16 @@ export class FocusService {
             )
 
             return combineLatest({
-                activity: this.#activity.events,
+                activity: this.#activity.events$.pipe(
+                    filter(event => event.type !== "mousemove"),
+                    distinctUntilChanged((prev, curr): boolean => {
+                        if (prev && curr) {
+                            return prev.origin === curr.origin && prev.node === curr.node
+                        } else {
+                            return false
+                        }
+                    })
+                ),
                 focus: focus,
                 blur: blur
             }).pipe(

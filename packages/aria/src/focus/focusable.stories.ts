@@ -1,8 +1,10 @@
 /* eslint-disable max-len */
 import { Meta, moduleMetadata, StoryFn, StoryObj } from "@storybook/angular"
 
+import { AsyncPipe } from "@angular/common"
 import { Component, inject } from "@angular/core"
 
+import { ActivityService } from "../activity/activity.service"
 import { FocusState } from "./focus-state.directive"
 import { Focusable } from "./focusable.directive"
 
@@ -100,10 +102,22 @@ class FocusableComponent {
 })
 class FormField {}
 
+@Component({
+    selector: "story-activity",
+    standalone: true,
+    imports: [AsyncPipe],
+    providers: [ActivityService],
+    template: ` <div>IsInactive: {{ (isInactive$ | async) ? "true" : "false" }}</div> `
+})
+class ActivityComponent {
+    readonly #activity = inject(ActivityService)
+    readonly isInactive$ = this.#activity.watchInactvity(10000)
+}
+
 export default {
     title: "Focus / Focusable",
     component: FocusableComponent,
-    decorators: [moduleMetadata({ imports: [FormField] })]
+    decorators: [moduleMetadata({ imports: [FormField, ActivityComponent] })]
     // parameters: {
     //     layout: "fullscreen",
     //     controls: { include: [] }
@@ -124,6 +138,7 @@ type Story = StoryObj<FocusableComponent>
 
 export const Basic: StoryFn<Story> = args => {
     const template = `
+        <story-activity />
         <story-focusable></story-focusable>
         <story-focusable tabindex="42"></story-focusable>
         <story-focusable></story-focusable>
