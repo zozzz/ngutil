@@ -26,7 +26,11 @@ export interface GestureEvent<T extends string = string> {
     readonly pointerType: GesturePointerType
     readonly phase: GesturePhase
     readonly pointers: ReadonlyArray<GesturePointer>
+
+    preventDefault(): void
 }
+
+type GestureEventFixFields = "target" | "origin" | "pointers" | "phase" | "pointerType" | "preventDefault"
 
 export type PointersPosition = ReadonlyArray<Readonly<Position>>
 
@@ -51,9 +55,12 @@ export const enum GesturePhase {
     End = "end"
 }
 
-export type GestureMatchState<T extends GestureEvent = GestureEvent> = Partial<Mutable<T>> & {
-    readonly pending?: Array<string>
-}
+export type GestureMatchState<T extends GestureEvent = GestureEvent> = Partial<
+    Mutable<Omit<T, GestureEventFixFields>>
+> &
+    Pick<T, GestureEventFixFields> & {
+        readonly pending?: Array<string>
+    }
 
 export function stateToEvent<T extends GestureEvent>(state: GestureMatchState, type: string): T {
     return {
@@ -79,10 +86,46 @@ export const enum ListenerTarget {
 }
 
 export const Listeners: { [key: string]: ListenerConfig } = {
-    mousedown: { target: ListenerTarget.Element, pointerType: GesturePointerType.Mouse, phase: GesturePhase.Start },
-    mousemove: { target: ListenerTarget.Document, pointerType: GesturePointerType.Mouse, phase: GesturePhase.Moving },
-    mouseup: { target: ListenerTarget.Document, pointerType: GesturePointerType.Mouse, phase: GesturePhase.End },
-    touchstart: { target: ListenerTarget.Element, pointerType: GesturePointerType.Touch, phase: GesturePhase.Start },
-    touchmove: { target: ListenerTarget.Document, pointerType: GesturePointerType.Touch, phase: GesturePhase.Moving },
-    touchend: { target: ListenerTarget.Document, pointerType: GesturePointerType.Touch, phase: GesturePhase.End }
+    mousedown: {
+        target: ListenerTarget.Element,
+        pointerType: GesturePointerType.Mouse,
+        phase: GesturePhase.Start,
+        options: { capture: true, passive: false }
+    },
+    mousemove: {
+        target: ListenerTarget.Document,
+        pointerType: GesturePointerType.Mouse,
+        phase: GesturePhase.Moving,
+        options: { capture: true, passive: false }
+    },
+    mouseup: {
+        target: ListenerTarget.Document,
+        pointerType: GesturePointerType.Mouse,
+        phase: GesturePhase.End,
+        options: { capture: true, passive: true }
+    },
+    touchstart: {
+        target: ListenerTarget.Element,
+        pointerType: GesturePointerType.Touch,
+        phase: GesturePhase.Start,
+        options: { capture: true, passive: false }
+    },
+    touchmove: {
+        target: ListenerTarget.Document,
+        pointerType: GesturePointerType.Touch,
+        phase: GesturePhase.Moving,
+        options: { capture: true, passive: false }
+    },
+    touchend: {
+        target: ListenerTarget.Document,
+        pointerType: GesturePointerType.Touch,
+        phase: GesturePhase.End,
+        options: { capture: true, passive: false }
+    },
+    touchcancel: {
+        target: ListenerTarget.Document,
+        pointerType: GesturePointerType.Touch,
+        phase: GesturePhase.End,
+        options: { capture: true, passive: true }
+    }
 } as const

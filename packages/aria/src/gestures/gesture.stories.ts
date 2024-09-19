@@ -34,8 +34,14 @@ import { GesturesService } from "./gestures.service"
     `,
     template: `
         <button (click)="destroy.next()">DESTROY</button>
-        <div #drag class="garea">DRAG</div>
-        <div #drag2 class="garea">DRAG</div>
+        <div #drag class="garea">DRAG1</div>
+        <div #drag2 class="garea">DRAG2</div>
+        <div class="garea">SOMETHING</div>
+        <div class="garea">SOMETHING</div>
+        <div class="garea">SOMETHING</div>
+        <div class="garea">SOMETHING</div>
+        <div class="garea">SOMETHING</div>
+        <div class="garea">SOMETHING</div>
     `
 })
 class GestureTest {

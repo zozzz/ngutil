@@ -1,4 +1,4 @@
-import { filter, map } from "rxjs"
+import { filter, map, tap } from "rxjs"
 
 import { Gesture, GestureEvent, GesturePhase, stateToEvent } from "./_base"
 
@@ -14,11 +14,12 @@ const TypeMap = {
 
 export const Dragging: Gesture<DraggingEvent> = {
     name: "dragging",
-    listeners: ["mousedown", "mousemove", "mouseup", "touchstart", "touchmove", "touchend"],
+    listeners: ["mousedown", "mousemove", "mouseup", "touchstart", "touchmove", "touchend", "touchcancel"],
     priority: 0,
     handler: events =>
         events.pipe(
             filter(state => !state.pending || state.pending.length === 0),
-            map(state => stateToEvent(state, TypeMap[state.phase!]))
+            tap(state => state.preventDefault()),
+            map(state => stateToEvent(state, TypeMap[state.phase]))
         )
 }

@@ -18,6 +18,7 @@ import {
 } from "rxjs"
 
 import { flatten } from "lodash"
+import { Mutable } from "utility-types"
 
 import { coerceElement, ElementInput } from "@ngutil/common"
 import { Position } from "@ngutil/style"
@@ -31,11 +32,6 @@ import {
     GesturePointerType,
     Listeners
 } from "./gestures"
-
-const enum Signal {
-    Rewatch = 1,
-    Destroy = 2
-}
 
 @Injectable({ providedIn: "root" })
 export class GesturesService {
@@ -60,7 +56,10 @@ export class GesturesService {
                     this.#zone.runOutsideAngular(() => {
                         const watching = watch[pointerType!].pipe(
                             startWith(v),
-                            scan((state, curr) => updatePointers({ ...state, ...curr }), {} as GestureMatchState<T>),
+                            scan(
+                                (state, curr) => updatePointers<T>({ ...state, ...curr } as T),
+                                {} as GestureMatchState<T>
+                            ),
                             takeWhile(state => state.phase !== GesturePhase.End, true),
                             share()
                         )
@@ -71,7 +70,7 @@ export class GesturesService {
         })
     }
 
-    #getListeners(inputEl: HTMLElement, listeners: string[]) {
+    #getListeners<T extends GestureEvent>(inputEl: HTMLElement, listeners: string[]) {
         const triggers: string[] = []
         const watches: { [key: string]: string[] } = {}
 
@@ -96,9 +95,9 @@ export class GesturesService {
             if (names.length === 0) {
                 return of()
             } else if (names.length === 1) {
-                return this.#getListener(inputEl, names[0])
+                return this.#getListener<T>(inputEl, names[0])
             } else {
-                return merge(...names.map(v => this.#getListener(inputEl, v)))
+                return merge(...names.map(v => this.#getListener<T>(inputEl, v)))
             }
         }
 
@@ -111,7 +110,7 @@ export class GesturesService {
         }
     }
 
-    #getListener(inputEl: HTMLElement, name: string): Observable<GestureMatchState> {
+    #getListener<T extends GestureEvent>(inputEl: HTMLElement, name: string): Observable<GestureMatchState<T>> {
         return this.#zone.runOutsideAngular(() => {
             const target = Listeners[name].target
             const targetObj = target === "document" ? this.#document : inputEl
@@ -124,22 +123,28 @@ export class GesturesService {
 
             let listener = targetListeners.get(name)
             if (listener == null) {
-                const phase = Listeners[name].phase
-                const pointerType = Listeners[name].pointerType
+                const { phase, pointerType, options } = Listeners[name]
+                const passive = options?.passive
 
-                listener = fromEvent<GestureOrigin>(targetObj, name, { capture: true }).pipe(
+                listener = fromEvent<GestureOrigin>(targetObj, name, options as any).pipe(
                     finalize(() => {
                         targetListeners.delete(name)
                     }),
-                    map<GestureOrigin, GestureMatchState>(origin => {
-                        return { origin, phase, pointerType }
-                    })
+                    map(
+                        origin =>
+                            ({
+                                origin,
+                                phase,
+                                pointerType,
+                                preventDefault: passive === false ? origin.preventDefault.bind(origin) : noop
+                            }) as unknown as GestureMatchState<T>
+                    )
                 )
 
                 if (phase === GesturePhase.Start) {
                     listener = listener.pipe(
                         tap(state => {
-                            state.target = state.origin!.target! as HTMLElement
+                            ;(state as Mutable<GestureMatchState>).target = state.origin.target as HTMLElement
                         })
                     )
                 }
@@ -149,7 +154,7 @@ export class GesturesService {
                 targetListeners.set(name, listener)
             }
 
-            return listener
+            return listener as Observable<GestureMatchState<T>>
         })
     }
 }
@@ -169,13 +174,13 @@ function pointersFromEvent(event: MouseEvent | TouchEvent): Position[] {
     }
 }
 
-function updatePointers<T extends GestureMatchState>(state: T): T {
+function updatePointers<T extends GestureEvent>(state: Mutable<T>): GestureMatchState<T> {
     if (state.phase === GesturePhase.Start) {
-        state.pointers = pointersFromEvent(state.origin!).map(v => {
+        state.pointers = pointersFromEvent(state.origin).map(v => {
             return { start: v, current: v, distance: { x: 0, y: 0 }, direction: { x: 0, y: 0 } }
         })
     } else if (state.pointers) {
-        const pointers = pointersFromEvent(state.origin!)
+        const pointers = pointersFromEvent(state.origin)
         if (pointers.length === 0) {
             return state
         }
@@ -200,3 +205,4 @@ function direction(prev: number, curr: number): -1 | 0 | 1 {
 
 // const svc = new GesturesService()
 // const w = svc.watch(document.createElement("div"), DragAndDrop)
+function noop() {}
