@@ -1,15 +1,28 @@
 import { DOCUMENT } from "@angular/common"
-import { Inject, Injectable, NgZone } from "@angular/core"
+import { inject, Injectable, NgZone } from "@angular/core"
 
-import { distinctUntilChanged, filter, Observable, shareReplay, Subject } from "rxjs"
-
-import { Destructible } from "@ngutil/common"
+import {
+    distinctUntilChanged,
+    filter,
+    fromEvent,
+    map,
+    merge,
+    Observable,
+    share,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+    throttleTime,
+    timer
+} from "rxjs"
 
 // TODO: detect program activity
 export type ActivityOrigin = "mouse" | "keyboard" | "touch" | "program"
 
 export interface ActivityEvent {
     origin: ActivityOrigin
+    type: keyof typeof EVENT_ORIGIN
     node?: Node
 }
 
@@ -18,45 +31,40 @@ const EVENT_OPTIONS: AddEventListenerOptions = {
     passive: true
 }
 
+const EVENT_ORIGIN = {
+    keydown: "keyboard",
+    mousedown: "mouse",
+    mousemove: "mouse",
+    touchstart: "touch"
+}
+
 @Injectable({ providedIn: "root" })
-export class ActivityService extends Destructible {
-    #activity!: Subject<ActivityEvent>
+export class ActivityService {
+    readonly #zone = inject(NgZone)
+    readonly #doc = inject(DOCUMENT)
 
-    readonly events!: Observable<ActivityEvent>
-
-    constructor(@Inject(DOCUMENT) document: Document, @Inject(NgZone) zone: NgZone) {
-        super()
-
-        zone.runOutsideAngular(() => {
-            this.#activity = new Subject()
-            ;(this as { events: Observable<ActivityEvent> }).events = this.#activity.pipe(
-                distinctUntilChanged((prev, curr): boolean => {
-                    if (prev && curr) {
-                        return prev.origin === curr.origin && prev.node === curr.node
-                    } else {
-                        return false
-                    }
-                }),
-                shareReplay(1)
-            )
-
-            document.addEventListener("keydown", this.#onKeydown, EVENT_OPTIONS)
-            document.addEventListener("mousedown", this.#onMouseDown, EVENT_OPTIONS)
-            document.addEventListener("mousemove", this.#onMouseMove, EVENT_OPTIONS)
-            document.addEventListener("touchstart", this.#onTouchStart, EVENT_OPTIONS)
-
-            this.d.any(() => {
-                document.removeEventListener("keydown", this.#onKeydown, EVENT_OPTIONS)
-                document.removeEventListener("mousedown", this.#onMouseDown, EVENT_OPTIONS)
-                document.removeEventListener("mousemove", this.#onMouseMove, EVENT_OPTIONS)
-                document.removeEventListener("touchstart", this.#onTouchStart, EVENT_OPTIONS)
-            })
-        })
-    }
+    readonly events$: Observable<ActivityEvent> = this.#zone.runOutsideAngular(() =>
+        merge(
+            fromEvent(this.#doc, "keydown", EVENT_OPTIONS),
+            fromEvent(this.#doc, "mousedown", EVENT_OPTIONS),
+            fromEvent(this.#doc, "mousemove", EVENT_OPTIONS),
+            fromEvent(this.#doc, "touchstart", EVENT_OPTIONS)
+        ).pipe(
+            map(event => {
+                const type = event.type as ActivityEvent["type"]
+                return {
+                    origin: EVENT_ORIGIN[type] as ActivityOrigin,
+                    type: type,
+                    node: event.target as any
+                }
+            }),
+            share()
+        )
+    )
 
     watchActivity(node?: HTMLElement) {
         if (node) {
-            return this.events.pipe(
+            return this.events$.pipe(
                 filter(
                     event =>
                         event.node != null &&
@@ -65,27 +73,18 @@ export class ActivityService extends Destructible {
                 shareReplay(1)
             )
         } else {
-            return this.events
+            return this.events$
         }
     }
 
     watchInactvity(timeout: number) {
-        throw Error("Not implemnted yet")
-    }
-
-    #onKeydown = (event: KeyboardEvent) => {
-        this.#activity.next({ origin: "keyboard", node: event.target as any })
-    }
-
-    #onMouseDown = (event: MouseEvent) => {
-        this.#activity.next({ origin: "mouse", node: event.target as any })
-    }
-
-    #onMouseMove = (event: MouseEvent) => {
-        // this.#activity.next({ origin: "mouse" })
-    }
-
-    #onTouchStart = (event: TouchEvent) => {
-        this.#activity.next({ origin: "touch", node: event.target as any })
+        return this.events$.pipe(
+            startWith(null),
+            throttleTime(timeout / 2),
+            switchMap(() => timer(0, timeout).pipe(take(2))),
+            map(v => v !== 0),
+            distinctUntilChanged(),
+            shareReplay(1)
+        )
     }
 }
