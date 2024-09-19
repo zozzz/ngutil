@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.48](https://github.com/zozzz/ngutil/compare/0.0.47...0.0.48) (2024-09-19)
+
+
+### Features
+
+* **aria:** ActivityService.watchInactvity ([940471d](https://github.com/zozzz/ngutil/commit/940471d6a9673ae8753c7abf11a8acfb95ec71fc))
+
+
+### Bug Fixes
+
+* **aria:** GestureMatchState ([41ee5d1](https://github.com/zozzz/ngutil/commit/41ee5d17e9265936df46a0870239e23eca3344d1))
+
 ## [0.0.47](https://github.com/zozzz/ngutil/compare/0.0.46...0.0.47) (2024-09-13)
 
 
