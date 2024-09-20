@@ -8,7 +8,7 @@ export { coerceElement, ElementInput, isElementInput } from "./coerce/element"
 
 export * from "./form"
 
-export { StateChain, StateChainHandler } from "./state-chain"
+// export { StateChain, StateChainHandler } from "./state-chain"
 
 export {
     rawCancelAnimationFrame,
@@ -30,3 +30,4 @@ export { NumberRange } from "./types/number-range"
 export { Primitive, Builtins, isPrimitive, AsPrimitive, ToPrimitiveMap } from "./types/primitive"
 export { DeepReadonly, ReadonlyDate } from "./types/readonly"
 export { deepClone, deepFreeze, isPlainObject, toSorted, isFalsy, isTruthy } from "./util"
+export * from "./lifecycle"
