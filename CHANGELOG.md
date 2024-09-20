@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.49](https://github.com/zozzz/ngutil/compare/0.0.48...0.0.49) (2024-09-20)
+
+
+### Features
+
+* **floating:** AlwaysOnTop ([0e77d7f](https://github.com/zozzz/ngutil/commit/0e77d7fc8d03197c8659e5e6dda5de952c332058))
+* replace StateChain with Lifecycle ([3d6b252](https://github.com/zozzz/ngutil/commit/3d6b25233b91ee07bbfeb6298958a6f17b95621d))
+
 ## [0.0.48](https://github.com/zozzz/ngutil/compare/0.0.47...0.0.48) (2024-09-19)
 
 
