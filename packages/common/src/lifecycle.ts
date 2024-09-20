@@ -46,12 +46,11 @@ export class Lifecycle<T extends LifecycleOptions, S extends keyof T = keyof T> 
     readonly #until = new Subject<void>()
     readonly #trigger = new Subject<S>()
     readonly #status = this.#trigger.pipe(
-        // takeUntil(this.#until),
+        takeUntil(this.#until),
         scan(
             (result, trigger) => {
                 if (!result[trigger]) {
                     result[trigger] = this.#run(trigger as S).pipe(
-                        // takeUntil(this.#until),
                         tap(executed => {
                             if (executed === false) {
                                 delete result[trigger]
@@ -68,7 +67,6 @@ export class Lifecycle<T extends LifecycleOptions, S extends keyof T = keyof T> 
         concatMap(triggers => {
             const srcs = Object.values(triggers) as Array<Observable<[S, boolean]>>
             return concat(...srcs).pipe(
-                // tap(v => console.log(v)),
                 takeWhile(([_, executed]) => executed, false),
                 reduce(
                     (result, [name, executed]) => {
@@ -190,14 +188,14 @@ export class Lifecycle<T extends LifecycleOptions, S extends keyof T = keyof T> 
         }
 
         return new Observable((dest: Subscriber<boolean>) => {
+            this.current$.next(state)
+
             const handlers = this.#handlers[state]
             if (handlers == null || handlers.length === 0) {
                 dest.next(true)
                 dest.complete()
                 return
             }
-
-            this.current$.next(state)
 
             const observables: Array<Observable<any>> = handlers.map(handler => {
                 const observable = handler()

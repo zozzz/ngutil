@@ -1,6 +1,6 @@
 import { ElementRef } from "@angular/core"
 
-import { combineLatest, Observable, Subscriber } from "rxjs"
+import { combineLatest, Observable, Subscriber, takeUntil } from "rxjs"
 
 import { ElementInput } from "@ngutil/common"
 import { AlignmentInput, Dimension, DimensionWatcher, Rect, RectWatcher, SidesInput } from "@ngutil/style"
@@ -101,7 +101,7 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
                 res.apply(floatingRef)
                 dest.next(res)
             })
-        })
+        }).pipe(takeUntil(floatingRef.state.onExecute("disposing")))
     }
 }
 

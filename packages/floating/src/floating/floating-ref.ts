@@ -1,8 +1,20 @@
 import { Inject, Injectable, InjectionToken } from "@angular/core"
 
-import { debounceTime, EMPTY, filter, map, merge, Observable, ReplaySubject, shareReplay, takeUntil } from "rxjs"
+import {
+    debounceTime,
+    EMPTY,
+    filter,
+    map,
+    merge,
+    Observable,
+    ReplaySubject,
+    shareReplay,
+    take,
+    takeUntil,
+    takeWhile
+} from "rxjs"
 
-import { StateChain } from "@ngutil/common"
+import { Lifecycle } from "@ngutil/common"
 
 import { ContainerRef } from "../layer/container-ref"
 import { LayerService } from "../layer/layer.service"
@@ -27,7 +39,7 @@ export interface FloatingTraitEvent {
 export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends HTMLElement = HTMLElement> {
     readonly channel = new ReplaySubject<FloatingChannel>(1)
 
-    readonly state = new StateChain({
+    readonly state = new Lifecycle({
         init: {},
         showing: {},
         shown: {},
@@ -40,15 +52,8 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
     readonly #traits: Traits = {}
     readonly traitState$: Observable<FloatingTraitEvent>
 
-    readonly #untilCleanup = this.state.current$.pipe(
-        filter(state => state === "cleanup"),
-        shareReplay(1)
-    )
-
-    readonly #untilDisposed = this.state.current$.pipe(
-        filter(state => state === "cleanup"),
-        shareReplay(1)
-    )
+    readonly #untilCleanup = this.state.onExecute("cleanup")
+    readonly #untilDisposed = this.state.onExecute("disposed")
 
     constructor(
         readonly layerSvc: LayerService,
@@ -61,41 +66,42 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         this.#traits = traits
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
 
-        const sub = this.state.current$.subscribe(state => {
+        this.state.current$.pipe(takeWhile(state => state !== "cleanup", true)).subscribe(state => {
             this.emit({ type: state } as C)
         })
-        this.state.on(
-            "init",
-            () =>
-                new Observable(dst => {
-                    // TODO: angular render is stabilized
-                    this.traitState$.pipe(takeUntil(this.#untilCleanup), debounceTime(5)).subscribe(() => {
-                        dst.complete()
-                    })
-                })
-        )
+        this.state.on("init", () => this.traitState$.pipe(takeUntil(this.#untilCleanup), debounceTime(5), take(1)))
         this.state.on("showing", () => {
             container.nativeElement.style.visibility = "visible"
         })
         this.state.on("disposing", () => {
             container.nativeElement.style.pointerEvents = "none"
         })
-        this.state.on("disposed", () => {
-            sub.unsubscribe()
-        })
+
         this.state.control(container.state)
+
+        // TODO: remove
+        // this.state.status$.subscribe(status => {
+        //     console.log("floating", status)
+        // })
     }
 
     show() {
-        return this.state.run(["init", "showing", "shown"])
+        return this.state.run("init", "showing", "shown")
     }
 
+    /**
+     * @deprecated
+     */
     hide() {
-        return this.state.run(["disposing", "disposed", "cleanup"])
+        return this.close(true)
     }
 
-    close() {
-        return this.state.run(["closing", "disposing", "disposed", "cleanup"])
+    close(force = false) {
+        if (force) {
+            return this.state.run("disposing", "disposed", "cleanup")
+        } else {
+            return this.state.run("closing", "disposing", "disposed", "cleanup")
+        }
     }
 
     emit(event: Omit<C, "floatingRef">) {
@@ -104,7 +110,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
 
     setResult(data: any) {
         this.emit({ type: "result", data } as C)
-        this.hide().subscribe()
+        this.close(true).subscribe()
     }
 
     watchTrait<T>(name: string): Observable<T> {

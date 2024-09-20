@@ -1,6 +1,6 @@
 import { Injector } from "@angular/core"
 
-import { Subscription } from "rxjs"
+import { takeUntil } from "rxjs"
 
 import { CoverService } from "@ngutil/graphics"
 import { CoverOptions, CropCoverOptions } from "@ngutil/graphics"
@@ -31,7 +31,6 @@ export class BackdropRef extends ChildRef {
         return ref
     }
 
-    readonly #coverSub?: Subscription
     readonly under: ChildRef
     readonly group?: string
 
@@ -64,21 +63,20 @@ export class BackdropRef extends ChildRef {
         this.under = options.under
 
         if (options.type === "solid") {
-            this.#coverSub = this.coverSvc.solid({ container: nativeElement, color: options.color }).subscribe()
+            this.coverSvc
+                .solid({ container: nativeElement, color: options.color })
+                .pipe(takeUntil(this.disposed$))
+                .subscribe()
             this.group = `${options.color === "transparent" ? "transparent" : "solid"}`
         } else if (options.type === "crop") {
-            this.#coverSub = this.coverSvc
+            this.coverSvc
                 .crop({ container: nativeElement, color: options.color, crop: options.crop })
+                .pipe(takeUntil(this.disposed$))
                 .subscribe()
         }
     }
 
     show() {
-        return this.state.run(["showing", "shown"])
-    }
-
-    protected override destroy(): void {
-        this.#coverSub?.unsubscribe()
-        super.destroy()
+        return this.state.run("showing", "shown")
     }
 }

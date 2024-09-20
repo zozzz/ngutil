@@ -1,6 +1,6 @@
 import { animate, AnimationBuilder, AnimationMetadata, style } from "@angular/animations"
 
-import { Observable, Subscriber } from "rxjs"
+import { Observable, Subscriber, tap } from "rxjs"
 
 import { animationObservable } from "@ngutil/graphics"
 import { Duration, Ease } from "@ngutil/style"
@@ -27,8 +27,11 @@ export class AnimationTrait implements FloatingTrait<unknown> {
                 animationObservable({ builder, element, animation: this.animation.show })
             )
             floatingRef.state.on("disposing", () =>
-                animationObservable({ builder, element, animation: this.animation.hide })
+                animationObservable({ builder, element, animation: this.animation.hide }).pipe(
+                    tap(() => (element.style.display = "none"))
+                )
             )
+            floatingRef.state.on("disposing", () => dst.complete())
             dst.next()
         })
     }
@@ -37,7 +40,6 @@ export class AnimationTrait implements FloatingTrait<unknown> {
 export const FallAnimation: AnimationSet = {
     show: [
         style({
-            // "perspective:": "1300px",
             transform: "scale(1.5)",
             visibility: "visible",
             opacity: "0"

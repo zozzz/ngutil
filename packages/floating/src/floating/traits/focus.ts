@@ -1,4 +1,4 @@
-import { Observable, Subscription } from "rxjs"
+import { Observable } from "rxjs"
 
 import { Focusable, FocusService, FocusState } from "@ngutil/aria"
 import { ElementInput } from "@ngutil/common"
@@ -19,19 +19,18 @@ export class FocusTrait implements FloatingTrait<unknown> {
     constructor(readonly options: FocusOptions) {}
 
     connect(floatingRef: FloatingRef): Observable<unknown> {
-        return new Observable(() => {
-            const subs = new Subscription()
+        return new Observable(dest => {
             const originallyFocused = document.activeElement as HTMLElement
             const svc = floatingRef.container.injector.get(FocusService)
 
             if (this.options.connect) {
                 const tabindex = this.options.tabindex == null ? 0 : this.options.tabindex
                 floatingRef.container.nativeElement.setAttribute("tabindex", tabindex.toString())
-                subs.add(this.options.connect.connect(floatingRef.container).subscribe())
+                dest.add(this.options.connect.connect(floatingRef.container).subscribe())
             }
 
             if (this.options.trap) {
-                subs.add(this.#trap(floatingRef, svc).subscribe())
+                dest.add(this.#trap(floatingRef, svc).subscribe())
             }
 
             floatingRef.state.on("disposing", () => {
@@ -40,11 +39,9 @@ export class FocusTrait implements FloatingTrait<unknown> {
                 if (active === floating || floating.contains(active)) {
                     originallyFocused && document.contains(originallyFocused) && svc.focus(originallyFocused, "program")
                 }
+                dest.complete()
             })
-
-            return () => {
-                subs.unsubscribe()
-            }
+            dest.next()
         })
     }
 

@@ -43,13 +43,11 @@ export class BackdropTrait implements FloatingTrait<BackdropState> {
 
             const state = new BackdropState()
             const backdrop = floatingRef.layerSvc.newBackdrop(options)
-            const removeOnClick = this.options.closeOnClick
-                ? this.#installClickHandler(floatingRef, backdrop, state)
-                : null
 
-            const onClickSub = this.options.closeOnClick
-                ? state.onClick.pipe(exhaustMap(() => floatingRef.close())).subscribe()
-                : null
+            if (this.options.closeOnClick) {
+                dest.add(this.#installClickHandler(floatingRef, backdrop, state))
+                dest.add(state.onClick.pipe(exhaustMap(() => floatingRef.close())).subscribe())
+            }
 
             backdrop.state.on("showing", () =>
                 animationObservable({
@@ -66,16 +64,12 @@ export class BackdropTrait implements FloatingTrait<BackdropState> {
                 })
             )
 
+            backdrop.state.on("disposed", () => dest.complete())
+
             floatingRef.state.on("disposing", () => backdrop.dispose())
 
-            const backdropShowSub = backdrop.show().subscribe()
+            dest.add(backdrop.show().subscribe())
             dest.next(state)
-
-            return () => {
-                removeOnClick && removeOnClick()
-                onClickSub?.unsubscribe()
-                backdropShowSub.unsubscribe()
-            }
         })
     }
 

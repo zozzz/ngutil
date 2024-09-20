@@ -16,12 +16,13 @@ export function animationObservable({ builder, animation, element, options }: An
         const factory = builder.build(animation)
         const player = factory.create(coerceElement(element), options)
 
-        player.onDestroy(() => {
+        const done = () => {
+            dst.next()
             dst.complete()
-        })
-        player.onDone(() => {
-            dst.complete()
-        })
+        }
+
+        player.onDestroy(done)
+        player.onDone(done)
         player.play()
 
         return () => {

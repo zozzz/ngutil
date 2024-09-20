@@ -1,4 +1,4 @@
-import { combineLatest, distinctUntilChanged, map, Observable, Subscriber, tap } from "rxjs"
+import { combineLatest, distinctUntilChanged, map, Observable, Subscriber, takeUntil, tap } from "rxjs"
 
 import { clamp } from "lodash"
 
@@ -75,6 +75,7 @@ export class DimensionConstraintTrait implements FloatingTrait<number> {
                 })
             }
         }).pipe(
+            takeUntil(floatingRef.state.onExecute("disposing")),
             distinctUntilChanged(),
             tap(value => {
                 const floatingEl = floatingRef.container.nativeElement

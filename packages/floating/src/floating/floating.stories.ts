@@ -1,26 +1,74 @@
 /* eslint-disable max-len */
 import { applicationConfig, Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
-import { Component, ElementRef, HostListener, inject } from "@angular/core"
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
+import { Component, ElementRef, HostListener, inject, input } from "@angular/core"
 import { provideAnimations } from "@angular/platform-browser/animations"
 
 import { Focusable, FocusState } from "@ngutil/aria"
 
+import { AlwaysOnTop } from "../layer/child-ref"
 import { IndividualLayer } from "../layer/layer.service"
 import { FloatingRef } from "./floating-ref"
 import { FloatingService } from "./floating.service"
 import { fadeAnimation } from "./traits/animation"
 import { backdrop } from "./traits/backdrop"
-import { maxWidth, minWidth } from "./traits/dim-contraint"
+import { minWidth } from "./traits/dim-contraint"
 import { focus } from "./traits/focus"
 import { modal } from "./traits/modal"
 import { position } from "./traits/position"
 import { style } from "./traits/style"
 
 @Component({
+    selector: ".drop-down-trigger",
+    standalone: true,
+    hostDirectives: [Focusable],
+    template: `
+        <ng-content />
+        <!-- &nbsp;( origin: {{ focus.origin() }} with: {{ focus.within() }} ) -->
+    `
+})
+class DropDownTrigger {
+    readonly floating = inject(FloatingService)
+    readonly focus = inject(FocusState)
+    readonly el = inject(ElementRef)
+
+    readonly alwaysOnTop = input(AlwaysOnTop.None)
+
+    constructor() {
+        // this.focus.event$.pipe(takeUntilDestroyed()).subscribe(console.log)
+    }
+
+    @HostListener("click")
+    onClick() {
+        this.floating
+            .from(FloatingCmp, { alwaysOnTop: this.alwaysOnTop() })
+            .trait(
+                position({
+                    anchor: { ref: this.el, align: "bottom left" },
+                    content: { align: "top left", margin: 20 }
+                }),
+
+                // minWidth(3243524),
+                // maxWidth(this.el),
+                minWidth(this.el),
+                style({ borderRadius: "3px", border: "1px solid black" }),
+                fadeAnimation(),
+                focus({ connect: this.focus }),
+                backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)", closeOnClick: true })
+            )
+            .subscribe(event => {
+                if (event.type === "disposing") {
+                    this.el.nativeElement.focus()
+                }
+                // console.log(event)
+            })
+    }
+}
+
+@Component({
     selector: "floating-cmp",
     standalone: true,
+    imports: [DropDownTrigger],
     styles: [
         `
             :host {
@@ -38,6 +86,8 @@ import { style } from "./traits/style"
         <button (click)="close()">close</button>
         <button (click)="newModal()">new modal</button>
         <button (click)="setResult()">set result</button>
+        <button class="drop-down-trigger" [alwaysOnTop]="${AlwaysOnTop.Modal}">drop down</button>
+        <button class="drop-down-trigger" [alwaysOnTop]="${AlwaysOnTop.UAC}">uac</button>
     `
 })
 class FloatingCmp {
@@ -56,49 +106,6 @@ class FloatingCmp {
 
     setResult() {
         this.floatingRef.setResult("RESULT FROM POPUP")
-    }
-}
-
-@Component({
-    selector: ".drop-down-trigger",
-    standalone: true,
-    hostDirectives: [Focusable],
-    template: `
-        <ng-content />
-        &nbsp;( origin: {{ focus.origin() }} with: {{ focus.within() }} )
-    `
-})
-class DropDownTrigger {
-    readonly floating = inject(FloatingService)
-    readonly focus = inject(FocusState)
-    readonly el = inject(ElementRef)
-
-    constructor() {
-        this.focus.event$.pipe(takeUntilDestroyed()).subscribe(console.log)
-    }
-
-    @HostListener("click")
-    onClick() {
-        this.floating
-            .from(FloatingCmp, {})
-            .trait(
-                position({
-                    anchor: { ref: this.el, align: "bottom left" },
-                    content: { align: "top left", margin: { top: 10 } }
-                }),
-                // minWidth(3243524),
-                maxWidth(this.el),
-                minWidth(this.el),
-                style({ borderRadius: "3px" }),
-                fadeAnimation(),
-                focus({ connect: this.focus })
-            )
-            .subscribe(event => {
-                if (event.type === "disposing") {
-                    this.el.nativeElement.focus()
-                }
-                console.log(event)
-            })
     }
 }
 

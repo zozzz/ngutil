@@ -5,7 +5,7 @@ import { toSorted } from "@ngutil/common"
 import { CoverService } from "@ngutil/graphics"
 
 import { BackdropOptions, BackdropRef } from "./backdrop-ref"
-import { ChildRef } from "./child-ref"
+import { AlwaysOnTop, ChildRef } from "./child-ref"
 import { ContainerOptions, ContainerRef } from "./container-ref"
 import { ComponentPortalOptions, ComponentPortalRef, TemplatePortalOptions, TemplatePortalRef } from "./portal-ref"
 
@@ -78,7 +78,7 @@ export abstract class LayerService {
     }
 
     #update() {
-        const children = toSorted(this.#children, sortByBackdrop)
+        const children = toSorted(this.#children, sortChildren2)
 
         let zIndex = this.#zIndexStart
         for (const child of children) {
@@ -111,6 +111,15 @@ export class RootLayer extends LayerService {}
 })
 export class IndividualLayer extends LayerService {}
 
+function sortChildren2(a: ChildRef, b: ChildRef) {
+    const alwaysOnTop = sortByAlwaysOnTop(a, b)
+    if (alwaysOnTop === 0) {
+        return sortByBackdrop(a, b)
+    } else {
+        return alwaysOnTop
+    }
+}
+
 function sortByBackdrop(a: ChildRef, b: ChildRef) {
     if (a instanceof BackdropRef && a.under === b) {
         return -1
@@ -122,4 +131,16 @@ function sortByBackdrop(a: ChildRef, b: ChildRef) {
 
 function sortByZIndexDesc(a: ChildRef, b: ChildRef) {
     return b.zIndex - a.zIndex
+}
+
+function sortByAlwaysOnTop(a: ChildRef, b: ChildRef) {
+    return getAlwaysOnTop(a) - getAlwaysOnTop(b)
+}
+
+function getAlwaysOnTop(child: ChildRef): number {
+    if (child instanceof BackdropRef) {
+        return child.under.alwaysOnTop || AlwaysOnTop.None
+    } else {
+        return child.alwaysOnTop || AlwaysOnTop.None
+    }
 }

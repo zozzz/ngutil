@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 
-import { Observable, of, Subscriber } from "rxjs"
+import { Observable, of } from "rxjs"
 
 import { coerceElement, ElementInput } from "@ngutil/common"
 import { Rect } from "@ngutil/style"
@@ -28,12 +28,12 @@ export interface RevealCoverOptions extends CoverOptions {
 
 @Injectable({ providedIn: "root" })
 export class CoverService {
-    solid(options: SolidCoverOptions): Observable<void> {
-        return new Observable((dest: Subscriber<void>) => {
+    solid(options: SolidCoverOptions): Observable<HTMLDivElement> {
+        return new Observable(dest => {
             const container = coerceElement(options.container)
             const cover = this.#createElement(options)
             container.appendChild(cover)
-            dest.next()
+            dest.next(cover)
 
             return () => {
                 cover.parentElement?.removeChild(cover)
@@ -41,11 +41,11 @@ export class CoverService {
         })
     }
 
-    crop(options: CropCoverOptions): Observable<void> {
+    crop(options: CropCoverOptions): Observable<HTMLDivElement> {
         return of()
     }
 
-    reveal(options: RevealCoverOptions): Observable<void> {
+    reveal(options: RevealCoverOptions): Observable<HTMLDivElement> {
         return of()
     }
 

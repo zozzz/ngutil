@@ -1,9 +1,9 @@
 import { Injector, Provider } from "@angular/core"
 
-import { ChildRef } from "./child-ref"
+import { AlwaysOnTop, ChildRef } from "./child-ref"
 
 export interface ContainerOptions {
-    alwaysOnTop?: boolean
+    alwaysOnTop?: AlwaysOnTop
     elevation?: number
     classes?: string[]
     attributes?: Record<string, string>
@@ -17,7 +17,7 @@ export class ContainerRef extends ChildRef {
     protected injectorName = "ContainerRef"
 
     constructor(public readonly options: ContainerOptions) {
-        super(createElement(options))
+        super(createElement(options), options.alwaysOnTop || AlwaysOnTop.None)
 
         const providers = options.providers || []
         this.injector = Injector.create({
