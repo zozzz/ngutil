@@ -6,7 +6,7 @@ import { Lifecycle } from "@ngutil/common"
 
 export type DisposeHandler<T> = (ref: T) => Observable<void>
 
-export const enum AlwaysOnTop {
+export enum AlwaysOnTop {
     None = 0,
     Normal = 1,
     Modal = 2,
