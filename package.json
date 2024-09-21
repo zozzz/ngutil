@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/source",
-  "version": "0.0.50",
+  "version": "0.0.51",
   "scripts": {
     "before:release": "pnpm before:release:syncpack && pnpm before:release:update-lockfile && pnpm before:release:format",
     "before:release:format": "pnpm nx format:write && git add . && (git diff-index --quiet HEAD || git commit -m \"format: Beautify files\")",
