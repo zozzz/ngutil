@@ -140,7 +140,15 @@ class Floatings {
         this.#floating
             .from(FloatingCmp, {})
             .position({})
-            .trait(backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)", closeOnClick: true }), focus({ trap: true }))
+            .trait(
+                backdrop({
+                    type: "solid",
+                    color: "rgba(0, 0, 0, .5)",
+                    closeOnClick: true,
+                    style: { backdropFilter: "blur(10px)" }
+                }),
+                focus({ trap: true })
+            )
             .subscribe()
     }
 

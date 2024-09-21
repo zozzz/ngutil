@@ -13,6 +13,7 @@ import { FloatingPosition } from "./position"
 export interface BackdropTraitOptions {
     type: BackdropOptions["type"]
     color: BackdropOptions["color"]
+    style?: Partial<CSSStyleDeclaration>
     closeOnClick?: boolean
     // TODO: maybe cropMargin
 }
@@ -32,7 +33,8 @@ export class BackdropTrait implements FloatingTrait<BackdropState> {
             const options: BackdropOptions = {
                 type: this.options.type,
                 under: floatingRef.container,
-                color: this.options.color
+                color: this.options.color,
+                style: this.options.style
             } as any
 
             if (this.options.type === "crop") {

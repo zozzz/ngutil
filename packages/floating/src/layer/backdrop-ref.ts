@@ -10,6 +10,7 @@ import { ChildRef } from "./child-ref"
 export interface BasicBackdropOptions {
     under: ChildRef
     color: CoverOptions["color"]
+    style?: Partial<CSSStyleDeclaration>
 }
 
 export interface SolidBackdropOptions extends BasicBackdropOptions {
@@ -59,6 +60,10 @@ export class BackdropRef extends ChildRef {
             nativeElement.style.bottom =
             nativeElement.style.left =
                 "0px"
+
+        if (options.style) {
+            Object.assign(nativeElement.style, options.style)
+        }
 
         this.under = options.under
 
