@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.52](https://github.com/zozzz/ngutil/compare/0.0.51...0.0.52) (2024-09-23)
+
+
+### Features
+
+* **floating:** dropAnimation ([8b86db4](https://github.com/zozzz/ngutil/commit/8b86db4c65de30fb0c74d35ea0fbb089c0bb17a3))
+* **graphics:** Cropped Cover ([1b76b16](https://github.com/zozzz/ngutil/commit/1b76b16905b1e0543b52721f2f9cfae6d233b2ca))
+
 ## [0.0.51](https://github.com/zozzz/ngutil/compare/0.0.50...0.0.51) (2024-09-21)
 
 ## [0.0.50](https://github.com/zozzz/ngutil/compare/0.0.49...0.0.50) (2024-09-21)
