@@ -38,8 +38,8 @@ class DropDownTrigger {
         // this.focus.event$.pipe(takeUntilDestroyed()).subscribe(console.log)
     }
 
-    @HostListener("click")
-    onClick() {
+    @HostListener("click", ["$event"])
+    onClick(event: MouseEvent) {
         this.floating
             .from(FloatingCmp, { alwaysOnTop: this.alwaysOnTop() })
             .trait(
@@ -55,7 +55,17 @@ class DropDownTrigger {
                 // fadeAnimation(),
                 dropAnimation(),
                 focus({ connect: this.focus }),
-                backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)", closeOnClick: true })
+                // backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)" }),
+                backdrop({
+                    type: "crop",
+                    shape: { type: "rect", borderRadius: 3 },
+                    expand: 10,
+                    color: "rgba(0, 0, 0, .8)",
+                    closeOnClick: true,
+                    crop: event.target as HTMLElement,
+                    disablePointerEvents: false,
+                    style: { backdropFilter: "blur(10px)" }
+                })
             )
             .subscribe(event => {
                 if (event.type === "disposing") {

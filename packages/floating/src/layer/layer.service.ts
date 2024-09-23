@@ -55,8 +55,9 @@ export abstract class LayerService {
         return this.append(new ContainerRef(options))
     }
 
-    newBackdrop(options: BackdropOptions): BackdropRef {
-        return this.append(BackdropRef.from(this.#cover, this.#injector, options))
+    newBackdrop(under: ChildRef, options: BackdropOptions): BackdropRef {
+        const coverRef = this.#cover.create(this.root, options)
+        return this.append(new BackdropRef(coverRef, under, options))
     }
 
     append<T extends ChildRef>(ref: T): T {
@@ -90,7 +91,7 @@ export abstract class LayerService {
 
         let hasBackdrop = false
         for (const child of children) {
-            if (child instanceof BackdropRef && child.options.type === "solid") {
+            if (child instanceof BackdropRef && child.options.color !== "transparent") {
                 child.visible = !hasBackdrop
                 hasBackdrop = true
             }

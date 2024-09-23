@@ -2,6 +2,8 @@ import { Directive, ElementRef, NgZone, TemplateRef } from "@angular/core"
 
 import { Destructible, IDisposable } from "@ngutil/common"
 
+import { maxPossibleRadius } from "../util"
+
 @Directive({
     standalone: true,
     selector: "ng-template[nuRipple]",
@@ -160,10 +162,4 @@ export class Ripple implements IDisposable {
         this.#hiding = true
         this.el.style.opacity = "0"
     }
-}
-
-function maxPossibleRadius(x: number, y: number, w: number, h: number) {
-    const distX = Math.max(x, Math.abs(w - x))
-    const distY = Math.max(y, Math.abs(h - y))
-    return Math.sqrt(distX * distX + distY * distY)
 }

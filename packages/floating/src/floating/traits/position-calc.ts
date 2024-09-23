@@ -94,7 +94,7 @@ function addTLRB(rect: Rect, container: Rect): ComputedRect {
         ...rect,
         top: rect.y,
         left: rect.x,
-        right: container.width - rect.width - rect.x,
-        bottom: container.height - rect.height - rect.y
+        right: container.width - (rect.x + rect.width),
+        bottom: container.height - (rect.y + rect.height)
     }
 }

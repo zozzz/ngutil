@@ -1,22 +1,19 @@
 import { AnimationBuilder } from "@angular/animations"
 
-import { exhaustMap, map, Observable, Subject, Subscriber } from "rxjs"
+import { exhaustMap, Observable, Subject, Subscriber } from "rxjs"
 
-import { animationObservable } from "@ngutil/graphics"
+import { animationObservable, CoverOptions } from "@ngutil/graphics"
 
-import type { BackdropOptions, BackdropRef, CropBackdropOptions } from "../../layer/backdrop-ref"
+import type { BackdropRef } from "../../layer/backdrop-ref"
 import { type FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
 import { FadeAnimation } from "./animation"
-import { FloatingPosition } from "./position"
 
-export interface BackdropTraitOptions {
-    type: BackdropOptions["type"]
-    color: BackdropOptions["color"]
-    style?: Partial<CSSStyleDeclaration>
+interface CommonOptions {
     closeOnClick?: boolean
-    // TODO: maybe cropMargin
 }
+
+export type BackdropTraitOptions = CoverOptions & CommonOptions
 
 export class BackdropState {
     onClick: Observable<void> = new Subject<void>()
@@ -30,23 +27,11 @@ export class BackdropTrait implements FloatingTrait<BackdropState> {
     connect(floatingRef: FloatingRef<any>): Observable<BackdropState> {
         return new Observable((dest: Subscriber<BackdropState>) => {
             const animationBuilder = floatingRef.container.injector.get(AnimationBuilder)
-            const options: BackdropOptions = {
-                type: this.options.type,
-                under: floatingRef.container,
-                color: this.options.color,
-                style: this.options.style
-            } as any
-
-            if (this.options.type === "crop") {
-                ;(options as CropBackdropOptions).crop = floatingRef
-                    .watchTrait<FloatingPosition>("position")
-                    .pipe(map(position => position.anchor))
-            }
-
+            const options = { ...this.options }
             const state = new BackdropState()
-            const backdrop = floatingRef.layerSvc.newBackdrop(options)
+            const backdrop = floatingRef.layerSvc.newBackdrop(floatingRef.container, options)
 
-            if (this.options.closeOnClick) {
+            if (options.closeOnClick) {
                 dest.add(this.#installClickHandler(floatingRef, backdrop, state))
                 dest.add(state.onClick.pipe(exhaustMap(() => floatingRef.close())).subscribe())
             }

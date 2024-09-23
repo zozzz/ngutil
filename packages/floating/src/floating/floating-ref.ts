@@ -75,6 +75,10 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         this.state.on("init", () => this.traitState$.pipe(takeUntil(this.#untilCleanup), debounceTime(5), take(1)))
         this.state.on("showing", () => {
             container.nativeElement.style.visibility = "visible"
+            container.nativeElement.style.pointerEvents = "none"
+        })
+        this.state.on("showing", () => {
+            container.nativeElement.style.pointerEvents = null as any
         })
         this.state.on("disposing", () => {
             container.nativeElement.style.pointerEvents = "none"

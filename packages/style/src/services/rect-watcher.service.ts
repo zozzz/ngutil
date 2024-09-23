@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core"
 
-import { combineLatest, Observable, shareReplay, Subscriber } from "rxjs"
+import { combineLatest, map, Observable, Subscriber } from "rxjs"
 
 import { ElementInput } from "@ngutil/common"
 
@@ -18,14 +18,13 @@ export class RectWatcher {
             combineLatest({
                 dim: this.#dimWatcher.watch(element, watchBox),
                 pos: this.#posWatcher.watch(element)
-            }).subscribe(({ dim, pos }) => {
-                dest.next({
-                    x: pos.x,
-                    y: pos.y,
-                    width: dim.width,
-                    height: dim.height
-                })
             })
-        ).pipe(shareReplay(1))
+                .pipe(
+                    map(({ dim, pos }) => {
+                        return { ...dim, ...pos }
+                    })
+                )
+                .subscribe(dest)
+        )
     }
 }

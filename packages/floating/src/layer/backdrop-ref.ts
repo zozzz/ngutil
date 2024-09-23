@@ -1,39 +1,14 @@
-import { Injector } from "@angular/core"
-
 import { takeUntil } from "rxjs"
 
-import { CoverService } from "@ngutil/graphics"
-import { CoverOptions, CropCoverOptions } from "@ngutil/graphics"
+import { CoverRef } from "@ngutil/graphics"
+import { CoverOptions } from "@ngutil/graphics"
 
 import { ChildRef } from "./child-ref"
 
-export interface BasicBackdropOptions {
-    under: ChildRef
-    color: CoverOptions["color"]
-    style?: Partial<CSSStyleDeclaration>
-}
-
-export interface SolidBackdropOptions extends BasicBackdropOptions {
-    type: "solid"
-}
-
-export interface CropBackdropOptions extends BasicBackdropOptions {
-    type: "crop"
-    crop: CropCoverOptions["crop"]
-}
-
-export type BackdropOptions = SolidBackdropOptions | CropBackdropOptions
+export type BackdropOptions = CoverOptions
 
 export class BackdropRef extends ChildRef {
-    static from(cover: CoverService, injector: Injector, options: BackdropOptions): BackdropRef {
-        const ref = new BackdropRef(document.createElement("div"), cover, injector, options)
-        // TODO: kérdéses
-        // options.under.state.control(ref.state)
-        return ref
-    }
-
-    readonly under: ChildRef
-    readonly group?: string
+    readonly group: string
 
     set visible(visible: boolean) {
         if (this.#visible !== visible) {
@@ -45,40 +20,25 @@ export class BackdropRef extends ChildRef {
     get visible(): boolean {
         return this.#visible
     }
-    #visible: boolean = true
+    #visible: boolean = false
 
     constructor(
-        nativeElement: HTMLElement,
-        readonly coverSvc: CoverService,
-        readonly injector: Injector,
-        readonly options: BackdropOptions
+        readonly coverRef: CoverRef<any>,
+        readonly under: ChildRef,
+        readonly options: CoverOptions
     ) {
-        super(nativeElement)
-        nativeElement.style.position = "absolute"
-        nativeElement.style.top =
-            nativeElement.style.right =
-            nativeElement.style.bottom =
-            nativeElement.style.left =
-                "0px"
+        super(coverRef.nativeElement)
 
-        if (options.style) {
-            Object.assign(nativeElement.style, options.style)
-        }
+        this.group = `${options.color === "transparent" ? "transparent" : "solid"}`
 
-        this.under = options.under
-
-        if (options.type === "solid") {
-            this.coverSvc
-                .solid({ container: nativeElement, color: options.color })
-                .pipe(takeUntil(this.disposed$))
-                .subscribe()
-            this.group = `${options.color === "transparent" ? "transparent" : "solid"}`
-        } else if (options.type === "crop") {
-            this.coverSvc
-                .crop({ container: nativeElement, color: options.color, crop: options.crop })
-                .pipe(takeUntil(this.disposed$))
-                .subscribe()
-        }
+        this.state.on("showing", () => {
+            this.coverRef
+                .show()
+                .pipe(takeUntil(this.state.onDone("disposed")))
+                .subscribe(() => {
+                    this.visible = true
+                })
+        })
     }
 
     show() {
