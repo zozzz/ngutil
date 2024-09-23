@@ -1,5 +1,6 @@
 import {
     Alignment,
+    alignmentNormalize,
     Dimension,
     Position,
     Rect,
@@ -18,25 +19,37 @@ export interface ComputePositionInput {
     options: FloatingPositionOptionsNormalized
 }
 
-export interface ComputedFloating {
-    current: Rect
+export interface ComputedRect extends Rect {
+    top: number
+    left: number
+    right: number
+    bottom: number
+}
+
+export interface ComputedAlignment extends ComputedRect {
+    align: Alignment
+    connect: Position
+}
+
+export interface ComputedContent extends ComputedAlignment {
     min: Dimension
     max: Dimension
 }
 
-export interface ComputedAlignment {
-    align: Alignment
-    postion: Position
-}
+// export interface ComputedAlignment {
+//     align: Alignment
+//     postion: Position
+// }
 
-export interface ComputedAnchor {
-    floating: ComputedAlignment
-    anchor: ComputedAlignment
-}
+// export interface ComputedOrigin {
+//     content: ComputedAlignment
+//     anchor: ComputedAlignment
+// }
 
 export interface ComputedPositon {
-    floating: ComputedFloating
-    anchor?: ComputedAnchor
+    content: ComputedContent
+    anchor: ComputedAlignment
+    placement: ComputedRect
 }
 
 export function computePosition({
@@ -50,20 +63,38 @@ export function computePosition({
     }
     const anchorPoint = rectOrigin(anchor, options.anchor.align)
 
-    let content = rectMoveOrigin(floating, options.content.align, anchorPoint)
+    let contentRect = rectMoveOrigin(floating, options.content.align, anchorPoint)
     if (options.content.margin) {
-        content = rectContract(content, options.content.margin)
+        contentRect = rectContract(contentRect, options.content.margin)
     }
 
     if (options.placement.padding) {
         placement = rectContract(placement, options.placement.padding)
     }
 
-    const cf: ComputedFloating = {
-        current: content,
-        max: { width: placement.width - content.x, height: placement.height - content.y },
-        min: { width: 0, height: 0 }
+    return {
+        content: {
+            ...addTLRB(contentRect, placement),
+            align: alignmentNormalize(options.content.align),
+            connect: anchorPoint,
+            max: { width: placement.width - contentRect.x, height: placement.height - contentRect.y },
+            min: { width: 0, height: 0 }
+        },
+        anchor: {
+            ...addTLRB(anchor, placement),
+            align: alignmentNormalize(options.anchor.align),
+            connect: anchorPoint
+        },
+        placement: addTLRB(placement, placement)
     }
+}
 
-    return { floating: cf }
+function addTLRB(rect: Rect, container: Rect): ComputedRect {
+    return {
+        ...rect,
+        top: rect.y,
+        left: rect.x,
+        right: container.width - rect.width - rect.x,
+        bottom: container.height - rect.height - rect.y
+    }
 }

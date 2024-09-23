@@ -43,7 +43,7 @@ export class DimensionConstraintTrait implements FloatingTrait<number> {
                     refDim: refDim,
                     position: floatingRef.watchTrait<FloatingPosition>("position")
                 }).subscribe(({ refDim, position }) => {
-                    const floating = position.computed?.floating
+                    const floating = position.computed?.content
                     if (!floating) {
                         return
                     }
@@ -57,7 +57,7 @@ export class DimensionConstraintTrait implements FloatingTrait<number> {
                 })
             } else {
                 return floatingRef.watchTrait<FloatingPosition>("position").subscribe(position => {
-                    const floating = position.computed?.floating
+                    const floating = position.computed?.content
                     if (!floating) {
                         return
                     }
@@ -67,8 +67,8 @@ export class DimensionConstraintTrait implements FloatingTrait<number> {
                         dst.next(
                             clamp(
                                 this.value as number,
-                                floating?.min[this.#map.dimension] || 0,
-                                floating?.max[this.#map.dimension] || Infinity
+                                floating!.min[this.#map.dimension] || 0,
+                                floating!.max[this.#map.dimension] || Infinity
                             )
                         )
                     }

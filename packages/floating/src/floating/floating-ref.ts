@@ -1,14 +1,15 @@
 import { Inject, Injectable, InjectionToken } from "@angular/core"
 
 import {
+    combineLatest,
     debounceTime,
     EMPTY,
     filter,
     map,
-    merge,
     Observable,
     ReplaySubject,
     shareReplay,
+    startWith,
     take,
     takeUntil,
     takeWhile
@@ -35,6 +36,8 @@ export interface FloatingTraitEvent {
     data: object
 }
 
+type TraitState = { [key: string]: FloatingTraitEvent | null }
+
 @Injectable()
 export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends HTMLElement = HTMLElement> {
     readonly channel = new ReplaySubject<FloatingChannel>(1)
@@ -50,7 +53,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
     })
 
     readonly #traits: Traits = {}
-    readonly traitState$: Observable<FloatingTraitEvent>
+    readonly traitState$: Observable<TraitState>
 
     readonly #untilCleanup = this.state.onExecute("cleanup")
     readonly #untilDisposed = this.state.onExecute("disposed")
@@ -116,32 +119,22 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
     watchTrait<T>(name: string): Observable<T> {
         return this.traitState$.pipe(
             takeUntil(this.#untilDisposed),
-            filter(event => event.name === name),
-            map(event => event.data as T),
-            shareReplay(1)
-        )
+            map(state => state[name]),
+            filter(value => value != null)
+        ) as Observable<T>
     }
 
-    #traitState(): Observable<FloatingTraitEvent> {
-        const src = []
+    #traitState(): Observable<TraitState> {
+        const src: { [key: string]: Observable<FloatingTraitEvent | null> } = {}
 
         for (const [k, v] of Object.entries(this.#traits)) {
-            src.push(
-                v.connect(this).pipe(
-                    takeUntil(this.#untilCleanup),
-                    map(result => {
-                        return { name: k, data: result }
-                    })
-                )
-            )
+            src[k] = v.connect(this).pipe(takeUntil(this.#untilDisposed), startWith(null))
         }
 
-        if (src.length === 0) {
+        if (Object.keys(src).length === 0) {
             return EMPTY
-        } else if (src.length === 1) {
-            return src[0]
         } else {
-            return merge(...src)
+            return combineLatest(src).pipe(shareReplay(1))
         }
     }
 }

@@ -137,7 +137,21 @@ export class FloatingPosition {
         }
 
         const floatingEl = floatingRef.container.nativeElement
-        floatingEl.style.left = `${this.computed.floating.current.x}px`
-        floatingEl.style.top = `${this.computed.floating.current.y}px`
+        const computedContent = this.computed.content
+        const style: Record<string, string | null> = { top: null, right: null, bottom: null, left: null }
+
+        if (computedContent.align.horizontal === "right") {
+            style["right"] = `${computedContent.right}px`
+        } else {
+            style["left"] = `${computedContent.left}px`
+        }
+
+        if (computedContent.align.vertical === "bottom") {
+            style["bottom"] = `${computedContent.bottom}px`
+        } else {
+            style["top"] = `${computedContent.top}px`
+        }
+
+        Object.assign(floatingEl.style, style)
     }
 }

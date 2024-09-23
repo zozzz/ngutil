@@ -5,7 +5,14 @@ export { DimensionWatcher, WatchBox } from "./services/dimension-watcher.service
 export { PositionWatcher } from "./services/position-watcher.service"
 export { RectWatcher } from "./services/rect-watcher.service"
 
-export { AlignmentInput, alignmentNormalize, Alignment, AlignHorizontal, AlignVertical } from "./util/alignment"
+export {
+    AlignmentInput,
+    alignmentNormalize,
+    Alignment,
+    AlignHorizontal,
+    AlignVertical,
+    alignmentToTransformOrigin
+} from "./util/alignment"
 export { inAnimation, inTransition, isAnimating } from "./util/in-animation"
 export {
     Dimension,

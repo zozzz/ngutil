@@ -26,6 +26,7 @@ export function animationObservable({ builder, animation, element, options }: An
         player.play()
 
         return () => {
+            player.pause()
             player.destroy()
         }
     })

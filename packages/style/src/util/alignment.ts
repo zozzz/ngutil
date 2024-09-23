@@ -47,3 +47,21 @@ export function alignmentNormalize(value?: AlignmentInput): Alignment {
 
     return { horizontal, vertical }
 }
+
+const HorizontalOrigin: { [key: string]: string } = {
+    start: "left",
+    left: "left",
+    center: "center",
+    right: "right",
+    end: "right"
+}
+
+const VerticalOrigin: { [key: string]: string } = {
+    top: "top",
+    middle: "center",
+    bottom: "bottom"
+}
+
+export function alignmentToTransformOrigin(alignment: Alignment): string {
+    return `${HorizontalOrigin[alignment.horizontal] || "center"} ${VerticalOrigin[alignment.vertical] || "center"}`
+}

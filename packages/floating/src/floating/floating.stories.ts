@@ -10,7 +10,7 @@ import { AlwaysOnTop } from "../layer/child-ref"
 import { IndividualLayer } from "../layer/layer.service"
 import { FloatingRef } from "./floating-ref"
 import { FloatingService } from "./floating.service"
-import { fadeAnimation } from "./traits/animation"
+import { dropAnimation } from "./traits/animation"
 import { backdrop } from "./traits/backdrop"
 import { minWidth } from "./traits/dim-contraint"
 import { focus } from "./traits/focus"
@@ -52,7 +52,8 @@ class DropDownTrigger {
                 // maxWidth(this.el),
                 minWidth(this.el),
                 style({ borderRadius: "3px", border: "1px solid black" }),
-                fadeAnimation(),
+                // fadeAnimation(),
+                dropAnimation(),
                 focus({ connect: this.focus }),
                 backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)", closeOnClick: true })
             )
