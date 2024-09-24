@@ -63,8 +63,11 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         readonly container: ContainerRef,
         @Inject(TRAITS) traits: Traits
     ) {
-        container.nativeElement.style.overflow = "hidden"
-        container.nativeElement.style.visibility = "hidden"
+        Object.assign(container.nativeElement.style, {
+            overflow: "hidden",
+            visibility: "hidden",
+            pointerEvents: "none"
+        })
 
         this.#traits = traits
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
@@ -75,9 +78,8 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         this.state.on("init", () => this.traitState$.pipe(takeUntil(this.#untilCleanup), debounceTime(5), take(1)))
         this.state.on("showing", () => {
             container.nativeElement.style.visibility = "visible"
-            container.nativeElement.style.pointerEvents = "none"
         })
-        this.state.on("showing", () => {
+        this.state.on("shown", () => {
             container.nativeElement.style.pointerEvents = null as any
         })
         this.state.on("disposing", () => {
