@@ -20,7 +20,8 @@ import { Busy } from "./busy"
     standalone: true,
     exportAs: "nuDisabled",
     host: {
-        "[attr.disabled]": "isDisabled() ? '' : null"
+        "[attr.disabled]": "isDisabled() ? '' : null",
+        "[attr.inert]": "isDisabled() ? '' : null"
     }
 })
 export class DisabledState {
