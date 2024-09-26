@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.53](https://github.com/zozzz/ngutil/compare/0.0.52...0.0.53) (2024-09-26)
+
+
+### Features
+
+* **aria:** KeystrokeService.watch more watch options ([189ecb2](https://github.com/zozzz/ngutil/commit/189ecb2a6cc6a3658b68ec96334a74a57b163174))
+
+
+### Bug Fixes
+
+* **common:** Disabled directive set / unset inert attribute ([78969bc](https://github.com/zozzz/ngutil/commit/78969bc4d5aad4a82b52d41daa7a5dab01a956f1))
+* **floating:** pointer-events enable when floating is shown ([ee884b7](https://github.com/zozzz/ngutil/commit/ee884b714735a2448de8f63a6a1e51cf7c0e48b6))
+
 ## [0.0.52](https://github.com/zozzz/ngutil/compare/0.0.51...0.0.52) (2024-09-23)
 
 
