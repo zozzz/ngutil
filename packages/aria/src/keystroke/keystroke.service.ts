@@ -1,9 +1,26 @@
-import { Injectable } from "@angular/core"
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
+import { DOCUMENT } from "@angular/common"
+import { inject, Injectable, NgZone } from "@angular/core"
 
-import { map, Observable, share, Subject, Subscriber } from "rxjs"
+import {
+    distinctUntilChanged,
+    EMPTY,
+    filter,
+    from,
+    fromEvent,
+    map,
+    merge,
+    Observable,
+    of,
+    share,
+    shareReplay,
+    startWith,
+    Subscriber,
+    switchMap
+} from "rxjs"
 
-import { coerceElement, ElementInput } from "@ngutil/common"
+import { coerceElement, ElementInput, isElementInput } from "@ngutil/common"
+
+import { FocusState } from "../focus"
 
 export interface Keystroke {
     // https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
@@ -19,82 +36,92 @@ export interface KeystrokeEvent {
     keystroke: Keystroke
 }
 
-interface KeystrokeEntry {
-    keystroke: Keystroke
-    target: HTMLElement
-    subject: Subject<KeystrokeEvent>
-}
+export type KeystrokeActivation = ElementInput | FocusState | Observable<ElementInput | FocusState | boolean>
 
 @Injectable({ providedIn: "root" })
 export class KeystrokeService {
-    readonly #keystrokes: { [key: string]: KeystrokeEntry[] } = {}
+    readonly #document = inject(DOCUMENT)
+    readonly #zone = inject(NgZone)
 
-    readonly #keyEvent = new Observable((dst: Subscriber<KeyboardEvent>) => {
-        const handler = (event: KeyboardEvent) => {
-            dst.next(event)
-        }
-        document.addEventListener("keydown", handler, { capture: true })
-        document.addEventListener("keyup", handler, { capture: true })
-
-        return () => {
-            document.removeEventListener("keydown", handler, { capture: true })
-            document.removeEventListener("keyup", handler, { capture: true })
-        }
-    }).pipe(share())
-
-    readonly #activatedKs = this.#keyEvent.pipe(
-        map(event => {
-            const keystroke = eventToKeystroke(event)
-            const id = keystrokeId(keystroke)
-            return { event, keystrokes: this.#keystrokes[id] || [], keystroke }
-        })
+    readonly #keyEvent = this.#zone.runOutsideAngular(() =>
+        merge(
+            fromEvent<KeyboardEvent>(this.#document, "keydown", { capture: true, passive: false }),
+            fromEvent<KeyboardEvent>(this.#document, "keyup", { capture: true, passive: false })
+        ).pipe(
+            filter(event => event.defaultPrevented === false),
+            share()
+        )
     )
 
-    constructor() {
-        this.#activatedKs.pipe(takeUntilDestroyed()).subscribe(({ event, keystrokes, keystroke }) => {
-            for (const ks of keystrokes) {
-                if (event.defaultPrevented) {
-                    return
-                }
+    readonly #focusEvent = this.#zone.runOutsideAngular(() =>
+        fromEvent(this.#document, "focus", { capture: true, passive: true }).pipe(
+            startWith(null),
+            map(() => this.#document.activeElement),
+            shareReplay(1)
+        )
+    )
 
-                if (
-                    ks.target === event.target ||
-                    ks.target.contains(event.target as Node) ||
-                    document.activeElement === ks.target ||
-                    ks.target.contains(document.activeElement as Node)
-                ) {
-                    ks.subject.next({ original: event, keystroke })
-                }
-            }
-        })
+    watch(activation: KeystrokeActivation, ...keystrokes: Keystroke[]): Observable<KeystrokeEvent> {
+        return new Observable((dst: Subscriber<KeystrokeEvent>) =>
+            this.#trigger(activation)
+                .pipe(
+                    distinctUntilChanged(),
+                    switchMap(enabled => {
+                        console.log({ enabled }, keystrokes)
+                        if (enabled) {
+                            return this.#keyEvent
+                        } else {
+                            return EMPTY
+                        }
+                    }),
+                    map(event => {
+                        if (event.defaultPrevented) {
+                            return []
+                        }
+
+                        const idFromEvent = keystrokeId(eventToKeystroke(event))
+                        const matches = keystrokes
+                            .filter(ks => keystrokeId(ks) === idFromEvent)
+                            .map(ks => {
+                                return {
+                                    original: event,
+                                    keystroke: ks
+                                }
+                            })
+
+                        if (matches.length > 0) {
+                            event.preventDefault()
+                        }
+
+                        return matches
+                    }),
+                    filter(matches => matches.length > 0),
+                    switchMap(matches => of(...matches))
+                )
+                .subscribe(dst)
+        )
     }
 
-    watch(target: ElementInput, keystroke: Keystroke): Observable<KeystrokeEvent> {
-        const id = keystrokeId(keystroke)
-        return new Observable((dst: Subscriber<KeystrokeEvent>) => {
-            if (!this.#keystrokes[id]) {
-                this.#keystrokes[id] = []
-            }
-
-            const subject = new Subject<KeystrokeEvent>()
-            const entry: KeystrokeEntry = { target: coerceElement(target), keystroke, subject }
-            const sub = subject.subscribe(dst)
-
-            this.#keystrokes[id].push(entry)
-
-            return () => {
-                sub.unsubscribe()
-                if (this.#keystrokes[id]) {
-                    const index = this.#keystrokes[id].indexOf(entry)
-                    if (index !== -1) {
-                        this.#keystrokes[id].splice(index, 1)
+    #trigger(activation: KeystrokeActivation): Observable<boolean | HTMLElement> {
+        if (isElementInput(activation)) {
+            return this.#focusActivation(coerceElement(activation))
+        } else if (activation instanceof FocusState) {
+            return activation.origin$.pipe(map(origin => origin != null))
+        } else {
+            return from(activation).pipe(
+                switchMap(value => {
+                    if (isElementInput(value) || value instanceof FocusState) {
+                        return this.#trigger(value)
+                    } else {
+                        return of(value)
                     }
-                    if (this.#keystrokes[id].length === 0) {
-                        delete this.#keystrokes[id]
-                    }
-                }
-            }
-        }).pipe(share())
+                })
+            )
+        }
+    }
+
+    #focusActivation(element: HTMLElement): Observable<boolean> {
+        return this.#focusEvent.pipe(map(focused => focused === element || element.contains(focused)))
     }
 }
 
