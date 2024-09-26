@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 import { applicationConfig, Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
-import { Component, ElementRef, HostListener, inject, input } from "@angular/core"
+import { Component, DestroyRef, effect, ElementRef, HostListener, inject, input, viewChild } from "@angular/core"
 import { provideAnimations } from "@angular/platform-browser/animations"
 
-import { Focusable, FocusState } from "@ngutil/aria"
+import { Focusable, FocusState, KeystrokeService } from "@ngutil/aria"
 
 import { AlwaysOnTop } from "../layer/child-ref"
 import { IndividualLayer } from "../layer/layer.service"
@@ -12,6 +12,7 @@ import { FloatingRef } from "./floating-ref"
 import { FloatingService } from "./floating.service"
 import { dropAnimation } from "./traits/animation"
 import { backdrop } from "./traits/backdrop"
+import { closeTrigger } from "./traits/close-trigger"
 import { minWidth } from "./traits/dim-contraint"
 import { focus } from "./traits/focus"
 import { modal } from "./traits/modal"
@@ -61,11 +62,13 @@ class DropDownTrigger {
                     shape: { type: "rect", borderRadius: 3 },
                     expand: 10,
                     color: "rgba(0, 0, 0, .8)",
-                    closeOnClick: true,
                     crop: event.target as HTMLElement,
                     disablePointerEvents: false,
                     style: { backdropFilter: "blur(10px)" }
-                })
+                }),
+                closeTrigger({ clickOutside: { allowedElements: [this.el] } }),
+                closeTrigger({ clickOutside: {} }),
+                closeTrigger({ clickOutside: true, keystroke: true })
             )
             .subscribe(event => {
                 if (event.type === "disposing") {
@@ -94,7 +97,7 @@ class DropDownTrigger {
     template: `
         <div>I'am Floating! yeah :)</div>
         <br />
-        <button (click)="close()">close</button>
+        <button #close (click)="close()">close</button>
         <button (click)="newModal()">new modal</button>
         <button (click)="setResult()">set result</button>
         <button class="drop-down-trigger" [alwaysOnTop]="${AlwaysOnTop.Modal}">drop down</button>
@@ -104,15 +107,27 @@ class DropDownTrigger {
 class FloatingCmp {
     readonly floatingRef = inject(FloatingRef)
     readonly #floating = inject(FloatingService)
+    readonly #ks = inject(KeystrokeService)
+    readonly #destryRef = inject(DestroyRef)
+    readonly closeEl = viewChild("close", { read: ElementRef })
+
+    constructor() {
+        effect(() => {
+            const closeEl = this.closeEl()
+            if (closeEl) {
+                this.#ks.watch(closeEl, { key: "n", state: "up" }).subscribe(event => {
+                    console.log(event)
+                })
+            }
+        })
+    }
+
     close() {
         this.floatingRef.hide().subscribe()
     }
 
     newModal() {
-        this.#floating
-            .from(FloatingCmp, {})
-            .trait(modal({ closeOnBackdropClick: true }))
-            .subscribe()
+        this.#floating.from(FloatingCmp, {}).trait(modal()).subscribe()
     }
 
     setResult() {
@@ -155,7 +170,6 @@ class Floatings {
                 backdrop({
                     type: "solid",
                     color: "rgba(0, 0, 0, .5)",
-                    closeOnClick: true,
                     style: { backdropFilter: "blur(10px)" }
                 }),
                 focus({ trap: true })
@@ -166,7 +180,7 @@ class Floatings {
     showModal() {
         this.#floating
             .from(FloatingCmp, {})
-            .trait(modal({ closeOnBackdropClick: true }), style({ borderRadius: "3px" }))
+            .trait(modal(), style({ borderRadius: "3px" }), closeTrigger())
             .subscribe(event => {
                 console.log(event)
             })

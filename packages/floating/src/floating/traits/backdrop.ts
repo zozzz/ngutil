@@ -1,40 +1,31 @@
 import { AnimationBuilder } from "@angular/animations"
 
-import { exhaustMap, Observable, Subject, Subscriber } from "rxjs"
+import { Observable, Subscriber } from "rxjs"
 
 import { animationObservable, CoverOptions } from "@ngutil/graphics"
 
-import type { BackdropRef } from "../../layer/backdrop-ref"
+import { BackdropRef } from "../../layer"
 import { type FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
 import { FadeAnimation } from "./animation"
 
-interface CommonOptions {
-    closeOnClick?: boolean
-}
+interface CommonOptions {}
 
 export type BackdropTraitOptions = CoverOptions & CommonOptions
 
-export class BackdropState {
-    onClick: Observable<void> = new Subject<void>()
-}
-
-export class BackdropTrait implements FloatingTrait<BackdropState> {
+export class BackdropTrait implements FloatingTrait<BackdropRef> {
     readonly name = "backdrop"
 
     constructor(readonly options: BackdropTraitOptions) {}
 
-    connect(floatingRef: FloatingRef<any>): Observable<BackdropState> {
-        return new Observable((dest: Subscriber<BackdropState>) => {
+    connect(floatingRef: FloatingRef<any>): Observable<BackdropRef> {
+        return new Observable((dest: Subscriber<BackdropRef>) => {
             const animationBuilder = floatingRef.container.injector.get(AnimationBuilder)
             const options = { ...this.options }
-            const state = new BackdropState()
             const backdrop = floatingRef.layerSvc.newBackdrop(floatingRef.container, options)
 
-            if (options.closeOnClick) {
-                dest.add(this.#installClickHandler(floatingRef, backdrop, state))
-                dest.add(state.onClick.pipe(exhaustMap(() => floatingRef.close())).subscribe())
-            }
+            floatingRef.container.nativeElement.setAttribute("data-floating-has-backdrop", "true")
+            backdrop.nativeElement.setAttribute("data-floating-backdrop", floatingRef.uid)
 
             backdrop.state.on("showing", () =>
                 animationObservable({
@@ -56,26 +47,8 @@ export class BackdropTrait implements FloatingTrait<BackdropState> {
             floatingRef.state.on("disposing", () => backdrop.dispose())
 
             dest.add(backdrop.show().subscribe())
-            dest.next(state)
+            dest.next(backdrop)
         })
-    }
-
-    #installClickHandler(floatingRef: FloatingRef<any>, backdrop: BackdropRef, state: BackdropState) {
-        const handler = (event: MouseEvent) => {
-            if (event.defaultPrevented) {
-                return
-            }
-
-            if (event.target === backdrop.nativeElement || backdrop.nativeElement.contains(event.target as Node)) {
-                ;(state.onClick as Subject<void>).next()
-            }
-        }
-
-        document.addEventListener("click", handler)
-
-        return () => {
-            document.removeEventListener("click", handler)
-        }
     }
 }
 

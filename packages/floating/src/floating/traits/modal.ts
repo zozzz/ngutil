@@ -1,14 +1,10 @@
 import { fallAnimation } from "./animation"
 import { backdrop } from "./backdrop"
+import { closeTrigger } from "./close-trigger"
 import { focus } from "./focus"
-import { keystroke } from "./keystroke"
 import { position } from "./position"
 
-export interface ModalOptions {
-    closeOnBackdropClick?: boolean
-}
-
-export function modal(options: ModalOptions = {}) {
+export function modal() {
     return [
         position({
             anchor: {
@@ -20,9 +16,9 @@ export function modal(options: ModalOptions = {}) {
                 padding: "16px"
             }
         }),
-        backdrop({ type: "solid", color: "rgba(0, 0, 0, .3)", closeOnClick: options.closeOnBackdropClick }),
+        backdrop({ type: "solid", color: "rgba(0, 0, 0, .3)" }),
         focus({ trap: true }),
-        keystroke(),
+        closeTrigger(),
         fallAnimation()
     ]
 }

@@ -35,6 +35,7 @@
     "storybook": {
       "executor": "@storybook/angular:start-storybook",
       "options": {
+        "host": "0.0.0.0",
         "port": 4400,
         "configDir": "packages/floating/.storybook",
         "browserTarget": "floating:build-storybook",

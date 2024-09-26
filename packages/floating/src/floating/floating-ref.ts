@@ -38,6 +38,8 @@ export interface FloatingTraitEvent {
 
 type TraitState = { [key: string]: FloatingTraitEvent | null }
 
+let UID_COUNTER = 0
+
 @Injectable()
 export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends HTMLElement = HTMLElement> {
     readonly channel = new ReplaySubject<FloatingChannel>(1)
@@ -58,6 +60,8 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
     readonly #untilCleanup = this.state.onExecute("cleanup")
     readonly #untilDisposed = this.state.onExecute("disposed")
 
+    readonly uid = `${++UID_COUNTER}`
+
     constructor(
         readonly layerSvc: LayerService,
         readonly container: ContainerRef,
@@ -68,6 +72,7 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
             visibility: "hidden",
             pointerEvents: "none"
         })
+        container.nativeElement.setAttribute("data-floating", this.uid)
 
         this.#traits = traits
         this.traitState$ = this.#traitState().pipe(shareReplay(1))
