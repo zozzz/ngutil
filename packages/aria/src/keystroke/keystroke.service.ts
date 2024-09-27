@@ -67,7 +67,6 @@ export class KeystrokeService {
                 .pipe(
                     distinctUntilChanged(),
                     switchMap(enabled => {
-                        console.log({ enabled }, keystrokes)
                         if (enabled) {
                             return this.#keyEvent
                         } else {

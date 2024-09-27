@@ -2,7 +2,6 @@ import {
     distinctUntilChanged,
     exhaustMap,
     filter,
-    finalize,
     from,
     fromEvent,
     map,
@@ -137,7 +136,6 @@ class CloseTriggerTrait implements FloatingTrait {
             return of()
         } else {
             return race(...triggers).pipe(
-                finalize(() => console.log("CLOSED", floatingRef.uid)),
                 exhaustMap(event =>
                     floatingRef.close().pipe(
                         map(() => event),
