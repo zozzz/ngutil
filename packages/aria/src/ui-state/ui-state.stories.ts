@@ -67,20 +67,30 @@ import { UiState } from "./ui-state"
             {{ busyDirective2.yes() }} | {{ busyDirective2.state.merged() | json }}
         </div>
 
-        <!--<div>disabled:</div>
-        <button>true</button>
-        <button>false</button>
-        <div nuDisabled #disabled="disabled">...</div>
+        <div>disabled:</div>
+        <button (click)="disabled.set(true)">true</button>
+        <button (click)="disabled.set(false)">false</button>
+        <div [nuDisabled]="disabled()" #disabledDirective="disabled">
+            {{ disabledDirective.yes() }} {{ disabledDirective.state.merged() | json }}
+        </div>
 
         <div>readonly:</div>
-        <button>true</button>
-        <button>false</button>
-        <div nuReadonly #readonly="readonly">...</div> -->
+        <button (click)="readonly.set(true)">true</button>
+        <button (click)="readonly.set(false)">false</button>
+        <div
+            [nuReadonly]="readonly() || disabled()"
+            nuReadonlyWhen="busy{loading, saving}"
+            #readonlyDirective="readonly"
+        >
+            {{ readonlyDirective.yes() }} {{ readonlyDirective.state.merged() | json }}
+        </div>
     `
 })
 class UiStateTest {
     readonly state = inject(UiState)
     readonly busy = signal(false)
+    readonly disabled = signal(false)
+    readonly readonly = signal(false)
 }
 
 export default {

@@ -1,6 +1,6 @@
 import { computed, Directive, effect, inject, input } from "@angular/core"
 
-import { ConnectProtocol, DisabledState, ElementInput, isElementInput } from "@ngutil/common"
+import { ConnectProtocol, ElementInput, isElementInput } from "@ngutil/common"
 
 import { FocusState } from "./focus-state.directive"
 
@@ -16,7 +16,6 @@ import { FocusState } from "./focus-state.directive"
     hostDirectives: [FocusState]
 })
 export class Focusable implements ConnectProtocol {
-    readonly #disabled = inject(DisabledState, { optional: true, self: true })
     readonly state = inject(FocusState)
 
     readonly focusable = input<boolean | number>(true, { alias: "nuFocusable" })
@@ -25,9 +24,8 @@ export class Focusable implements ConnectProtocol {
     readonly _tabindex = computed(() => {
         const focusable = this.focusable()
         const tabindex = this.tabindex()
-        const isDisabled = this.#disabled?.isDisabled()
 
-        if (focusable === false || isDisabled) {
+        if (focusable === false) {
             return -1
         }
 

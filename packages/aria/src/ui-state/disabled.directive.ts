@@ -9,7 +9,7 @@ import { UiState } from "./ui-state"
     standalone: true,
     host: {
         "[attr.aria-disabled]": "yes() ? 'true' : 'false'",
-        "[attr.disabled]": "yes() ? 'true' : 'false'",
+        "[attr.disabled]": "yes() ? '' : null",
         "[attr.inert]": "yes() ? '' : null"
     },
     providers: [UiState]
