@@ -2,9 +2,9 @@
   "name": "@ngutil/layout",
   "version": "0.0.53",
   "peerDependencies": {
-    "@angular/animations": "^17.3.6",
-    "@angular/common": "^17.3.6",
-    "@angular/core": "^17.3.6",
+    "@angular/animations": "18.2.6",
+    "@angular/common": "18.2.6",
+    "@angular/core": "18.2.6",
     "@ngutil/common": "workspace:*",
     "@ngutil/style": "workspace:*",
     "rxjs": "^7.8.1",

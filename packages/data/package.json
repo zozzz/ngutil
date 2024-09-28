@@ -2,8 +2,8 @@
   "name": "@ngutil/data",
   "version": "0.0.53",
   "peerDependencies": {
-    "@angular/cdk": "^17.3.6",
-    "@angular/core": "^17.3.6",
+    "@angular/cdk": "18.2.6",
+    "@angular/core": "18.2.6",
     "@ngutil/aria": "workspace:*",
     "@ngutil/common": "workspace:*",
     "lodash": "^4.17.21",
