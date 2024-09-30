@@ -1,6 +1,6 @@
 import { computed, Directive, inject, signal, untracked } from "@angular/core"
 
-import { finalize, Observable, tap } from "rxjs"
+import { Observable } from "rxjs"
 
 import { Mutable } from "utility-types"
 
@@ -108,10 +108,14 @@ export class UiState<N extends string = string, S extends UiStateSource = UiStat
     }
 
     intercept(name: N, source: S) {
-        return <S>(src: Observable<S>) =>
-            src.pipe(
-                tap(() => this.set(name, true, source)),
-                finalize(() => this.set(name, false, source))
-            )
+        return <S>(src: Observable<S>) => this.wrap(src, name, source)
+    }
+
+    wrap<T>(observable: Observable<T>, name: N, source: S): Observable<T> {
+        return new Observable<T>(subscriber => {
+            this.set(name, true, source)
+            subscriber.add(() => this.set(name, false, source))
+            return observable.subscribe(subscriber)
+        })
     }
 }

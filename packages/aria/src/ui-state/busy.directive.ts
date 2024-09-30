@@ -14,8 +14,8 @@ import { UiState } from "./ui-state"
     providers: [UiState]
 })
 export class BusyDirective extends AbstractUiState<"busy"> {
-    protected readonly input = input(NOTSET as boolean, { alias: "nuBusy" })
-    protected readonly when = input(NOTSET as string, { alias: "nuBusyWhen" })
+    readonly input = input(NOTSET as boolean, { alias: "nuBusy" })
+    readonly when = input(NOTSET as string, { alias: "nuBusyWhen" })
 
     constructor() {
         super("busy")

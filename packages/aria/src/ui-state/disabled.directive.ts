@@ -15,8 +15,8 @@ import { UiState } from "./ui-state"
     providers: [UiState]
 })
 export class DisabledDirective extends AbstractUiState<"disabled"> {
-    protected readonly input = input(NOTSET as boolean, { alias: "nuDisabled" })
-    protected readonly when = input(NOTSET as string, { alias: "nuDisabledWhen" })
+    readonly input = input(NOTSET as boolean, { alias: "nuDisabled" })
+    readonly when = input(NOTSET as string, { alias: "nuDisabledWhen" })
 
     constructor() {
         super("disabled")
