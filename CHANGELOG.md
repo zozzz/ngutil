@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.54](https://github.com/zozzz/ngutil/compare/0.0.53...0.0.54) (2024-09-30)
+
+
+### Features
+
+* **aria:** progress state ([52f89a5](https://github.com/zozzz/ngutil/commit/52f89a57881694d286e2f7fea92a5b9b603bf987))
+* **aria:** ui state ([0b8d847](https://github.com/zozzz/ngutil/commit/0b8d84753b71efd4649a320ba387b11ee6551fa9))
+
+
+### Other changes
+
+* remove console.log ([36b99b9](https://github.com/zozzz/ngutil/commit/36b99b9ed96c1dc78edb834af58d997a04dec0c1))
+
 ## [0.0.53](https://github.com/zozzz/ngutil/compare/0.0.52...0.0.53) (2024-09-26)
 
 
