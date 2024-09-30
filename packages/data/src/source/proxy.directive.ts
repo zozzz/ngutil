@@ -17,7 +17,8 @@ import {
     throwError
 } from "rxjs"
 
-import { Busy, ConnectProtocol } from "@ngutil/common"
+import { BusyDirective } from "@ngutil/aria"
+import { ConnectProtocol } from "@ngutil/common"
 
 import { Model } from "../model"
 import { DataProvider } from "../provider/provider"
@@ -190,15 +191,15 @@ export class DataSourceProxyGrouper<T extends Model, G extends Grouper<T>> {
 })
 export class DataSourceProxyBusy {
     readonly #proxy = inject<DataSourceProxy<any>>(DataSourceProxy)
-    readonly #busy = inject<Busy<any>>(Busy)
-
-    readonly isBusy$ = this.#proxy.value$.pipe(
-        switchMap(value => value.isBusy$),
-        shareReplay(1)
-    )
+    readonly #busy = inject(BusyDirective)
 
     constructor() {
-        this.#busy.connect(this.isBusy$).pipe(takeUntilDestroyed()).subscribe()
+        this.#proxy.value$
+            .pipe(
+                takeUntilDestroyed(),
+                switchMap(value => value.isBusy$)
+            )
+            .subscribe(isBusy => this.#busy.set(isBusy, "data-source"))
     }
 }
 
