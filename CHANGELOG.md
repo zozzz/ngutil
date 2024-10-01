@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.57](https://github.com/zozzz/ngutil/compare/0.0.56...0.0.57) (2024-10-01)
+
+
+### Features
+
+* **aria:** ui state selector ([5a82261](https://github.com/zozzz/ngutil/commit/5a8226117bbf002e17efaffc8159a81d5f4f0ac3))
+
 ## [0.0.56](https://github.com/zozzz/ngutil/compare/0.0.55...0.0.56) (2024-09-30)
 
 ## [0.0.55](https://github.com/zozzz/ngutil/compare/0.0.54...0.0.55) (2024-09-30)
