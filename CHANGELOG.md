@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.61](https://github.com/zozzz/ngutil/compare/0.0.60...0.0.61) (2024-10-01)
+
+
+### Bug Fixes
+
+* **floating:** LayerService can be root ([ca9043b](https://github.com/zozzz/ngutil/commit/ca9043b82601ddab0be5c840fc295e9cfc079572))
+
 ## [0.0.60](https://github.com/zozzz/ngutil/compare/0.0.59...0.0.60) (2024-10-01)
 
 
