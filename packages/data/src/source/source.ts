@@ -6,6 +6,7 @@ import {
     debounceTime,
     distinctUntilChanged,
     map,
+    merge,
     Observable,
     of,
     ReplaySubject,
@@ -39,14 +40,14 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         switchMap(slice => this.provider.clampSlice(slice)),
         distinctUntilChanged(isEqual),
         map(slice => deepFreeze(deepClone(slice))),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
     )
 
     readonly #reload = new BehaviorSubject<void>(undefined)
 
     readonly #query: Observable<QueryWithSlice<T>> = combineLatest({
         query: this.query$,
-        reload: this.#reload
+        reload: merge(this.#reload, this.provider.changed$)
     }).pipe(
         tap(() => this.#setBusy(true)),
         // TODO: maybe silent reset or prevent items$ chenges
@@ -60,7 +61,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                 })
             )
         ),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
     )
 
     readonly items$: Observable<PartialCollection<T>> = this.#query.pipe(
@@ -88,12 +89,12 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
             )
         ),
         tap(() => this.#setBusy(false)),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
     )
 
     readonly isEmpty$ = combineLatest({ busy: this.isBusy$, items: this.items$ }).pipe(
         map(({ busy, items }) => !busy && items.every(isFalsy)),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
     )
 
     constructor(

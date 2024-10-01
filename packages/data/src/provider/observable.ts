@@ -1,4 +1,4 @@
-import type { Observable } from "rxjs"
+import { type Observable, shareReplay } from "rxjs"
 
 import type { Model, ModelMetaInput } from "../model"
 import { LocalProvider } from "./local"
@@ -8,6 +8,8 @@ export class ObservableProvider<T extends Model> extends LocalProvider<T> {
 
     constructor(meta: ModelMetaInput<T>, src: Observable<readonly T[]>) {
         super(meta)
-        this.items$ = src
+        const source = src.pipe(shareReplay({ bufferSize: 1, refCount: true }))
+        this.items$ = source
+        this._changed = source
     }
 }

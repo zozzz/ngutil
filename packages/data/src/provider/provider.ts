@@ -1,5 +1,5 @@
 import type { Observable } from "rxjs"
-import { of } from "rxjs"
+import { NEVER, of } from "rxjs"
 
 import type { Model, ModelMeta, ModelRefNorm } from "../model"
 import type { QueryResult, QueryWithSlice, Slice } from "../query"
@@ -16,6 +16,14 @@ export abstract class DataProvider<T extends Model> {
      * Metadata of model
      */
     abstract readonly meta: ModelMeta<T>
+
+    /**
+     * Emit event when data is changed
+     */
+    get changed$(): Observable<any> {
+        return this._changed
+    }
+    protected _changed: Observable<any> = NEVER
 
     /**
      * Query items by the given request

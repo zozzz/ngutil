@@ -18,6 +18,7 @@ export abstract class AbstractUiState<N extends string> {
     readonly yes = computed(() => {
         const when = this.when()
         if (when !== NOTSET) {
+            // TODO: add prefix if only provide loading, or simething simple selector
             return this.state.is(`${this.name}.self || (${when})`)
         }
         return this.state.is(this.name)
