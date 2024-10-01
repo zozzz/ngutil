@@ -25,8 +25,9 @@ export abstract class LocalProvider<T extends Model> extends DataProvider<T> {
         return this.items$.pipe(map(items => exec(items)))
     }
 
-    override queryItem(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<T | undefined> {
-        return this.queryList(request).pipe(map(list => list.items.find(ref.toFilter())))
+    override queryItem(ref: ModelRefNorm, request?: QueryWithSlice<T>): Observable<T | undefined> {
+        const items = request ? this.queryList(request).pipe(map(list => list.items)) : this.items$
+        return items.pipe(map(items => items.find(ref.toFilter())))
     }
 
     override queryPosition(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<number | undefined> {

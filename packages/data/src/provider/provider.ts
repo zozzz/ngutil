@@ -33,7 +33,7 @@ export abstract class DataProvider<T extends Model> {
     /**
      * Query exactly one item by the given request
      */
-    abstract queryItem(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<T | undefined>
+    abstract queryItem(ref: ModelRefNorm, request?: QueryWithSlice<T>): Observable<T | undefined>
 
     /**
      * Query item position in the list that matching by the given request

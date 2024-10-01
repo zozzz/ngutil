@@ -119,7 +119,16 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     getItem(ref: ModelRef): Observable<T | undefined> {
-        return this.watchItem(ref).pipe(take(1))
+        const refn = this.provider.meta.normalizeRef(ref)
+        return this.store.get(refn).pipe(
+            take(1),
+            switchMap(result => {
+                if (result == null) {
+                    return this.provider.queryItem(refn).pipe(take(1))
+                }
+                return of(result)
+            })
+        )
     }
 
     watchItem(ref: ModelRef): Observable<T | undefined> {
