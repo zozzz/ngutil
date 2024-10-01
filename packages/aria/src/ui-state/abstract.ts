@@ -18,7 +18,7 @@ export abstract class AbstractUiState<N extends string> {
     readonly yes = computed(() => {
         const when = this.when()
         if (when !== NOTSET) {
-            return this.state.is(this.name, `${when},self`)
+            return this.state.is(`${this.name}.self || (${when})`)
         }
         return this.state.is(this.name)
     })
@@ -31,7 +31,6 @@ export abstract class AbstractUiState<N extends string> {
                 if (input !== NOTSET) {
                     this.state.set(name, !!coerceBoolAttr(input))
                 }
-                this.yes()
             },
             { allowSignalWrites: true }
         )

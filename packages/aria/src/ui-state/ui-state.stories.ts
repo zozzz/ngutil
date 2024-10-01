@@ -51,7 +51,7 @@ import { UiState } from "./ui-state"
         <div>parent:</div>
         <button (click)="state.set('busy', true, 'loading')">true</button>
         <button (click)="state.set('busy', false, 'loading')">false</button>
-        <div nuBusy nuDisabled nuReadonly>{{ state.is("busy") }} | {{ state.merged() | json }}</div>
+        <div nuBusy nuDisabled nuReadonly>{{ state.is("*") }} | {{ state.merged() | json }}</div>
 
         <div>busy:</div>
         <button (click)="busy.set(true)">true</button>

@@ -6,6 +6,8 @@ import { Mutable } from "utility-types"
 
 import { deepClone } from "@ngutil/common"
 
+import { compile as compileSelector } from "./selector"
+
 /**
  * {
  *  busy: {
@@ -23,7 +25,7 @@ export type UiStateValue = { readonly [key: string]: boolean }
 
 export type UiStateSource = "parent" | "self" | string
 
-export type UiStateSourceSelector<S extends UiStateSource> = "*" | S
+export type UiStateSelector = string
 
 @Directive({ standalone: true })
 export class UiState<N extends string = string, S extends UiStateSource = UiStateSource> {
@@ -85,26 +87,15 @@ export class UiState<N extends string = string, S extends UiStateSource = UiStat
             this.#self.set({ ...current, [name]: { ...entry, [source]: value } })
         }
 
-        const root = this.root
-        if (source !== "self" && root !== this) {
-            root.set(name, value, source)
-        }
+        // TODO: maybe some option to propagate to root
+        // const root = this.root
+        // if (source !== "self" && root !== this) {
+        //     root.set(name, value, source)
+        // }
     }
 
-    is(name: N, selector: UiStateSourceSelector<S> = "*"): boolean {
-        if (selector === "*") {
-            const current = this.value()
-            return current[name] ?? false
-        } else if (selector.includes(",")) {
-            const merged = this.merged()
-            return selector
-                .split(/\s*,\s*/)
-                .map(v => merged[name]?.[v] ?? false)
-                .some(v => v)
-        } else {
-            const merged = this.merged()
-            return merged[name]?.[selector] ?? false
-        }
+    is(selector: UiStateSelector = "*"): boolean {
+        return compileSelector(selector)(this.merged())
     }
 
     intercept(name: N, source: S) {
