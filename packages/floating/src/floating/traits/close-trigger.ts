@@ -106,10 +106,10 @@ class CloseTriggerTrait implements FloatingTrait {
                             return true
                         } else {
                             return (
-                                // click on self backdrop
-                                (backdropUid != null && backdropUid === selfUid) ||
+                                // click on self or erlier backdrop
+                                (backdropUid != null && backdropUid <= selfUid) ||
                                 // click on other floating element, whitout backdrop
-                                (floatingUid != null && otherBackdropUid == null && floatingUid !== selfUid) ||
+                                (floatingUid != null && otherBackdropUid == null && floatingUid < selfUid) ||
                                 // click on other floating element that opened erlier
                                 (floatingUid != null && floatingUid < selfUid)
                             )

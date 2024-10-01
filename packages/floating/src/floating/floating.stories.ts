@@ -34,6 +34,7 @@ class DropDownTrigger {
     readonly el = inject(ElementRef)
 
     readonly alwaysOnTop = input(AlwaysOnTop.None)
+    readonly backdrop = input(true)
 
     constructor() {
         // this.focus.event$.pipe(takeUntilDestroyed()).subscribe(console.log)
@@ -41,21 +42,25 @@ class DropDownTrigger {
 
     @HostListener("click", ["$event"])
     onClick(event: MouseEvent) {
-        this.floating
-            .from(FloatingCmp, { alwaysOnTop: this.alwaysOnTop() })
-            .trait(
-                position({
-                    anchor: { ref: this.el, align: "bottom left" },
-                    content: { align: "top left", margin: 20 }
-                }),
+        const factory = this.floating.from(FloatingCmp, { alwaysOnTop: this.alwaysOnTop() }).trait(
+            position({
+                anchor: { ref: this.el, align: "bottom left" },
+                content: { align: "top left", margin: 20 }
+            }),
 
-                // minWidth(3243524),
-                // maxWidth(this.el),
-                minWidth(this.el),
-                style({ borderRadius: "3px", border: "1px solid black" }),
-                // fadeAnimation(),
-                dropAnimation(),
-                focus({ connect: this.focus }),
+            // minWidth(3243524),
+            // maxWidth(this.el),
+            minWidth(this.el),
+            style({ borderRadius: "3px", border: "1px solid black" }),
+            // fadeAnimation(),
+            dropAnimation(),
+            focus({ connect: this.focus }),
+
+            closeTrigger()
+        )
+
+        if (this.backdrop()) {
+            factory.trait(
                 // backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)" }),
                 backdrop({
                     type: "crop",
@@ -65,17 +70,16 @@ class DropDownTrigger {
                     crop: event.target as HTMLElement,
                     disablePointerEvents: false,
                     style: { backdropFilter: "blur(10px)" }
-                }),
-                closeTrigger({ clickOutside: { allowedElements: [this.el] } }),
-                closeTrigger({ clickOutside: {} }),
-                closeTrigger({ clickOutside: true, keystroke: true })
+                })
             )
-            .subscribe(event => {
-                if (event.type === "disposing") {
-                    this.el.nativeElement.focus()
-                }
-                // console.log(event)
-            })
+        }
+
+        factory.subscribe(event => {
+            if (event.type === "disposing") {
+                this.el.nativeElement.focus()
+            }
+            // console.log(event)
+        })
     }
 }
 
@@ -97,10 +101,11 @@ class DropDownTrigger {
     template: `
         <div>I'am Floating! yeah :)</div>
         <br />
-        <button #close (click)="close()">close</button>
+        <button #close (click)="doClose()">close</button>
         <button (click)="newModal()">new modal</button>
         <button (click)="setResult()">set result</button>
         <button class="drop-down-trigger" [alwaysOnTop]="${AlwaysOnTop.Modal}">drop down</button>
+        <button class="drop-down-trigger" [backdrop]="false">drop down without back</button>
         <button class="drop-down-trigger" [alwaysOnTop]="${AlwaysOnTop.UAC}">uac</button>
     `
 })
@@ -122,8 +127,8 @@ class FloatingCmp {
         })
     }
 
-    close() {
-        this.floatingRef.hide().subscribe()
+    doClose() {
+        this.floatingRef.close(true).subscribe()
     }
 
     newModal() {
