@@ -1,3 +1,4 @@
+import { DOCUMENT } from "@angular/common"
 import { inject, Injectable, NgZone } from "@angular/core"
 
 import { distinctUntilChanged, Observable, of, shareReplay, Subscriber } from "rxjs"
@@ -11,6 +12,7 @@ import { Position } from "../util/rect"
 @Injectable({ providedIn: "root" })
 export class PositionWatcher {
     readonly #zone = inject(NgZone)
+    readonly #document = inject(DOCUMENT)
     readonly #watches: Map<HTMLElement, Observable<Position>> = new Map()
 
     watch(element: ElementInput | Window): Observable<Position> {
@@ -34,6 +36,10 @@ export class PositionWatcher {
             new Observable((dest: Subscriber<Position>) => {
                 let rafId: number | undefined = undefined
                 const emit = () => {
+                    if (!this.#document.contains(element)) {
+                        return
+                    }
+
                     const rect = element.getBoundingClientRect()
                     dest.next({
                         x: rect.x,

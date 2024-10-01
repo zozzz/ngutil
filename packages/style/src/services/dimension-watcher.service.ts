@@ -1,3 +1,4 @@
+import { DOCUMENT } from "@angular/common"
 import { inject, Injectable, NgZone } from "@angular/core"
 
 import { distinctUntilChanged, Observable, shareReplay, Subscriber } from "rxjs"
@@ -12,6 +13,7 @@ export type Watches = Map<HTMLElement | Window, Observable<Dimension>>
 @Injectable({ providedIn: "root" })
 export class DimensionWatcher {
     readonly #zone = inject(NgZone)
+    readonly #document = inject(DOCUMENT)
     readonly #watches: { [key in WatchBox]?: Watches } = {}
 
     watch(element: ElementInput | Window, box: WatchBox): Observable<Dimension> {
@@ -49,6 +51,10 @@ export class DimensionWatcher {
         return this.#zone.runOutsideAngular(() =>
             new Observable((sub: Subscriber<Dimension>) => {
                 const observer = new ResizeObserver(entries => {
+                    if (!this.#document.contains(el)) {
+                        return
+                    }
+
                     for (const entry of entries) {
                         if (entry.borderBoxSize) {
                             sub.next({
