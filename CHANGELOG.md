@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.60](https://github.com/zozzz/ngutil/compare/0.0.59...0.0.60) (2024-10-01)
+
+
+### Bug Fixes
+
+* **aria:** progress state ([f770088](https://github.com/zozzz/ngutil/commit/f770088e6108c402269e73b63ff99991b0167da7))
+
 ## [0.0.59](https://github.com/zozzz/ngutil/compare/0.0.58...0.0.59) (2024-10-01)
 
 ## [0.0.58](https://github.com/zozzz/ngutil/compare/0.0.57...0.0.58) (2024-10-01)
