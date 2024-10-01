@@ -54,7 +54,7 @@ class CloseTriggerTrait implements FloatingTrait {
         const { keystroke, clickOutside, trigger } = this.options
 
         const container = floatingRef.container.nativeElement
-        const triggers = []
+        const triggers: Array<Observable<any>> = []
         const selfUid = Number(floatingRef.uid)
 
         if (keystroke) {
@@ -135,13 +135,19 @@ class CloseTriggerTrait implements FloatingTrait {
         if (triggers.length === 0) {
             return of()
         } else {
-            return race(...triggers).pipe(
-                exhaustMap(event =>
-                    floatingRef.close().pipe(
-                        map(() => event),
-                        distinctUntilChanged()
-                    )
-                )
+            return new Observable(dst =>
+                floatingRef.state.on("shown", () => {
+                    race(...triggers)
+                        .pipe(
+                            exhaustMap(event =>
+                                floatingRef.close().pipe(
+                                    map(() => event),
+                                    distinctUntilChanged()
+                                )
+                            )
+                        )
+                        .subscribe(dst)
+                })
             )
         }
     }
