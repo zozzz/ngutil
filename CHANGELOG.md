@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.58](https://github.com/zozzz/ngutil/compare/0.0.57...0.0.58) (2024-10-01)
+
+
+### Bug Fixes
+
+* **data:** Observable source changes ([413a106](https://github.com/zozzz/ngutil/commit/413a10672c91218418745fcdf8368aac4bee75e6))
+* **floating:** Tweaking closeTrigger ([7ecf673](https://github.com/zozzz/ngutil/commit/7ecf673158ceee21520c1377d5782292016f3e2d))
+* **style:** Dimension and position watcher dont emit events, when the element is not in dom ([7deb763](https://github.com/zozzz/ngutil/commit/7deb763fef878b0ee0b8e41a46b8d79160eae0bf))
+
 ## [0.0.57](https://github.com/zozzz/ngutil/compare/0.0.56...0.0.57) (2024-10-01)
 
 
