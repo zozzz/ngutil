@@ -41,7 +41,7 @@ export interface FloatingPlacement extends FloatingPlacementPosition {
     ref: FloatingTargetElementRef
 }
 
-export class FloatingPlacementRef<T extends LayerService["root"]["nativeElement"]> extends ElementRef<T> {}
+export class FloatingPlacementRef<T extends LayerService["root"]> extends ElementRef<T> {}
 
 export interface FloatingPositionOptions {
     anchor?: FloatingAnchor

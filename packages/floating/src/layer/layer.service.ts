@@ -1,5 +1,16 @@
 import { ComponentType } from "@angular/cdk/portal"
-import { Directive, ElementRef, inject, Inject, InjectionToken, Injector, Optional, TemplateRef } from "@angular/core"
+import { DOCUMENT } from "@angular/common"
+import {
+    Directive,
+    ElementRef,
+    inject,
+    Inject,
+    Injectable,
+    InjectionToken,
+    Injector,
+    Optional,
+    TemplateRef
+} from "@angular/core"
 
 import { toSorted } from "@ngutil/common"
 import { CoverService } from "@ngutil/graphics"
@@ -14,12 +25,16 @@ export const LAYER_ZINDEX_START = new InjectionToken<number>("LAYER_ZINDEX_START
 // TODO: ELEVATION_STEP config with injection
 // TODO: ELEVATION_START config with injection
 
-@Directive()
+@Injectable()
 export abstract class LayerService {
     readonly #cover = inject(CoverService)
     readonly #injector = inject(Injector)
+    readonly #document = inject(DOCUMENT)
+    readonly #el = inject<ElementRef<HTMLElement>>(ElementRef, { optional: true, self: true })
 
-    readonly root = inject<ElementRef<HTMLElement>>(ElementRef)
+    get root() {
+        return (this.#el && this.#el.nativeElement) || this.#document.body
+    }
     // readonly #el = this.root.nativeElement
 
     readonly #children: Array<ChildRef> = []
@@ -64,7 +79,7 @@ export abstract class LayerService {
         if (!this.#children.includes(ref)) {
             this.#children.push(ref)
             this.#update()
-            this.root.nativeElement.appendChild(ref.nativeElement)
+            this.root.appendChild(ref.nativeElement)
             ref.state.on("disposed", () => this.#remove(ref))
         }
         return ref
