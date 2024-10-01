@@ -1,18 +1,6 @@
 import { Directive } from "@angular/core"
 
-import {
-    animationFrames,
-    map,
-    Observable,
-    of,
-    scan,
-    shareReplay,
-    startWith,
-    Subject,
-    switchMap,
-    takeWhile,
-    tap
-} from "rxjs"
+import { animationFrames, map, Observable, of, scan, shareReplay, startWith, Subject, switchMap, takeWhile } from "rxjs"
 
 import { clamp } from "lodash"
 import { Mutable } from "utility-types"
@@ -47,7 +35,6 @@ export interface ProgressSegement extends ProgressSegmentInput {
     ratio: number
     share: number
     done: boolean
-    laxPercent?: number
     laxBegin?: number
 }
 
@@ -78,68 +65,55 @@ export class ProgressState {
 
             if (input.progress.type === "lax") {
                 delete current.laxBegin
-                delete current.laxPercent
+                current.done = false
+            }
+
+            if (input.progress.type === "fix" && input.progress.percent < 1) {
+                current.done = false
             }
 
             return { ...state, [input.name]: { ...current, ...input } }
         }, {} as ProgressSegements),
         switchMap(state => {
-            const laxCount = Object.values(state).filter(({ progress }) => progress.type === "lax").length
-
-            if (laxCount > 0) {
-                return animationFrames().pipe(
-                    map(({ timestamp }) => {
-                        for (const entry of Object.values(state)) {
-                            if (entry.progress.type === "lax") {
-                                if (entry.laxBegin == null) {
-                                    entry.laxBegin = timestamp
-                                }
-
-                                let percent = (timestamp - entry.laxBegin) / entry.progress.predictedTime
-                                if (percent >= 0.8) {
-                                    const final = (timestamp - entry.laxBegin) / (entry.progress.predictedTime * 50)
-                                    percent = 0.8 + Math.log1p(final)
-                                }
-                                entry.laxPercent = clamp(percent, 0, 0.99)
-                            } else {
-                                delete entry.laxPercent
-                            }
-                        }
-                        return state
-                    }),
-                    takeWhile(() => {
-                        const doneCount = Object.values(state).filter(
-                            item => item.progress.type === "lax" && item.laxPercent! >= 1
-                        ).length
-                        return doneCount !== laxCount
-                    }, true)
-                )
-            } else {
-                return of(state)
-            }
-        }),
-        tap(state => {
             const slist = Object.values(state) as Array<Mutable<ProgressSegement>>
             const min = slist.reduce((min, current) => Math.min(min, current.distribution || 0), Infinity) || 1
             const totalDistribution = slist.reduce((total, current) => total + (current.distribution || min), 0)
+            const hasLax = slist.some(segment => segment.progress.type === "lax")
+            const trigger = hasLax ? animationFrames() : of({ timestamp: performance.now() })
 
-            for (const segment of slist) {
-                if (segment.distribution == null) {
-                    segment.distribution = min
-                }
+            return trigger.pipe(
+                map(({ timestamp }) => {
+                    for (const segment of slist) {
+                        if (segment.distribution == null) {
+                            segment.distribution = min
+                        }
+                        segment.ratio = segment.distribution / totalDistribution + 0.0001
 
-                segment.ratio = segment.distribution / totalDistribution + 0.0001
+                        let percent: number
 
-                if (segment.progress.type === "fix") {
-                    const percent = clamp(segment.progress.percent, 0, 1)
-                    segment.share = percent * segment.ratio
-                    segment.done = percent >= 1
-                } else if (segment.progress.type === "lax" && segment.laxPercent != null) {
-                    const percent = segment.laxPercent
-                    segment.share = percent * segment.ratio
-                    segment.done = percent >= 1
-                }
-            }
+                        if (segment.progress.type === "lax") {
+                            if (segment.laxBegin == null) {
+                                segment.laxBegin = timestamp
+                            }
+
+                            percent = (timestamp - segment.laxBegin) / segment.progress.predictedTime
+                            if (percent >= 0.8) {
+                                const final = (timestamp - segment.laxBegin) / (segment.progress.predictedTime * 50)
+                                percent = 0.8 + Math.log1p(final)
+                            }
+                        } else {
+                            delete segment.laxBegin
+                            percent = clamp(segment.progress.percent, 0, 1)
+                        }
+
+                        segment.share = percent * segment.ratio
+                        segment.done = percent >= 1
+                    }
+
+                    return state
+                }),
+                takeWhile(state => Object.values(state).some(segment => !segment.done), true)
+            )
         }),
         shareReplay({ bufferSize: 1, refCount: true })
     )
