@@ -38,10 +38,6 @@ class DropDownTrigger {
     readonly alwaysOnTop = input(AlwaysOnTop.None)
     readonly backdrop = input(true)
 
-    constructor() {
-        // this.focus.event$.pipe(takeUntilDestroyed()).subscribe(console.log)
-    }
-
     @HostListener("click", ["$event"])
     onClick(event: MouseEvent) {
         const factory = this.floating.from(FloatingCmp, { alwaysOnTop: this.alwaysOnTop() }).trait(
@@ -80,7 +76,6 @@ class DropDownTrigger {
             if (event.type === "disposing") {
                 this.el.nativeElement.focus()
             }
-            // console.log(event)
         })
     }
 }

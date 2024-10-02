@@ -25,14 +25,7 @@ export class LayerService {
         return this.#container.root
     }
 
-    constructor() {
-        console.log(this.#appRef)
-
-        // console.log(this.#appRef.)
-    }
-
     newComponentPortal<T>(component: ComponentType<T>, options: ComponentPortalOptions<T>): ComponentPortalRef<T> {
-        // console.log(this.getRootViewContainerRef())
         if (!options.injector) {
             options = { ...options, injector: this.#getInjector() }
         }
@@ -70,6 +63,10 @@ export class LayerService {
         } catch (err) {}
 
         const root = this.#appRef.components[0]
+        if (root == null) {
+            throw new Error("Root component not found")
+        }
+
         return root.injector
     }
 }

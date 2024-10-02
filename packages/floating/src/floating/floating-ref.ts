@@ -92,11 +92,6 @@ export class FloatingRef<C extends FloatingChannel = FloatingChannel, T extends 
         })
 
         this.state.control(container.state)
-
-        // TODO: remove
-        // this.state.status$.subscribe(status => {
-        //     console.log("floating", status)
-        // })
     }
 
     show() {
