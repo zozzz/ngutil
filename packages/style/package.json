@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/style",
-  "version": "0.0.61",
+  "version": "0.0.62",
   "devDependencies": {
     "@ngutil/nx": "workspace:*"
   },
