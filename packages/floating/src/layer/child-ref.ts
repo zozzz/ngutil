@@ -7,11 +7,30 @@ import { Lifecycle } from "@ngutil/common"
 export type DisposeHandler<T> = (ref: T) => Observable<void>
 
 export enum AlwaysOnTop {
+    /**
+     * Display as open order
+     */
     None = 0,
-    Normal = 1,
+
+    /**
+     * Modals
+     */
     Modal = 2,
-    Toast = 3,
-    UAC = 100
+
+    /**
+     * User access control
+     */
+    UAC = 3,
+
+    /**
+     * Toast...
+     */
+    Toast = 4,
+
+    /**
+     * Like select drop down, tooltip, stb...
+     */
+    Control = 5
 }
 
 // TODO: disposing, disposed
@@ -54,13 +73,6 @@ export abstract class ChildRef<T extends HTMLElement = HTMLElement> extends Elem
             this.state.destroy()
             delete (this as any).state
         })
-
-        // this.state.current$.subscribe(state => {
-        //     console.log(this, state)
-        // })
-        // this.state.status$.subscribe(status => {
-        //     console.log(this.nativeElement, status)
-        // })
     }
 
     dispose() {

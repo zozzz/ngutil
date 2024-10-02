@@ -6,18 +6,20 @@ import { provideAnimations } from "@angular/platform-browser/animations"
 
 import { Focusable, FocusState, KeystrokeService } from "@ngutil/aria"
 
-import { AlwaysOnTop } from "../layer/child-ref"
-import { IndividualLayer } from "../layer/layer.service"
-import { FloatingRef } from "./floating-ref"
-import { FloatingService } from "./floating.service"
-import { dropAnimation } from "./traits/animation"
-import { backdrop } from "./traits/backdrop"
-import { closeTrigger } from "./traits/close-trigger"
-import { minWidth } from "./traits/dim-contraint"
-import { focus } from "./traits/focus"
-import { modal } from "./traits/modal"
-import { position } from "./traits/position"
-import { style } from "./traits/style"
+import {
+    backdrop,
+    closeTrigger,
+    dropAnimation,
+    FloatingRef,
+    FloatingService,
+    focus,
+    minWidth,
+    modal,
+    position,
+    style
+} from "./floating"
+import { provideFloating } from "./index"
+import { AlwaysOnTop } from "./layer"
 
 @Component({
     selector: ".drop-down-trigger",
@@ -144,8 +146,6 @@ class FloatingCmp {
     standalone: true,
     selector: "floatings",
     imports: [FloatingCmp, DropDownTrigger],
-    providers: [FloatingService],
-    hostDirectives: [IndividualLayer],
     styles: [
         `
             :host {
@@ -199,9 +199,9 @@ export default {
     component: Floatings,
     decorators: [
         applicationConfig({
-            providers: [provideAnimations()]
+            providers: [provideAnimations(), provideFloating()]
         }),
-        moduleMetadata({ imports: [Floatings] })
+        moduleMetadata({ imports: [] })
     ],
     parameters: {
         layout: "fullscreen",

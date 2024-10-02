@@ -1,23 +1,38 @@
 # floating
 
-This library was generated with [Nx](https://nx.dev).
+## Usage
 
-## Running unit tests
-
-Run `nx test floating` to execute the unit tests.
-
-
-## Plan
+### Configure
 
 ```typescript
-floating.showComponent(Component, new Modal({
-    backdrop: {click: "close | hide", cut: element},
-    escape: "close | hide",
-}));
-floating.showComponent(Component, new Toast({}));
-floating.showComponent(Component, new Tip({anchor: {ref: element}})).subscribe(event => {
-    if (event === "done") {
-        // ...
-    }
+import { provideAnimations } from "@angular/platform-browser/animations"
+import { provideFloating } from "@ngutil/floating"
+
+export const appConfig: ApplicationConfig = {
+    providers: [
+        provideAnimations(),
+        provideFloating()
+    ]
+}
+```
+
+### Create floating from component
+
+```typescript
+@Component({
+    selector: 'app-modal',
+    template: `...`
 })
+export class ModalComponent {}
+
+@Component({
+    selector: `app-user-list`,
+})
+export class UserListComponent {
+    readonly #floating = inject(FloatingService)
+
+    confirm() {
+        this.#floating.from(ModalComponent).trait(modal()).subscribe()
+    }
+}
 ```
