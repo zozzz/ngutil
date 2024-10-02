@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.63](https://github.com/zozzz/ngutil/compare/0.0.62...0.0.63) (2024-10-02)
+
+
+### Bug Fixes
+
+* **floating:** provideFloating function in application config ([c15eb4b](https://github.com/zozzz/ngutil/commit/c15eb4b49a2aec690db5a6dd63abea24185d1580))
+
 ## [0.0.62](https://github.com/zozzz/ngutil/compare/0.0.61...0.0.62) (2024-10-02)
 
 ## [0.0.61](https://github.com/zozzz/ngutil/compare/0.0.60...0.0.61) (2024-10-01)
