@@ -1,11 +1,9 @@
 import { NgModule } from "@angular/core"
 
 import { FloatingService } from "./floating/floating.service"
-import { RootLayer } from "./layer/layer.service"
+import { LayerService, RootLayer } from "./layer/layer.service"
 
 @NgModule({
-    providers: [FloatingService],
-    imports: [RootLayer],
-    exports: [RootLayer]
+    providers: [FloatingService, { provide: LayerService, useClass: RootLayer }]
 })
 export class NuFloating {}

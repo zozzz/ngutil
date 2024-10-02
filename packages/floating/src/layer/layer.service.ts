@@ -25,21 +25,14 @@ export const LAYER_ZINDEX_START = new InjectionToken<number>("LAYER_ZINDEX_START
 // TODO: ELEVATION_STEP config with injection
 // TODO: ELEVATION_START config with injection
 
-@Injectable()
+@Directive()
 export abstract class LayerService {
     readonly #cover = inject(CoverService)
     readonly #injector = inject(Injector)
-    readonly #document = inject(DOCUMENT)
-    readonly #el = inject<ElementRef<HTMLElement>>(ElementRef, { optional: true, self: true })
-
-    get root() {
-        return (this.#el && this.#el.nativeElement) || this.#document.body
-    }
-    // readonly #el = this.root.nativeElement
-
     readonly #children: Array<ChildRef> = []
     readonly #zIndexStart: number
-    // readonly #backdrop: Map<>
+
+    abstract readonly root: HTMLElement
 
     constructor(@Inject(LAYER_ZINDEX_START) @Optional() zIndexStart?: number) {
         if (zIndexStart != null) {
@@ -114,18 +107,24 @@ export abstract class LayerService {
     }
 }
 
-@Directive({
-    selector: "body",
-    standalone: true,
-    providers: [{ provide: LayerService, useExisting: RootLayer }]
-})
-export class RootLayer extends LayerService {}
+@Injectable({ providedIn: "root" })
+export class RootLayer extends LayerService {
+    readonly #doc = inject(DOCUMENT)
+    get root() {
+        return this.#doc.body
+    }
+}
 
 @Directive({
     standalone: true,
     providers: [{ provide: LayerService, useExisting: IndividualLayer }]
 })
-export class IndividualLayer extends LayerService {}
+export class IndividualLayer extends LayerService {
+    readonly #el = inject(ElementRef)
+    get root() {
+        return this.#el.nativeElement
+    }
+}
 
 function sortChildren2(a: ChildRef, b: ChildRef) {
     const alwaysOnTop = sortByAlwaysOnTop(a, b)
