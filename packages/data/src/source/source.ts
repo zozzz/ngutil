@@ -3,7 +3,6 @@ import { DataSource as CdkDataSource, CollectionViewer } from "@angular/cdk/coll
 import {
     BehaviorSubject,
     combineLatest,
-    debounceTime,
     distinctUntilChanged,
     map,
     merge,
@@ -16,7 +15,8 @@ import {
     switchMap,
     take,
     takeUntil,
-    tap
+    tap,
+    timer
 } from "rxjs"
 
 import { isEqual } from "lodash"
@@ -66,8 +66,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     readonly items$: Observable<PartialCollection<T>> = this.#query.pipe(
         tap(() => this.#setBusy(true)),
-        debounceTime(DEBOUNCE_TIME),
-        // tap(query => console.log(query)),
+        switchMap(v => (this.provider.isAsync ? timer(DEBOUNCE_TIME).pipe(map(() => v)) : of(v))),
         switchMap(query =>
             this.store.hasSlice(query.slice).pipe(
                 take(1),
@@ -173,10 +172,12 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     #setBusy(busy: boolean) {
-        if (this.provider.isAsync) {
-            if (this.isBusy$.value !== busy) {
-                this.isBusy$.next(busy)
+        if (this.isBusy$.value !== busy) {
+            // dont set true when not async provider, but false is also set
+            if (busy && this.provider.isAsync) {
+                return
             }
+            this.isBusy$.next(busy)
         }
     }
 
