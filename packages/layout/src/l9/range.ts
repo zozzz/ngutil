@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------
  * | TOP:LEFT     |  TOP:CENTER   | TOP:RIGHT    |
- * -----------------------------------------------
- * | MIDDLE:LEFT  | MIDDLE:CENTER | MIDDLE:RIGH  |
- * -----------------------------------------------
+ * ----------------------------------------------
+ * | MIDDLE:LEFT  | MIDDLE:CENTER | MIDDLE:RIGHT |
+ * ----------------------------------------------
  * | BOTTOMN:LEFT | BOTTOM:CENTER | BOTTOM:RIGHT |
  * -----------------------------------------------
  */
@@ -11,11 +11,13 @@
 const vertical = ["top", "middle", "bottom"] as const
 const horizontal = ["left", "center", "right"] as const
 
-export type L9Vertical = "top" | "middle" | "bottom"
-export type L9Horizontal = "left" | "center" | "right"
+export type L9Vertical = (typeof vertical)[number]
+export type L9Horizontal = (typeof horizontal)[number]
 export type L9CellName = `${L9Vertical}:${L9Horizontal}`
 export type L9RangeName = L9Vertical | L9Horizontal | L9CellName | `${L9CellName}-${L9CellName}`
 export type L9Orient = "horizontal" | "vertical" | "rect"
+
+export const L9GridTopLeft = { row: 1, col: 1 }
 
 export class L9Cell {
     static coerce(value: L9CellName) {
@@ -32,6 +34,10 @@ export class L9Cell {
         public readonly v: L9Vertical,
         public readonly h: L9Horizontal
     ) {}
+
+    intoGridArea(gridTopLeft: typeof L9GridTopLeft = L9GridTopLeft) {
+        return `${gridTopLeft.row + vertical.indexOf(this.v)}/${gridTopLeft.col + horizontal.indexOf(this.h)}`
+    }
 }
 
 export class L9Range {
@@ -68,6 +74,16 @@ export class L9Range {
             }
         }
         return false
+    }
+
+    intoGridArea(gridTopLeft: typeof L9GridTopLeft = L9GridTopLeft) {
+        const start = this.cells[0]
+        const end = this.cells[this.cells.length - 1]
+        if (start === end) {
+            return start.intoGridArea(gridTopLeft)
+        } else {
+            return `${start.intoGridArea(gridTopLeft)}/${end.intoGridArea(gridTopLeft)}`
+        }
     }
 
     #determineOrient(): L9Orient {

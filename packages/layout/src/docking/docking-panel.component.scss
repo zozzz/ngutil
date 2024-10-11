@@ -1,95 +1,108 @@
 @use "style" as nu;
 
 :host {
-    @include nu.var-option(docking-panel-t, auto);
-    @include nu.var-option(docking-panel-r, auto);
-    @include nu.var-option(docking-panel-b, auto);
-    @include nu.var-option(docking-panel-l, auto);
-    @include nu.var-option(docking-panel-w, auto);
-    @include nu.var-option(docking-panel-h, auto);
-    @include nu.var-option(docking-panel-content-w, ---docking-panel-w);
-    @include nu.var-option(docking-panel-content-g, ---docking-panel-h);
+    --nudp-tx: 0;
+    --nudp-ty: 0;
+    --nudp-t: auto;
+    --nudp-r: auto;
+    --nudp-b: auto;
+    --nudp-l: auto;
 
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: stretch;
-    position: absolute;
-    box-sizing: border-box;
-    overflow: hidden;
+    display: block;
+    position: relative;
+    z-index: 10;
 
-    top: var(---docking-panel-t);
-    right: var(---docking-panel-r);
-    bottom: var(---docking-panel-b);
-    left: var(---docking-panel-l);
+    .wrapper {
+        all: inherit;
 
-    width: var(---docking-panel-w);
-    height: var(---docking-panel-h);
-
-    &[animate] {
-        transition:
-            transform var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
-            width var(---docking-layout-anim-duration) var(---docking-layout-anim-ease),
-            height var(---docking-layout-anim-duration) var(---docking-layout-anim-ease);
-    }
-
-    &[side="top"], &[side="left"] {
-        ---docking-panel-t-hide: -100%;
-        ---docking-panel-t-visible: 0%;
-    }
-    &[side="bottom"], &[side="right"] {
-        ---docking-panel-t-hide: 100%;
-        ---docking-panel-t-visible: 0%;
-    }
-
-    &[state="hidden"] {
-        animation: var(---docking-layout-anim-duration) var(---docking-layout-anim-ease) hide;
-        animation-fill-mode: forwards;
-
-        &[orient="horizontal"] {
-            transform: translateY(var(---docking-panel-t-hide));
-        }
-
-        &[orient="vertical"] {
-            transform: translateX(var(---docking-panel-t-hide));
-        }
-    }
-
-    &:not([state="hidden"]) {
-        visibility: visible;
-
-        &[orient="horizontal"] {
-            transform: translateY(var(---docking-panel-t-visible));
-        }
-
-        &[orient="vertical"] {
-            transform: translateX(var(---docking-panel-t-visible));
-        }
-    }
-
-    .nu-docking-wrapper {
-        display: flex;
-        flex-direction: column;
+        // TODO: kérdéses, hogy akarok-e, hogy a chikd az mindig teljes méretű legyen
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto;
         align-items: stretch;
+        justify-items: stretch;
+
+        position: absolute;
+        top: var(--nudp-t);
+        right: var(--nudp-r);
+        bottom: var(--nudp-b);
+        left: var(--nudp-l);
+        width: auto;
+        height: auto;
+
+        transition: transform nu.$duration-fast nu.$ease-deceleration;
+        transform: translate(var(--nudp-tx), var(--nudp-ty));
+    }
+
+    &[mode="rigid"] {
+        overflow: clip;
+
+        &[orient="horizontal"] {
+            transition: height nu.$duration-fast nu.$ease-deceleration;
+            height: var(--nudp-content-size);
+
+            &[state="closed"] {
+                height: 0px;
+            }
+        }
+
+        &[orient="vertical"] {
+            transition: width nu.$duration-fast nu.$ease-deceleration;
+            width: var(--nudp-content-size);
+
+            &[state="closed"] {
+                width: 0;
+            }
+        }
     }
 
     &[orient="horizontal"] {
-        .nu-docking-wrapper {
-            width: 100%;
-            min-width: 100%;
-            max-width: 100%;
+        --nudp-l: 0px;
+        --nudp-r: 0px;
+
+        &[side="top"] {
+            --nudp-t: 0px;
+
+            &[state="closed"] {
+                --nudp-ty: -100%;
+            }
+        }
+
+        &[side="bottom"] {
+            --nudp-b: 0px;
+
+            &[state="closed"] {
+                --nudp-ty: 100%;
+            }
+        }
+
+        &:not([mode="rigid"]) {
+            height: 0px;
         }
     }
 
     &[orient="vertical"] {
-        .nu-docking-wrapper {
-            height: 100%;
-            min-height: 100%;
-            max-height: 100%;
+        --nudp-t: 0px;
+        --nudp-b: 0px;
+
+        &[side="left"] {
+            --nudp-l: 0px;
+
+            &[state="closed"] {
+                --nudp-tx: -100%;
+            }
+        }
+
+        &[side="right"] {
+            --nudp-r: 0px;
+
+            &[state="closed"] {
+                --nudp-tx: 100%;
+            }
+        }
+
+        &:not([mode="rigid"]) {
+            width: 0px;
         }
     }
-}
-
-@keyframes hide {
-    99% { visibility: visible; }
-    100% { visibility: hidden; }
 }

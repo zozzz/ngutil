@@ -3,31 +3,19 @@
 /**
  * -----------------------------------------------
  * | TOP:LEFT     |  TOP:CENTER   | TOP:RIGHT    |
- * -----------------------------------------------
- * | MIDDLE:LEFT  | MIDDLE:CENTER | MIDDLE:RIGH  |
- * -----------------------------------------------
+ * ----------------------------------------------
+ * | MIDDLE:LEFT  | MIDDLE:CENTER | MIDDLE:RIGHT |
+ * ----------------------------------------------
  * | BOTTOMN:LEFT | BOTTOM:CENTER | BOTTOM:RIGHT |
  * -----------------------------------------------
  */
 
 :host {
-    @include nu.var-option(docking-layout-top, 0px);
-    @include nu.var-option(docking-layout-right, 0px);
-    @include nu.var-option(docking-layout-bottom, 0px);
-    @include nu.var-option(docking-layout-left, 0px);
-    @include nu.var-option(docking-layout-anim-duration, nu.$duration-medium);
-    @include nu.var-option(docking-layout-anim-ease, nu.$ease-standard);
-    @include nu.var-option(docking-layout-backdrop-color, #000);
-
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr auto;
     position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
-    z-index: 0;
-
-    padding: var(---docking-layout-top) var(---docking-layout-right) var(---docking-layout-bottom) var(---docking-layout-left);
-
-    transition: padding var(---docking-layout-anim-duration) var(---docking-layout-anim-ease);
+    align-items: stretch;
+    justify-items: stretch;
+    overflow: clip;
 }

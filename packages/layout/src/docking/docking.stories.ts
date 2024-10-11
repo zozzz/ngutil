@@ -12,25 +12,28 @@ import { NuDockingLayout } from "./index"
     template: `
         <nu-docking style="width:100vw;height:100vh;">
             <nu-docking-panel
-                position="left"
-                fullSize="200"
-                miniSize="48"
-                mode="rigid"
-                state="hidden"
                 #leftPanel="nuDockingPanel"
-                style="background:cyan;opacity:0.5"
-                backdrop
+                position="left"
+                mode="over"
+                [opened]="false"
+                style="background: green"
             >
-                <div style="width:var(--docking-panel-full-size);background:#CC3300;padding-top:100px;">FULL SIZE</div>
+                <div style="display: flex; flex-direction: row;">
+                    @for (item of leftExtra; track item; let idx = $index) {
+                        <div>{{ idx }} - {{ item }}</div>
+                    }
+                </div>
+                <button (click)="leftAddItem()">ADD ITEM</button>
+                <button (click)="leftDelItem()">DEL ITEM</button>
+                <button (click)="leftPanel.close()">LEFT: CLOSE</button>
             </nu-docking-panel>
 
             <nu-docking-panel
-                position="top"
-                fullSize="auto"
-                mode="rigid"
-                state="full"
                 #topPanel="nuDockingPanel"
-                style="background:magenta;opacity:0.5"
+                position="top"
+                mode="rigid"
+                opened
+                style="background-color:red"
             >
                 <div id="header-item">Header item</div>
                 @for (item of headerExtra; track item; let idx = $index) {
@@ -38,26 +41,22 @@ import { NuDockingLayout } from "./index"
                 }
             </nu-docking-panel>
 
-            <nu-docking-panel
-                position="right"
-                fullSize="100"
-                miniSize="50"
-                #rightPanel="nuDockingPanel"
-                style="background:yellow;opacity:0.5"
-            >
-                <div style="flex:1 1 1%;border: 1px solid red">B1</div>
-                <div style="flex:2 1 1%;border: 1px solid green">B2</div>
-                <div style="flex:1 1 1%;border: 1px solid blue">B3</div>
+            <nu-docking-panel #rightPanel="nuDockingPanel" position="right" style="background:yellow;opacity:0.5">
+                <div style="border: 1px solid red">B1</div>
+                <div style="border: 1px solid green">B2</div>
+                <div style="border: 1px solid blue">B3</div>
             </nu-docking-panel>
 
             <nu-docking-panel
-                position="bottom"
-                state="hidden"
-                mode="over"
-                fullSize="100"
                 #bottomPanel="nuDockingPanel"
+                position="bottom"
+                [opened]="false"
+                mode="over"
                 style="background:black;opacity:0.5"
             >
+                <div style="border: 1px solid red">B1</div>
+                <div style="border: 1px solid green">B2</div>
+                <div style="border: 1px solid blue">B3</div>
             </nu-docking-panel>
 
             <nu-docking-content>
@@ -65,25 +64,21 @@ import { NuDockingLayout } from "./index"
                     <div
                         style="
                             display: grid;
-                            grid-template-columns: max-content max-content max-content;
+                            grid-template-columns: max-content max-content;
                             grid-template-rows: repeat(4, max-content);
                             gap: 10px;
                             margin-bottom: 10px;"
                     >
                         <button (click)="leftPanel.open()">LEFT: OPEN</button>
-                        <button (click)="leftPanel.minimize()">LEFT: MIN</button>
                         <button (click)="leftPanel.close()">LEFT: CLOSE</button>
 
                         <button (click)="topPanel.open()">TOP: OPEN</button>
-                        <button (click)="topPanel.minimize()">TOP: MIN</button>
                         <button (click)="topPanel.close()">TOP: CLOSE</button>
 
                         <button (click)="rightPanel.open()">RIGHT: OPEN</button>
-                        <button (click)="rightPanel.minimize()">RIGHT: MIN</button>
                         <button (click)="rightPanel.close()">RIGHT: CLOSE</button>
 
                         <button (click)="bottomPanel.open()">BOTTOM: OPEN</button>
-                        <button (click)="bottomPanel.minimize()">BOTTOM: MIN</button>
                         <button (click)="bottomPanel.close()">BOTTOM: CLOSE</button>
                     </div>
 
@@ -104,6 +99,7 @@ class StoryDockingLayout {
         .map((v, i) => i)
 
     headerExtra: string[] = []
+    leftExtra: string[] = []
 
     headerAddItem() {
         this.headerExtra.push("Another Header Row")
@@ -111,6 +107,14 @@ class StoryDockingLayout {
 
     headerDelItem() {
         this.headerExtra.splice(0, 1)
+    }
+
+    leftAddItem() {
+        this.leftExtra.push("Another left Row")
+    }
+
+    leftDelItem() {
+        this.leftExtra.splice(0, 1)
     }
 }
 
