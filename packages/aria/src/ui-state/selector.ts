@@ -128,9 +128,7 @@ export function parse(selector: string): SelectorAst {
     return res
 }
 
-type Parser = (...args: any[]) => SelectorAst | null
-
-function expression(cursor: Cursor, skip?: Parser[]) {
+function expression(cursor: Cursor) {
     return binary(cursor) || leftExpr(cursor)
 }
 

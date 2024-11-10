@@ -2,27 +2,19 @@
 import { Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
 import { AsyncPipe } from "@angular/common"
-import { Component, inject } from "@angular/core"
+import { Component, inject, input } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 
 import { sampleTime, shareReplay } from "rxjs"
 
-import { ProgressState } from "./progress-state"
+import { ProgressSegmentRef, ProgressState } from "./progress-state"
 
 @Component({
+    selector: "progress-bar",
     standalone: true,
-    selector: "progress-test",
-    imports: [AsyncPipe],
-    providers: [ProgressState],
-    styles: `
-        :host {
-            display: grid;
-            grid-template-columns: max-content 1fr;
-            grid-template-rows: auto;
-            row-gap: 14px;
-            column-gap: 14px;
-
-            .progress {
+    styles: [
+        `
+            :host {
                 position: relative;
                 background: #ccc;
                 height: 30px;
@@ -36,17 +28,37 @@ import { ProgressState } from "./progress-state"
                     display: grid;
                 }
             }
+        `
+    ],
+    template: `<div class="progress"><div class="indicator" [style.width.%]="percent() * 100"></div></div>`
+})
+class ProgressBar {
+    readonly percent = input()
+}
+
+@Component({
+    standalone: true,
+    selector: "progress-test",
+    imports: [AsyncPipe, ProgressBar],
+    providers: [ProgressState],
+    styles: `
+        :host {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            grid-template-rows: auto;
+            row-gap: 14px;
+            column-gap: 14px;
         }
     `,
     template: `
         <div>parent:</div>
-        <div class="progress"><div class="indicator" [style.width.%]="(self.percent$ | async) * 100"></div></div>
+        <progress-bar [percent]="self.percent$ | async" />
 
         <div>bar1:</div>
-        <div class="progress"><div class="indicator" [style.width.%]="(bar1.percent$ | async) * 100"></div></div>
+        <progress-bar [percent]="bar1.percent$ | async" />
 
         <div>bar2:</div>
-        <div class="progress"><div class="indicator" [style.width.%]="(b2percent | async) * 100"></div></div>
+        <progress-bar [percent]="b2percent | async" />
     `
 })
 class ProgressTest {
@@ -92,26 +104,74 @@ class ProgressTest {
     }
 }
 
+@Component({
+    selector: "manual-increment",
+    standalone: true,
+    imports: [ProgressBar],
+    styles: [
+        `
+            :host {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                row-gap: 14px;
+                column-gap: 14px;
+
+                .buttons {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 14px;
+                }
+            }
+        `
+    ],
+    template: `
+        <div>Progress: {{ prog.percent() * 100 }}%</div>
+        <progress-bar [percent]="prog.percent()" />
+
+        <b>Segment 1</b>
+        <div class="buttons">
+            <button (click)="inc(segment1, 0.1)">+10%</button>
+            <button (click)="inc(segment1, 0.2)">+20%</button>
+            <button (click)="inc(segment1, 0.3)">+30%</button>
+            <button (click)="inc(segment1, 1)">DONE</button>
+        </div>
+
+        <b>Segment 2</b>
+        <div class="buttons">
+            <button (click)="inc(segment2, 0.1)">+10%</button>
+            <button (click)="inc(segment2, 0.2)">+20%</button>
+            <button (click)="inc(segment2, 0.3)">+30%</button>
+            <button (click)="inc(segment2, 1)">DONE</button>
+        </div>
+    `
+})
+class ManualIncrement {
+    readonly prog = new ProgressState()
+    readonly segment1 = this.prog.segment("s1")
+    readonly segment2 = this.prog.segment("s2")
+
+    inc(segment: ProgressSegmentRef, percent: number) {
+        if (segment.value) {
+            if (percent >= 1) {
+                segment.complete()
+            } else if (segment.value.type === "fix") {
+                segment.next({ type: "fix", percent: Math.min(1, segment.value.percent + percent) })
+            }
+        } else {
+            segment.next({ type: "fix", percent })
+        }
+    }
+}
+
 export default {
     title: "UI State",
-    component: ProgressTest,
+    // component: ProgressTest,
+    component: ManualIncrement,
     decorators: [moduleMetadata({ imports: [] })]
-    // parameters: {
-    //     layout: "fullscreen",
-    //     controls: { include: [] }
-    // },
-    // render: (args: FocusableComponent) => {
-    //     const content = args.content
-    //     delete args.content
-    //     return {
-    //         props: {
-    //             ...args
-    //         },
-    //         template: `<nu-story-slot ${argsToTemplate(args)}>${content || ""}</nu-story-slot>`
-    //     }
-    // }
-} as Meta<ProgressTest>
+} as Meta<ManualIncrement>
 
-type Story = StoryObj<ProgressTest>
+type Story = StoryObj<ManualIncrement>
 
 export const Progress: Story = {}

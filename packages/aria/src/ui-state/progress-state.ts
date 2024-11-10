@@ -1,4 +1,5 @@
 import { Directive } from "@angular/core"
+import { toSignal } from "@angular/core/rxjs-interop"
 
 import { animationFrames, map, Observable, of, scan, shareReplay, startWith, Subject, switchMap, takeWhile } from "rxjs"
 
@@ -119,19 +120,24 @@ export class ProgressState {
     )
 
     readonly value$: Observable<DeepReadonly<ProgressSegements>> = this.#state
+    readonly value = toSignal(this.value$)
 
     readonly percent$: Observable<number> = this.value$.pipe(
         map(value =>
-            clamp(
-                Object.values(value).reduce((a, b) => a + b.share, 0),
-                0,
-                1
-            )
+            value != null
+                ? clamp(
+                      Object.values(value).reduce((a, b) => a + b.share, 0),
+                      0,
+                      1
+                  )
+                : 0
         ),
         shareReplay({ bufferSize: 1, refCount: true })
     )
 
-    segment(name: string, distribution?: number): ProgressSegmentRef {
+    readonly percent = toSignal(this.percent$)
+
+    segment(name: string, distribution: number = 1): ProgressSegmentRef {
         const segment =
             this.#segments[name] ?? (this.#segments[name] = new ProgressSegmentRef(this.#input, name, distribution))
         segment.next(SEGMENT_REGISTER)
