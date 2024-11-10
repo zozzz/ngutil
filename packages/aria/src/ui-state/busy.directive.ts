@@ -9,7 +9,7 @@ import { UiState } from "./ui-state"
     standalone: true,
     host: {
         "[attr.aria-busy]": "yes() ? 'true' : 'false'",
-        "[attr.inert]": "yes() ? '' : null"
+        "[attr.inert]": "state.isInert() ? '' : null"
     },
     providers: [UiState]
 })

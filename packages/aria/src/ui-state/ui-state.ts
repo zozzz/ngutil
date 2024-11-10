@@ -74,6 +74,8 @@ export class UiState<N extends string = string, S extends UiStateSource = UiStat
         return result
     })
 
+    readonly inertSelector = signal("busy || disabled || readonly")
+
     set(name: N, value: boolean, source: S = "self" as S) {
         if (source === "parent") {
             console.error("can't set parent state")
@@ -108,5 +110,9 @@ export class UiState<N extends string = string, S extends UiStateSource = UiStat
             subscriber.add(() => this.set(name, false, source))
             return observable.subscribe(subscriber)
         })
+    }
+
+    isInert() {
+        return this.is(this.inertSelector())
     }
 }

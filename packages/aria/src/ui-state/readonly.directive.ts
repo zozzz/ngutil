@@ -10,7 +10,7 @@ import { UiState } from "./ui-state"
     host: {
         "[attr.aria-readonly]": "yes() ? 'true' : 'false'",
         "[attr.readonly]": "yes() ? '' : null",
-        "[attr.inert]": "yes() ? '' : null"
+        "[attr.inert]": "state.isInert() ? '' : null"
     },
     providers: [UiState]
 })
