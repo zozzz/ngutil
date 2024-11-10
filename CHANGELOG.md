@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.0.64](https://github.com/zozzz/ngutil/compare/0.0.63...0.0.64) (2024-11-10)
+
+
+### Features
+
+* **aria:** add signals to progress state ([82b742d](https://github.com/zozzz/ngutil/commit/82b742d0eaf14a88ae8fb8a8921278320ddd8b18))
+* docking layout rewrite with signals ([ad3d5e0](https://github.com/zozzz/ngutil/commit/ad3d5e0eb24bb2ed0de7808b0cd96ac22dad87b0))
+
+
+### Bug Fixes
+
+* **aria:** ui-state inert attribute ([dddbea2](https://github.com/zozzz/ngutil/commit/dddbea28d0004ddec0524f1cb69ec2239cb44873))
+* **data:** remove DataSoruce debounceTime when the provider is not async ([836b947](https://github.com/zozzz/ngutil/commit/836b94787d3cfd92d1c915d9f751ae85c7c1b9ca))
+
+
+### Other changes
+
+* remove console.log ([dc01331](https://github.com/zozzz/ngutil/commit/dc01331b7b78caa5320b0d48d5ecf596683a52de))
+
 ## [0.0.63](https://github.com/zozzz/ngutil/compare/0.0.62...0.0.63) (2024-10-02)
 
 
