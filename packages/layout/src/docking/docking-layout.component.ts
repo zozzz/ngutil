@@ -1,7 +1,6 @@
 import { Component, computed, contentChildren } from "@angular/core"
 
 import { DockingBackdropComponent } from "./docking-backdrop.component"
-import { DockingLayoutService } from "./docking-layout.service"
 import { DockingPanelComponent } from "./docking-panel.component"
 
 type DockingVerticalPosition = "top" | "middle" | "bottom"
@@ -18,7 +17,6 @@ export type DockingRange =
     exportAs: "nuDocking",
     standalone: true,
     imports: [DockingBackdropComponent],
-    providers: [DockingLayoutService],
     styleUrl: "./docking-layout.component.scss",
     template: `
         <ng-content />
