@@ -80,6 +80,23 @@ describe("L9Range", () => {
             new L9Cell("bottom", "left"),
             new L9Cell("bottom", "center")
         ])
-        expect(L9Range.coerce("middle:center-bottom:left").orient).toStrictEqual("rect")
+        expect(L9Range.coerce("middle:center-bottom:left").orient).toStrictEqual("vertical")
+    })
+
+    it("orinet", () => {
+        console.log(L9Range.coerce("top:left-top:right").intoRect())
+        expect(L9Range.coerce("top:left-top:right").orient).toStrictEqual("horizontal")
+        expect(L9Range.coerce("top:left-top:center").orient).toStrictEqual("horizontal")
+        expect(L9Range.coerce("top:left").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("top:center").orient).toStrictEqual("horizontal")
+        expect(L9Range.coerce("top:right").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("top:left-middle:right").orient).toStrictEqual("horizontal")
+
+        expect(L9Range.coerce("left:top-left:bottom").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("left:top-left:middle").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("left:top").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("left:middle").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("left:bottom").orient).toStrictEqual("vertical")
+        expect(L9Range.coerce("top:left-bottom:center").orient).toStrictEqual("vertical")
     })
 })

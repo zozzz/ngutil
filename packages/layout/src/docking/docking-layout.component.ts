@@ -1,8 +1,8 @@
-import { Component } from "@angular/core"
+import { Component, computed, contentChildren } from "@angular/core"
 
 import { DockingBackdropComponent } from "./docking-backdrop.component"
-import { DockingContentComponent } from "./docking-content.component"
 import { DockingLayoutService } from "./docking-layout.service"
+import { DockingPanelComponent } from "./docking-panel.component"
 
 type DockingVerticalPosition = "top" | "middle" | "bottom"
 type DockingHorizontalPositon = "left" | "center" | "right"
@@ -13,20 +13,16 @@ export type DockingRange =
     | DockingPosition
     | `${DockingPosition}-${DockingPosition}`
 
-const RIGID_ZINDEX = 100
-const OVER_ZINDEX = RIGID_ZINDEX * 2
-const BACKDROP_ZINDEX = 10000
-
 @Component({
     selector: "nu-docking",
     exportAs: "nuDocking",
     standalone: true,
-    imports: [DockingContentComponent, DockingBackdropComponent],
+    imports: [DockingBackdropComponent],
     providers: [DockingLayoutService],
     styleUrl: "./docking-layout.component.scss",
     template: `
         <ng-content />
-        <nu-docking-backdrop [visible]="backdropVisible"></nu-docking-backdrop>
+        <nu-docking-backdrop [visible]="backdropVisible()" (click)="doCloseActiveOverPanel()"></nu-docking-backdrop>
     `
 })
 export class DockingLayoutComponent {
@@ -34,5 +30,23 @@ export class DockingLayoutComponent {
      * True if u want to animate panel open/close with `mode="side"`
      */
     // readonly animateSide = input(false)
-    backdropVisible = true
+
+    readonly panels = contentChildren(DockingPanelComponent)
+
+    readonly activeOverPanel = computed(() => {
+        const panels = this.panels()
+        return panels.find(panel => panel.mode() === "over" && panel.opened())
+    })
+
+    readonly backdropVisible = computed(() => {
+        const active = this.activeOverPanel()
+        return active != null ? active.backdrop() !== false : false
+    })
+
+    doCloseActiveOverPanel() {
+        const activePanel = this.activeOverPanel()
+        if (activePanel) {
+            activePanel.close()
+        }
+    }
 }

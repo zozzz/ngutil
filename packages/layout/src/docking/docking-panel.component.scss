@@ -10,7 +10,7 @@
 
     display: block;
     position: relative;
-    z-index: 10;
+    z-index: 100;
 
     .wrapper {
         all: inherit;
@@ -54,6 +54,10 @@
                 width: 0;
             }
         }
+    }
+
+    &[mode="over"] {
+        z-index: 300;
     }
 
     &[orient="horizontal"] {

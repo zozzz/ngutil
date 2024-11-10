@@ -3,17 +3,16 @@ import { takeUntilDestroyed, toObservable, toSignal } from "@angular/core/rxjs-i
 
 import { switchMap } from "rxjs"
 
-import { coerceBoolAttr, NumberWithUnit } from "@ngutil/common"
+import { coerceBoolAttr } from "@ngutil/common"
 import { DimensionWatcher } from "@ngutil/style"
 
 import { L9Range } from "../l9/range"
 
 export type DockingPanelState = "full" | "mini" | "hidden"
 export type DockingPanelMode = "over" | "push" | "rigid"
+export type BackdropMode = boolean | "full" | "panel-size"
 
 const DEFAULT_POSITION = L9Range.coerce("left")
-const HIDDEN_SIZE = new NumberWithUnit(0, "px")
-const AUTO_SIZE = NumberWithUnit.coerce("auto")
 
 @Component({
     selector: "nu-docking-panel",
@@ -35,10 +34,12 @@ export class DockingPanelComponent {
     readonly el = inject(ElementRef)
 
     readonly position = input(DEFAULT_POSITION, { transform: L9Range.coerce })
+    // TODO: linkedSignal
     readonly opened = model<boolean>(false)
     readonly _opened = computed(() => coerceBoolAttr(this.opened()))
     readonly mode = input<DockingPanelMode>("rigid")
     readonly maxSize = input<number | undefined | null>(undefined)
+    readonly backdrop = input<BackdropMode>(false)
 
     readonly gridArea = computed(() => this.position().intoGridArea())
     readonly orient = computed(() => this.position().orient)
@@ -62,6 +63,21 @@ export class DockingPanelComponent {
         }
         return this.orient() === "horizontal" ? dim.height : dim.width
     })
+
+    // readonly backdropSize = computed(() => {
+    //     const mode = this.backdrop()
+    //     if (mode === true || mode === "full") {
+    //         return L9Range.coerce("top:left-bottom:right").intoGridArea()
+    //     } else if (mode === "panel-size") {
+    //         const pos = this.position()
+    //         if (pos.orient === "horizontal") {
+
+    //         }
+
+    //         return ""
+    //     }
+    //     return null
+    // })
 
     open() {
         this.opened.set(true)

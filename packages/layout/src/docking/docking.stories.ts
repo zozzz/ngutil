@@ -17,6 +17,7 @@ import { NuDockingLayout } from "./index"
                 mode="over"
                 [opened]="false"
                 style="background: green"
+                backdrop="full"
             >
                 <div style="display: flex; flex-direction: row;">
                     @for (item of leftExtra; track item; let idx = $index) {
@@ -26,6 +27,8 @@ import { NuDockingLayout } from "./index"
                 <button (click)="leftAddItem()">ADD ITEM</button>
                 <button (click)="leftDelItem()">DEL ITEM</button>
                 <button (click)="leftPanel.close()">LEFT: CLOSE</button>
+                <button (click)="rightPanel.open()">RIGHT: OPEN</button>
+                <button (click)="rightPanel.close()">RIGHT: CLOSE</button>
             </nu-docking-panel>
 
             <nu-docking-panel
@@ -41,8 +44,13 @@ import { NuDockingLayout } from "./index"
                 }
             </nu-docking-panel>
 
-            <nu-docking-panel #rightPanel="nuDockingPanel" position="right" style="background:yellow;opacity:0.5">
-                <div style="border: 1px solid red">B1</div>
+            <nu-docking-panel
+                #rightPanel="nuDockingPanel"
+                position="middle:right"
+                style="background:yellow;opacity:0.5"
+                backdrop="panel-size"
+            >
+                <div style="border: 1px solid red;width:150px;">B1</div>
                 <div style="border: 1px solid green">B2</div>
                 <div style="border: 1px solid blue">B3</div>
             </nu-docking-panel>
@@ -51,7 +59,7 @@ import { NuDockingLayout } from "./index"
                 #bottomPanel="nuDockingPanel"
                 position="bottom"
                 [opened]="false"
-                mode="over"
+                mode="rigid"
                 style="background:black;opacity:0.5"
             >
                 <div style="border: 1px solid red">B1</div>

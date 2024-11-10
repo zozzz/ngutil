@@ -7,27 +7,30 @@
  * | BOTTOMN:LEFT | BOTTOM:CENTER | BOTTOM:RIGHT |
  * -----------------------------------------------
  */
+import { Rect } from "@ngutil/style"
 
 const vertical = ["top", "middle", "bottom"] as const
 const horizontal = ["left", "center", "right"] as const
 
 export type L9Vertical = (typeof vertical)[number]
 export type L9Horizontal = (typeof horizontal)[number]
-export type L9CellName = `${L9Vertical}:${L9Horizontal}`
+export type L9CellName = `${L9Vertical}:${L9Horizontal}` | `${L9Horizontal}:${L9Vertical}`
 export type L9RangeName = L9Vertical | L9Horizontal | L9CellName | `${L9CellName}-${L9CellName}`
-export type L9Orient = "horizontal" | "vertical" | "rect"
+export type L9Orient = "horizontal" | "vertical"
 
 export const L9GridTopLeft = { row: 1, col: 1 }
 
 export class L9Cell {
     static coerce(value: L9CellName) {
-        const [v, h] = value.split(":")
+        const [v1, v2] = value.split(":")
+        const v = vertical.includes(v1 as any) ? v1 : v2
+        const h = horizontal.includes(v1 as any) ? v1 : v2
 
-        if (vertical.includes(v as any) && horizontal.includes(h as any)) {
-            return new L9Cell(v as any, h as any)
+        if (v === h) {
+            throw new Error(`Invalid cell value: ${value}`)
         }
 
-        throw new Error(`Invalid cell value: ${value}`)
+        return new L9Cell(v as any, h as any)
     }
 
     constructor(
@@ -37,6 +40,10 @@ export class L9Cell {
 
     intoGridArea(gridTopLeft: typeof L9GridTopLeft = L9GridTopLeft) {
         return `${gridTopLeft.row + vertical.indexOf(this.v)}/${gridTopLeft.col + horizontal.indexOf(this.h)}`
+    }
+
+    isEq(other: L9Cell) {
+        return this.v === other.v && this.h === other.h
     }
 }
 
@@ -79,24 +86,39 @@ export class L9Range {
     intoGridArea(gridTopLeft: typeof L9GridTopLeft = L9GridTopLeft) {
         const start = this.cells[0]
         const end = this.cells[this.cells.length - 1]
-        if (start === end) {
-            return start.intoGridArea(gridTopLeft)
-        } else {
-            return `${start.intoGridArea(gridTopLeft)}/${end.intoGridArea(gridTopLeft)}`
-        }
+        const endTopLeft = { row: gridTopLeft.row + 1, col: gridTopLeft.col + 1 }
+        return `${start.intoGridArea(gridTopLeft)}/${end.intoGridArea(endTopLeft)}`
+    }
+
+    intoRect(): Rect {
+        const start = this.cells[0]
+        const end = this.cells[this.cells.length - 1]
+        const x = horizontal.indexOf(start.h)
+        const y = vertical.indexOf(start.v)
+
+        return { x, y, width: horizontal.indexOf(end.h) - x + 1, height: vertical.indexOf(end.v) - y + 1 }
     }
 
     #determineOrient(): L9Orient {
-        const { v: sv, h: sh } = this.cells[0]
-        const { v: ev, h: eh } = this.cells[this.cells.length - 1]
+        const rect = this.intoRect()
+        if (rect.width === rect.height) {
+            // corner
+            if (rect.x === rect.y) {
+                return "vertical"
+            }
 
-        if (sv === ev) {
+            if (rect.x === 0 || rect.x === 2) {
+                return "vertical"
+            } else if (rect.y === 0 || rect.y === 2) {
+                return "horizontal"
+            }
+        } else if (rect.width > rect.height) {
             return "horizontal"
-        } else if (sh === eh) {
+        } else if (rect.height > rect.width) {
             return "vertical"
-        } else {
-            return "rect"
         }
+
+        return "vertical"
     }
 }
 
