@@ -74,7 +74,7 @@ export class UiState<N extends string = string, S extends UiStateSource = UiStat
         return result
     })
 
-    readonly inertSelector = signal("busy || disabled || readonly")
+    readonly inertSelector = signal("busy || disabled")
 
     set(name: N, value: boolean, source: S = "self" as S) {
         if (source === "parent") {
