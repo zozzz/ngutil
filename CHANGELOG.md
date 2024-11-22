@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.65](https://github.com/zozzz/ngutil/compare/0.0.64...0.0.65) (2024-11-22)
+
+
+### Features
+
+* **style:** floating position calculator ([811f0ef](https://github.com/zozzz/ngutil/commit/811f0ef65610106640729e5d093568eeed5264bb))
+
+
+### Bug Fixes
+
+* readonly ui state is not setting inert ([4e9c48c](https://github.com/zozzz/ngutil/commit/4e9c48c6a45ba0ea071d5de87c6f7452a55ca103))
+
 ## [0.0.64](https://github.com/zozzz/ngutil/compare/0.0.63...0.0.64) (2024-11-10)
 
 
