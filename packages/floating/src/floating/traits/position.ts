@@ -107,7 +107,6 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
                 combineLatest(watches)
                     // .pipe(distinctUntilChanged(isEqual))
                     .subscribe(({ dims, size }) => {
-                        console.log(size)
                         const pos = floatingPosition({ dims, options: this.options })
                         const floatingEl = floatingRef.container.nativeElement
                         Object.assign(floatingEl.style, floatingPositionToStyle(pos))
