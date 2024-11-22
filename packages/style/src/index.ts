@@ -14,6 +14,7 @@ export {
     alignmentToTransformOrigin
 } from "./util/alignment"
 export { inAnimation, inTransition, isAnimating } from "./util/in-animation"
+export * from "./util/floating-position"
 export {
     Dimension,
     Rect,

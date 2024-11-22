@@ -22,7 +22,6 @@ function rectHorizontalOrigin(rect: Rect, horizontal: AlignHorizontal): number {
     switch (horizontal) {
         case "start":
         case "left":
-        case "max-width":
             return rect.x
 
         case "center":
@@ -37,7 +36,6 @@ function rectHorizontalOrigin(rect: Rect, horizontal: AlignHorizontal): number {
 function rectVerticalOrigin(rect: Rect, vertical: AlignVertical): number {
     switch (vertical) {
         case "top":
-        case "max-height":
             return rect.y
 
         case "middle":
@@ -61,7 +59,6 @@ function rectMoveHorizontal(rect: Dimension, horizontal: AlignHorizontal, positi
     switch (horizontal) {
         case "start":
         case "left":
-        case "max-width":
             return position.x
 
         case "center":
@@ -76,7 +73,6 @@ function rectMoveHorizontal(rect: Dimension, horizontal: AlignHorizontal, positi
 function rectMoveVertical(rect: Dimension, vertical: AlignVertical, position: Position): number {
     switch (vertical) {
         case "top":
-        case "max-height":
             return position.y
 
         case "middle":
@@ -88,14 +84,16 @@ function rectMoveVertical(rect: Dimension, vertical: AlignVertical, position: Po
 }
 
 export function rectConstraint(rect: Rect, constraint: Rect): Rect {
+    const x = Math.max(rect.x, constraint.x)
+    const y = Math.max(rect.y, constraint.y)
     return {
-        x: Math.max(rect.x, constraint.x),
-        y: Math.max(rect.y, constraint.y),
-        width: Math.min(rect.x + rect.width, constraint.x + constraint.width) - rect.x,
-        height: Math.min(rect.y + rect.height, constraint.y + constraint.height) - rect.y
+        x: x,
+        y: y,
+        width: Math.min(x + rect.width, constraint.x + constraint.width) - x,
+        height: Math.min(y + rect.height, constraint.y + constraint.height) - y
     }
 }
-export function rectExpand(rect: Rect, margin: SidesInput) {
+export function rectExpand(rect: Rect, margin: SidesInput): Rect {
     const marginNorm = sidesNormalize(margin)
     return {
         x: rect.x - marginNorm.left.value,
@@ -105,7 +103,7 @@ export function rectExpand(rect: Rect, margin: SidesInput) {
     }
 }
 
-export function rectContract(rect: Rect, padding: SidesInput) {
+export function rectContract(rect: Rect, padding: SidesInput): Rect {
     const normMargin = sidesNormalize(padding)
     return {
         x: rect.x + normMargin.left.value,

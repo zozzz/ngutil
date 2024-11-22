@@ -1,10 +1,24 @@
 import { isPlainObject } from "@ngutil/common"
 
-const HORIZONTAL = ["start", "left", "center", "end", "right", "max-width"] as const
+const HORIZONTAL = ["start", "left", "center", "end", "right"] as const
 export type AlignHorizontal = (typeof HORIZONTAL)[number]
 
-const VERTICAL = ["top", "middle", "bottom", "max-height"] as const
+export const AlignHorizontalOpposite: Record<AlignHorizontal, AlignHorizontal> = {
+    start: "end",
+    left: "right",
+    center: "center",
+    end: "start",
+    right: "left"
+}
+
+const VERTICAL = ["top", "middle", "bottom"] as const
 export type AlignVertical = (typeof VERTICAL)[number]
+
+export const AlignVerticalOpposite: Record<AlignVertical, AlignVertical> = {
+    top: "bottom",
+    middle: "middle",
+    bottom: "top"
+}
 
 export type AlignmentInput =
     | `${AlignHorizontal} ${AlignVertical}`
@@ -48,7 +62,7 @@ export function alignmentNormalize(value?: AlignmentInput): Alignment {
     return { horizontal, vertical }
 }
 
-const HorizontalOrigin: { [key: string]: string } = {
+const HorizontalOrigin: Record<AlignHorizontal, "left" | "center" | "right"> = {
     start: "left",
     left: "left",
     center: "center",
@@ -56,7 +70,7 @@ const HorizontalOrigin: { [key: string]: string } = {
     end: "right"
 }
 
-const VerticalOrigin: { [key: string]: string } = {
+const VerticalOrigin: Record<AlignVertical, "top" | "center" | "bottom"> = {
     top: "top",
     middle: "center",
     bottom: "bottom"

@@ -1,0 +1,356 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`position-compute dialog 1`] = `
+{
+  "anchor": {
+    "link": {
+      "horizontal": "center",
+      "vertical": "middle",
+    },
+    "rect": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+  },
+  "connection": {
+    "x": 250,
+    "y": 250,
+  },
+  "content": {
+    "link": {
+      "horizontal": "center",
+      "vertical": "middle",
+    },
+    "rect": {
+      "height": 200,
+      "width": 100,
+      "x": 200,
+      "y": 150,
+    },
+  },
+  "placement": {
+    "area": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+    "padding": {
+      "bottom": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "left": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "right": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "top": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+    },
+    "rect": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+    "rectWithPadding": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+  },
+}
+`;
+
+exports[`position-compute flip-bottom-overflow 1`] = `
+{
+  "anchor": {
+    "link": {
+      "horizontal": "left",
+      "vertical": "top",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 30,
+      "y": 450,
+    },
+  },
+  "connection": {
+    "x": 30,
+    "y": 450,
+  },
+  "content": {
+    "link": {
+      "horizontal": "left",
+      "vertical": "bottom",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 30,
+      "y": 350,
+    },
+  },
+  "placement": {
+    "area": {
+      "height": 450,
+      "width": 470,
+      "x": 30,
+      "y": 0,
+    },
+    "padding": {
+      "bottom": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "left": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "right": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "top": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+    },
+    "rect": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+    "rectWithPadding": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+  },
+}
+`;
+
+exports[`position-compute flip-left-overflow 1`] = `
+{
+  "anchor": {
+    "link": {
+      "horizontal": "right",
+      "vertical": "top",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 30,
+      "y": 30,
+    },
+  },
+  "connection": {
+    "x": 130,
+    "y": 30,
+  },
+  "content": {
+    "link": {
+      "horizontal": "left",
+      "vertical": "top",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 130,
+      "y": 30,
+    },
+  },
+  "placement": {
+    "area": {
+      "height": 470,
+      "width": 370,
+      "x": 130,
+      "y": 30,
+    },
+    "padding": {
+      "bottom": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "left": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "right": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "top": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+    },
+    "rect": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+    "rectWithPadding": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+  },
+}
+`;
+
+exports[`position-compute flip-right-overflow 1`] = `
+{
+  "anchor": {
+    "link": {
+      "horizontal": "left",
+      "vertical": "middle",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 400,
+      "y": 0,
+    },
+  },
+  "connection": {
+    "x": 400,
+    "y": 50,
+  },
+  "content": {
+    "link": {
+      "horizontal": "right",
+      "vertical": "middle",
+    },
+    "rect": {
+      "height": 100,
+      "width": 200,
+      "x": 200,
+      "y": 0,
+    },
+  },
+  "placement": {
+    "area": {
+      "height": 500,
+      "width": 400,
+      "x": 0,
+      "y": 0,
+    },
+    "padding": {
+      "bottom": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "left": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "right": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "top": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+    },
+    "rect": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+    "rectWithPadding": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+  },
+}
+`;
+
+exports[`position-compute flip-top-overflow 1`] = `
+{
+  "anchor": {
+    "link": {
+      "horizontal": "left",
+      "vertical": "bottom",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 30,
+      "y": 30,
+    },
+  },
+  "connection": {
+    "x": 30,
+    "y": 130,
+  },
+  "content": {
+    "link": {
+      "horizontal": "left",
+      "vertical": "top",
+    },
+    "rect": {
+      "height": 100,
+      "width": 100,
+      "x": 30,
+      "y": 130,
+    },
+  },
+  "placement": {
+    "area": {
+      "height": 370,
+      "width": 470,
+      "x": 30,
+      "y": 130,
+    },
+    "padding": {
+      "bottom": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "left": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "right": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+      "top": NumberWithUnit {
+        "unit": "px",
+        "value": 0,
+      },
+    },
+    "rect": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+    "rectWithPadding": {
+      "height": 500,
+      "width": 500,
+      "x": 0,
+      "y": 0,
+    },
+  },
+}
+`;
