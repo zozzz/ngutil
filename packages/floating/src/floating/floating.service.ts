@@ -7,9 +7,7 @@ import { LayerService } from "../layer/layer.service"
 import { ComponentPortalOptions, TemplatePortalOptions } from "../layer/portal-ref"
 import { FloatingChannel, FloatingRef, TRAITS } from "./floating-ref"
 import { type FloatingTrait } from "./traits/_base"
-import { type FloatingPositionOptions, position } from "./traits/position"
-
-// export type FloatingTrait = (...args: any[]) => (traits: object) => Observable<object>
+import { position, type PositionTraitOptions } from "./traits/position"
 
 export type FloatingTraitInput = FloatingTrait | Array<FloatingTraitInput>
 
@@ -80,7 +78,7 @@ export abstract class FloatingFactory {
 
     protected abstract create(): FloatingRef<FloatingChannel>
 
-    position(options: FloatingPositionOptions) {
+    position(options: PositionTraitOptions) {
         return this.trait(position(options))
     }
 

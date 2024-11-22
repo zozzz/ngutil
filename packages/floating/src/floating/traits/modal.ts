@@ -9,7 +9,7 @@ export function modal() {
         position({
             anchor: {
                 ref: "viewport",
-                align: "center middle"
+                link: "center middle"
             },
             placement: {
                 ref: "viewport",

@@ -50,6 +50,7 @@ function createElement(options: ContainerOptions): HTMLDivElement {
     div.style.flexDirection = "column"
     div.style.alignItems = "stretch"
     div.style.justifyContent = "stretch"
+    div.style.boxSizing = "border-box"
 
     if (options.classes) {
         div.classList.add(...options.classes)

@@ -3,11 +3,10 @@ import { animate, AnimationBuilder, AnimationMetadata, AnimationOptions, style }
 import { map, Observable, Subscriber, switchMap, take, tap, timer } from "rxjs"
 
 import { animationObservable } from "@ngutil/graphics"
-import { alignmentToTransformOrigin, Duration, Ease } from "@ngutil/style"
+import { alignmentToTransformOrigin, Duration, Ease, FloatingPosition } from "@ngutil/style"
 
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
-import { FloatingPosition } from "./position"
 
 export type AnimationSet = { show: AnimationMetadata[]; hide: AnimationMetadata[] }
 
@@ -73,7 +72,7 @@ function animationParams(
     return src.pipe(
         take(1),
         map(position => {
-            const origin = position.computed ? alignmentToTransformOrigin(position.computed!.content.align) : "center"
+            const origin = alignmentToTransformOrigin(position.content.link)
             return {
                 origin,
                 ...overrides

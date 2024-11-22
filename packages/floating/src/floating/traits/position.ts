@@ -1,72 +1,67 @@
-import { ElementRef } from "@angular/core"
+import { combineLatest, isObservable, map, Observable, of, Subscriber, switchMap, takeUntil } from "rxjs"
 
-import { combineLatest, Observable, Subscriber, takeUntil } from "rxjs"
+import { ElementInput, isElementInput } from "@ngutil/common"
+import {
+    Dimension,
+    DimensionWatcher,
+    floatingPosition,
+    FloatingPosition,
+    FloatingPositionAltInput,
+    FloatingPositionAnchorOptions,
+    FloatingPositionContentOptions,
+    FloatingPositionPlacementOptions,
+    floatingPositionToStyle,
+    Rect,
+    RectWatcher
+} from "@ngutil/style"
 
-import { ElementInput } from "@ngutil/common"
-import { AlignmentInput, Dimension, DimensionWatcher, Rect, RectWatcher, SidesInput } from "@ngutil/style"
-
-import { LayerService } from "../../layer/layer.service"
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
-import { maxHeight, maxWidth } from "./dim-contraint"
-import { ComputedPositon, computePosition } from "./position-calc"
 
-export type FloatingTargetElementRef = ElementInput | Window | "layer" | "viewport"
+export type PositionTraitElementRef = ElementInput | Window | "layer" | "viewport"
 
-export interface FloatingAlign {
-    align: AlignmentInput
+export type PositionTraitOptions = {
+    content?: FloatingPositionContentOptions & MinMaxSizes
+    anchor?: FloatingPositionAnchorOptions & { ref: PositionTraitElementRef }
+    placement?: FloatingPositionPlacementOptions & { ref: PositionTraitElementRef }
+    horizontalAlt?: FloatingPositionAltInput
+    verticalAlt?: FloatingPositionAltInput
 }
 
-export interface FloatingAnchorPosition extends FloatingAlign {
-    margin?: SidesInput
-}
-
-export interface FloatingAnchor extends FloatingAnchorPosition {
-    ref: FloatingTargetElementRef
-}
-
-export class FloatingAnchorRef<T extends Node> extends ElementRef<T> {}
-
-export interface FloatingContentPosition extends FloatingAlign {
-    margin?: SidesInput
-}
-
-export interface FloatingContent extends FloatingContentPosition {}
-
-export interface FloatingPlacementPosition {
-    padding?: SidesInput
-}
-
-export interface FloatingPlacement extends FloatingPlacementPosition {
-    ref: FloatingTargetElementRef
-}
-
-export class FloatingPlacementRef<T extends LayerService["root"]> extends ElementRef<T> {}
-
-export interface FloatingPositionOptions {
-    anchor?: FloatingAnchor
-    content?: FloatingContent
-    placement?: FloatingPlacement
-}
-
-export type FloatingPositionOptionsNormalized = FloatingPositionOptions & {
-    anchor: FloatingAnchor
-    content: FloatingContent
-    placement: FloatingPlacement
+type SizeInput = number | ElementInput | Observable<number> | Observable<ElementInput>
+interface MinMaxSizes {
+    minWidth?: SizeInput
+    maxWidth?: SizeInput
+    minHeight?: SizeInput
+    maxHeight?: SizeInput
 }
 
 type Watches = {
-    floating: Observable<Dimension>
+    content: Observable<Dimension>
     anchor: Observable<Rect>
     placement: Observable<Rect>
+}
+
+type SizeWatches = {
+    minWidth: Observable<number>
+    maxWidth: Observable<number>
+    minHeight: Observable<number>
+    maxHeight: Observable<number>
+}
+
+interface MinMaxSizesResult {
+    minWidth: number
+    maxWidth: number
+    minHeight: number
+    maxHeight: number
 }
 
 export class PositionTrait implements FloatingTrait<FloatingPosition> {
     readonly name = "position"
 
-    readonly options: FloatingPositionOptionsNormalized
+    readonly options: Required<PositionTraitOptions>
 
-    constructor(options: FloatingPositionOptions) {
+    constructor(options: PositionTraitOptions) {
         const cloned = { ...options }
 
         if (!cloned.placement) {
@@ -74,11 +69,11 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
         }
 
         if (!cloned.anchor) {
-            cloned.anchor = { ref: cloned.placement.ref, align: "center middle" }
+            cloned.anchor = { ref: cloned.placement.ref, link: "center middle" }
         }
 
         if (!cloned.content) {
-            cloned.content = { align: "center middle" }
+            cloned.content = { link: "center middle" }
         }
 
         this.options = cloned as any
@@ -90,22 +85,41 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
             const dimWatcher = injector.get(DimensionWatcher)
             const rectWatcher = injector.get(RectWatcher)
 
-            const watches: Watches = {
-                floating: dimWatcher.watch(floatingRef.container, "border-box"),
+            const dimWatches: Watches = {
+                content: dimWatcher.watch(floatingRef.container, "border-box"),
                 anchor: refWatcher(rectWatcher, this.options.anchor.ref, floatingRef),
                 placement: refWatcher(rectWatcher, this.options.placement.ref, floatingRef)
             }
 
-            return combineLatest(watches).subscribe(({ floating, anchor, placement }) => {
-                const res = new FloatingPosition(this.options, floating, anchor, placement)
-                res.apply(floatingRef)
-                dest.next(res)
-            })
+            const sizeWatches: SizeWatches = {
+                minWidth: sizeWatcher(dimWatcher, "width", this.options.content.minWidth),
+                maxWidth: sizeWatcher(dimWatcher, "width", this.options.content.maxWidth),
+                minHeight: sizeWatcher(dimWatcher, "height", this.options.content.minHeight),
+                maxHeight: sizeWatcher(dimWatcher, "height", this.options.content.maxHeight)
+            }
+
+            const watches = {
+                dims: combineLatest(dimWatches),
+                size: combineLatest(sizeWatches)
+            }
+
+            return (
+                combineLatest(watches)
+                    // .pipe(distinctUntilChanged(isEqual))
+                    .subscribe(({ dims, size }) => {
+                        console.log(size)
+                        const pos = floatingPosition({ dims, options: this.options })
+                        const floatingEl = floatingRef.container.nativeElement
+                        Object.assign(floatingEl.style, floatingPositionToStyle(pos))
+                        Object.assign(floatingEl.style, sizesToStyle(pos, size))
+                        dest.next(pos)
+                    })
+            )
         }).pipe(takeUntil(floatingRef.state.onExecute("disposing")))
     }
 }
 
-function refWatcher(rectWatcher: RectWatcher, ref: FloatingTargetElementRef, floatingRef: FloatingRef<any>) {
+function refWatcher(rectWatcher: RectWatcher, ref: PositionTraitElementRef, floatingRef: FloatingRef<any>) {
     if (ref === "layer") {
         return rectWatcher.watch(floatingRef.layerSvc.root, "border-box")
     } else if (ref === "viewport" || ref instanceof Window) {
@@ -115,43 +129,30 @@ function refWatcher(rectWatcher: RectWatcher, ref: FloatingTargetElementRef, flo
     }
 }
 
-export function position(options: FloatingPositionOptions) {
-    return [new PositionTrait(options), maxWidth(NaN), maxHeight(NaN)]
+function sizeWatcher(dimWatcher: DimensionWatcher, prop: "width" | "height", size?: SizeInput): Observable<number> {
+    if (typeof size === "number") {
+        return of(size)
+    } else if (isElementInput(size)) {
+        return dimWatcher.watch(size, "border-box").pipe(map(value => value[prop]))
+    } else if (isObservable(size)) {
+        return (size as Observable<number | ElementInput>).pipe(
+            switchMap(value => sizeWatcher(dimWatcher, prop, value))
+        )
+    }
+    return of(NaN)
 }
 
-export class FloatingPosition {
-    readonly computed?: ComputedPositon
-    constructor(
-        readonly options: FloatingPositionOptionsNormalized,
-        readonly floating: Dimension,
-        readonly anchor: Rect,
-        readonly placement: Rect
-    ) {
-        // const frect: Rect = { x: 0, y: 0, ...floating }
-        this.computed = computePosition({ floating, anchor, placement, options })
+function sizesToStyle(pos: FloatingPosition, sizes: MinMaxSizesResult): Partial<CSSStyleDeclaration> {
+    const { minWidth, maxWidth, minHeight, maxHeight } = sizes
+    const { width, height } = pos.placement.area
+    return {
+        minWidth: isNaN(minWidth) ? "auto" : `${Math.min(width, minWidth)}px`,
+        minHeight: isNaN(minHeight) ? "auto" : `${Math.min(height, minHeight)}px`,
+        maxWidth: isNaN(maxWidth) ? `${width}px` : `${Math.min(width, maxWidth)}px`,
+        maxHeight: isNaN(maxHeight) ? `${height}px` : `${Math.min(height, maxHeight)}px`
     }
+}
 
-    apply(floatingRef: FloatingRef) {
-        if (this.computed == null) {
-            return
-        }
-
-        const floatingEl = floatingRef.container.nativeElement
-        const computedContent = this.computed.content
-        const style: Record<string, string | null> = { top: null, right: null, bottom: null, left: null }
-
-        if (computedContent.align.horizontal === "right") {
-            style["right"] = `${computedContent.right}px`
-        } else {
-            style["left"] = `${computedContent.left}px`
-        }
-
-        if (computedContent.align.vertical === "bottom") {
-            style["bottom"] = `${computedContent.bottom}px`
-        } else {
-            style["top"] = `${computedContent.top}px`
-        }
-
-        Object.assign(floatingEl.style, style)
-    }
+export function position(options: PositionTraitOptions) {
+    return new PositionTrait(options)
 }
