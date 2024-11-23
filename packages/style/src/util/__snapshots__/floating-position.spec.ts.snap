@@ -18,7 +18,12 @@ exports[`position-compute dialog 1`] = `
     "x": 250,
     "y": 250,
   },
+  "constrains": undefined,
   "content": {
+    "constrained": {
+      "height": 200,
+      "width": 100,
+    },
     "link": {
       "horizontal": "center",
       "vertical": "middle",
@@ -89,7 +94,12 @@ exports[`position-compute flip-bottom-overflow 1`] = `
     "x": 30,
     "y": 450,
   },
+  "constrains": undefined,
   "content": {
+    "constrained": {
+      "height": 100,
+      "width": 100,
+    },
     "link": {
       "horizontal": "left",
       "vertical": "bottom",
@@ -160,7 +170,12 @@ exports[`position-compute flip-left-overflow 1`] = `
     "x": 130,
     "y": 30,
   },
+  "constrains": undefined,
   "content": {
+    "constrained": {
+      "height": 100,
+      "width": 100,
+    },
     "link": {
       "horizontal": "left",
       "vertical": "top",
@@ -231,7 +246,12 @@ exports[`position-compute flip-right-overflow 1`] = `
     "x": 400,
     "y": 50,
   },
+  "constrains": undefined,
   "content": {
+    "constrained": {
+      "height": 100,
+      "width": 200,
+    },
     "link": {
       "horizontal": "right",
       "vertical": "middle",
@@ -302,7 +322,12 @@ exports[`position-compute flip-top-overflow 1`] = `
     "x": 30,
     "y": 130,
   },
+  "constrains": undefined,
   "content": {
+    "constrained": {
+      "height": 100,
+      "width": 100,
+    },
     "link": {
       "horizontal": "left",
       "vertical": "top",
