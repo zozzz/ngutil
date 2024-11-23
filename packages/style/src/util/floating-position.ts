@@ -336,6 +336,7 @@ function oppositeLink(axis: FloatingPositionAltAxis, link: Alignment): Alignment
 export function floatingPositionToStyle(pos: Readonly<FloatingPosition>): Partial<CSSStyleDeclaration> {
     const contentRect = pos.content.rect
     const placementRect = pos.placement.rect
+    // const { width: maxWidth, height: maxHeight } = pos.placement.area
     const style: Partial<CSSStyleDeclaration> = {}
 
     if (pos.content.link.horizontal === "right") {
@@ -354,5 +355,55 @@ export function floatingPositionToStyle(pos: Readonly<FloatingPosition>): Partia
         style["bottom"] = "auto"
     }
 
+    // style["maxWidth"] = `${maxWidth}px`
+    // style["maxHeight"] = `${maxHeight}px`
+
     return style
+}
+
+export const enum FloatingPositionDirection {
+    Up = "up",
+    Down = "down",
+    Left = "left",
+    Right = "right",
+    Center = "center"
+}
+
+export function floatingPositionDirection(pos: Readonly<FloatingPosition>): FloatingPositionDirection {
+    const { x: ax, y: ay, width: aw, height: ah } = pos.anchor.rect
+    const { x: bx, y: by, width: bw, height: bh } = pos.content.rect
+    const contentLink = pos.content.link
+    const anchorLink = pos.anchor.link
+
+    if (anchorLink.horizontal === "center" && anchorLink.vertical === "middle") {
+        if (contentLink.horizontal === "center" && contentLink.vertical === "middle") {
+            return FloatingPositionDirection.Center
+        }
+
+        const cx = pos.connection.x
+        if (cx <= bx) {
+            return FloatingPositionDirection.Right
+        } else if (cx >= bx + bw) {
+            return FloatingPositionDirection.Left
+        }
+    }
+
+    const widthOverlapPx = Math.min(ax + aw, bx + bw) - Math.max(ax, bx)
+    const widthOverlapPercent = widthOverlapPx / Math.max(aw, bw)
+    const heightOverlapPx = Math.min(ay + ah, by + bh) - Math.max(ay, by)
+    const heightOverlapPercent = heightOverlapPx / Math.max(ah, bh)
+
+    if (widthOverlapPercent >= heightOverlapPercent) {
+        if (contentLink.vertical === "bottom") {
+            return FloatingPositionDirection.Up
+        }
+
+        return FloatingPositionDirection.Down
+    } else {
+        if (contentLink.horizontal === "right") {
+            return FloatingPositionDirection.Left
+        }
+
+        return FloatingPositionDirection.Right
+    }
 }

@@ -10,9 +10,20 @@ import { provideAnimations } from "@angular/platform-browser/animations"
 import { filter, map, Observable, startWith, Subscriber, Subscription } from "rxjs"
 
 import { Focusable, FocusState } from "@ngutil/aria"
-import { Alignment, FloatingPosition } from "@ngutil/style"
+import { Alignment, FloatingPosition, floatingPositionDirection } from "@ngutil/style"
 
-import { backdrop, closeTrigger, dropAnimation, FloatingRef, FloatingService, focus, position, style } from "./floating"
+import {
+    backdrop,
+    closeTrigger,
+    fallAnimation,
+    FloatingRef,
+    FloatingService,
+    focus,
+    position,
+    slideAwayAnimation,
+    slideNearAnimation,
+    style
+} from "./floating"
 import { provideFloating } from "./index"
 import { AlwaysOnTop } from "./layer"
 
@@ -123,7 +134,7 @@ class FloatingTrigger {
                 positionSub?.unsubscribe()
                 placementRect = this.#rect(event.floatingRef).subscribe()
                 positionSub = event.floatingRef.watchTrait<FloatingPosition>("position").subscribe(position => {
-                    console.log(position)
+                    console.log(position, floatingPositionDirection(position))
                 })
             } else if (event.type === "disposing") {
                 placementRect?.unsubscribe()
@@ -138,7 +149,9 @@ class FloatingTrigger {
                 anchor: { ref: this.el, link: this.anchorLink()!, margin: 0 },
                 content: {
                     link: this.contentLink()!,
-                    constraints: { minWidth: this.el, minHeight: 150, maxWidth: this.el }
+                    // constraints: { minWidth: this.el, minHeight: 150, maxWidth: this.el }
+                    constraints: { minWidth: 50, minHeight: 1, maxWidth: this.el }
+                    // constraints: { minWidth: 50, minHeight: 200, maxWidth: 50 }
                 },
                 placement: { ref: "viewport", padding: 20 },
                 horizontalAlt: "flip",
@@ -147,7 +160,9 @@ class FloatingTrigger {
 
             style({ borderRadius: "3px", border: "1px solid black" }),
             // fadeAnimation(),
-            dropAnimation(),
+            fallAnimation(),
+            slideNearAnimation(),
+            slideAwayAnimation(),
             focus({ connect: this.focus }),
             closeTrigger()
         )

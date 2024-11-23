@@ -1,9 +1,9 @@
-import { animate, AnimationBuilder, AnimationMetadata, AnimationOptions, style } from "@angular/animations"
+import { animate, AnimationBuilder, AnimationMetadata, style } from "@angular/animations"
 
-import { map, Observable, Subscriber, switchMap, take, tap, timer } from "rxjs"
+import { map, Observable, of, Subscriber, switchMap, take, tap } from "rxjs"
 
 import { animationObservable } from "@ngutil/graphics"
-import { alignmentToTransformOrigin, Duration, Ease, FloatingPosition } from "@ngutil/style"
+import { Duration, Ease, FloatingPosition, FloatingPositionDirection, floatingPositionDirection } from "@ngutil/style"
 
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
@@ -14,40 +14,41 @@ export type AnimationSet = { show: AnimationMetadata[]; hide: AnimationMetadata[
 
 const timing = `${Duration.FastMs}ms ${Ease.Deceleration}`
 
+export type AnimationTraitParams = (position: FloatingPosition) => object
+
 export class AnimationTrait implements FloatingTrait<unknown> {
     readonly name = "animation"
 
     constructor(
         readonly animation: AnimationSet,
-        readonly options?: AnimationOptions
+        readonly params?: AnimationTraitParams
     ) {}
 
     connect(floatingRef: FloatingRef): Observable<unknown> {
         return new Observable((dst: Subscriber<unknown>) => {
             const builder = floatingRef.container.injector.get(AnimationBuilder)
             const element = floatingRef.container.nativeElement
-            const options = this.options || {}
 
             floatingRef.state.on("showing", () =>
-                animationParams(floatingRef, 0, options.params).pipe(
+                animationParams(floatingRef, this.params).pipe(
                     switchMap(params =>
                         animationObservable({
                             builder,
                             element,
                             animation: this.animation.show,
-                            options: { ...options, params }
+                            options: { params }
                         })
                     )
                 )
             )
             floatingRef.state.on("disposing", () =>
-                animationParams(floatingRef, 0, options.params).pipe(
+                animationParams(floatingRef, this.params).pipe(
                     switchMap(params =>
                         animationObservable({
                             builder,
                             element,
                             animation: this.animation.hide,
-                            options: { ...options, params }
+                            options: { params }
                         })
                     ),
                     tap(() => (element.style.display = "none"))
@@ -59,32 +60,18 @@ export class AnimationTrait implements FloatingTrait<unknown> {
     }
 }
 
-function animationParams(
-    floatingRef: FloatingRef,
-    delay: number,
-    overrides: AnimationOptions["params"]
-): Observable<AnimationOptions["params"]> {
-    const src =
-        delay > 0
-            ? timer(delay).pipe(switchMap(() => floatingRef.watchTrait<FloatingPosition>("position")))
-            : floatingRef.watchTrait<FloatingPosition>("position")
+function animationParams(floatingRef: FloatingRef, params?: AnimationTraitParams): Observable<object> {
+    if (params == null) {
+        return of({})
+    }
 
-    return src.pipe(
-        take(1),
-        map(position => {
-            const origin = alignmentToTransformOrigin(position.content.link)
-            return {
-                origin,
-                ...overrides
-            }
-        })
-    )
+    return floatingRef.watchTrait<FloatingPosition>("position").pipe(take(1), map(params))
 }
 
 export const FallAnimation: AnimationSet = {
     show: [
         style({
-            transform: "scale(1.5)",
+            transform: "scale({{ scale }})",
             visibility: "visible",
             opacity: "0"
         }),
@@ -100,7 +87,7 @@ export const FallAnimation: AnimationSet = {
         animate(
             timing,
             style({
-                transform: "scale(1.5)",
+                transform: "scale({{ scale }})",
                 visibility: "visible",
                 opacity: "0"
             })
@@ -108,8 +95,10 @@ export const FallAnimation: AnimationSet = {
     ]
 }
 
-export function fallAnimation(options?: AnimationOptions) {
-    return new AnimationTrait(FallAnimation, options)
+export function fallAnimation(scale: number = 1.5) {
+    return new AnimationTrait(FallAnimation, () => {
+        return { scale }
+    })
 }
 
 export const FadeAnimation: AnimationSet = {
@@ -117,47 +106,49 @@ export const FadeAnimation: AnimationSet = {
     hide: [animate(timing, style({ opacity: 0 }))]
 }
 
-export function fadeAnimation(options?: AnimationOptions) {
-    return new AnimationTrait(FadeAnimation, options)
+export function fadeAnimation() {
+    return new AnimationTrait(FadeAnimation)
 }
 
-export const DropAnimation: AnimationSet = {
+const SlideAnimation: AnimationSet = {
     show: [
         style({
-            transform: "translate({{ translateX }}, {{ translateY }})",
+            transform: "translate({{ tx }}, {{ ty }})",
             opacity: "0",
-            transformOrigin: "{{ origin }}",
+            // transformOrigin: "{{ origin }}",
             visibility: "visible"
         }),
         animate(
             timing,
             style({
                 opacity: "1",
-                transform: "scale(1, 1) translate(0px, 0px)"
+                transform: "translate(0px, 0px)"
             })
         )
     ],
-    hide: [
-        animate(
-            timing,
-            style({ opacity: 0, transform: "translate(calc({{ translateX }} * -1), calc({{ translateY }} * -1))" })
-        )
-    ]
+    hide: [animate(timing, style({ opacity: 0, transform: "translate(calc({{ tx }} * -1), calc({{ ty }} * -1))" }))]
 }
 
-export function dropAnimation(options?: AnimationOptions) {
-    if (!options) {
-        options = {}
-    }
+const SlideAnimationParams: { [K in FloatingPositionDirection]: { tx: number; ty: number } } = {
+    center: { tx: 0, ty: 0 },
+    up: { tx: 0, ty: 1 },
+    down: { tx: 0, ty: -1 },
+    left: { tx: 1, ty: 0 },
+    right: { tx: -1, ty: 0 }
+}
 
-    if (!options.params) {
-        options.params = {}
-    } else {
-        options.params = { ...options.params }
-    }
+function slideAnimation(size: number) {
+    return new AnimationTrait(SlideAnimation, position => {
+        const direction = floatingPositionDirection(position)
+        const { tx, ty } = SlideAnimationParams[direction]
+        return { tx: `${tx * size}px`, ty: `${ty * size}px` }
+    })
+}
 
-    options.params["translateX"] = "0px"
-    options.params["translateY"] = "-40px"
+export function slideNearAnimation(size: number = 40) {
+    return slideAnimation(size * -1)
+}
 
-    return new AnimationTrait(DropAnimation, options)
+export function slideAwayAnimation(size: number = 40) {
+    return slideAnimation(size)
 }
