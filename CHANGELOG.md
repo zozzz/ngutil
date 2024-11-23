@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.66](https://github.com/zozzz/ngutil/compare/0.0.65...0.0.66) (2024-11-23)
+
+
+### Bug Fixes
+
+* **style:** tests ([2681f66](https://github.com/zozzz/ngutil/commit/2681f66c5f6bceeb5ca68a2119665f9c81f6d249))
+
+
+### Other changes
+
+* remove console.log ([94547ab](https://github.com/zozzz/ngutil/commit/94547abef4ff83ba971a6a7f0f92e78cc7b0b012))
+
 ## [0.0.65](https://github.com/zozzz/ngutil/compare/0.0.64...0.0.65) (2024-11-22)
 
 
