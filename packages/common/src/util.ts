@@ -59,7 +59,9 @@ export function toSorted<T>(items: readonly T[], fn: (a: T, b: T) => number): T[
     }
 }
 
-export function isFalsy(value: any): boolean {
+type FalsyReturns = null | undefined | false | 0 | ""
+
+export function isFalsy(value: any): value is FalsyReturns {
     if (value == null) {
         return true
     } else if (Array.isArray(value)) {
@@ -78,6 +80,6 @@ export function isFalsy(value: any): boolean {
     return value === false
 }
 
-export function isTruthy(value: any): boolean {
+export function isTruthy<T>(value: T): value is Exclude<T, FalsyReturns> {
     return !isFalsy(value)
 }

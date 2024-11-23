@@ -136,7 +136,10 @@ class FloatingTrigger {
         const factory = this.floating.from(FloatingPopover, { alwaysOnTop: this.alwaysOnTop() }).trait(
             position({
                 anchor: { ref: this.el, link: this.anchorLink()!, margin: 0 },
-                content: { link: this.contentLink()!, minWidth: this.el, minHeight: 150, maxWidth: this.el },
+                content: {
+                    link: this.contentLink()!,
+                    constraints: { minWidth: this.el, minHeight: 150, maxWidth: this.el }
+                },
                 placement: { ref: "viewport", padding: 20 },
                 horizontalAlt: "flip",
                 verticalAlt: "flip"

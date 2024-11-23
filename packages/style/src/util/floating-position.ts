@@ -1,3 +1,5 @@
+import { clamp } from "lodash"
+
 import {
     AlignHorizontalOpposite,
     Alignment,
@@ -18,6 +20,7 @@ export interface FloatingPositionDims {
     content: Dimension
     anchor: Rect
     placement: Rect
+    constraints?: FloatingPositionConstraintsInput
 }
 
 export interface FloatingPositionOptions {
@@ -30,6 +33,13 @@ export interface FloatingPositionOptions {
 
 export interface FloatingPositionContentOptions {
     link: AlignmentInput
+}
+
+export interface FloatingPositionConstraintsInput {
+    minWidth?: number
+    maxWidth?: number
+    minHeight?: number
+    maxHeight?: number
 }
 
 export interface FloatingPositionAnchorOptions {
@@ -45,6 +55,7 @@ export interface FloatingPosition {
     content: {
         rect: Position & Readonly<Dimension>
         link: Alignment
+        readonly constrained: Readonly<Dimension>
     }
     anchor: {
         readonly rect: Readonly<Rect>
@@ -57,6 +68,7 @@ export interface FloatingPosition {
         area: Readonly<Rect>
     }
     connection: Position
+    constraints?: FloatingPositionConstraintsInput
 }
 
 interface PlacementArea {
@@ -101,12 +113,20 @@ export function floatingPosition({ dims, options }: FloatingPositionInput): Floa
         link: alignmentNormalize(options.anchor.link)
     }
 
+    const minWidth = dims.constraints?.minWidth || 0
+    const minHeight = dims.constraints?.minHeight || 0
+    const maxWidth = dims.constraints?.maxWidth || Infinity
+    const maxHeight = dims.constraints?.maxHeight || Infinity
     const content: FloatingPosition["content"] = {
         rect: { x: 0, y: 0, ...dims.content },
-        link: alignmentNormalize(options.content.link)
+        link: alignmentNormalize(options.content.link),
+        constrained: {
+            width: clamp(dims.content.width, minWidth, maxWidth),
+            height: clamp(dims.content.height, minHeight, maxHeight)
+        }
     }
 
-    const position = { placement, anchor, content, connection: ZERO_CONNECTION }
+    const position = { placement, anchor, content, connection: ZERO_CONNECTION, constrains: dims.constraints }
     const area = placementArea(position, anchor.link, content.link)
     setPlacement(position, area)
 
@@ -274,7 +294,7 @@ function none(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {}
 
 function flip(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {
     const wh: "width" | "height" = axis === FloatingPositionAltAxis.Horizontal ? "width" : "height"
-    if (pos.placement.area[wh] >= pos.content.rect[wh]) {
+    if (pos.placement.area[wh] >= pos.content.constrained[wh]) {
         return
     }
     return greatest(pos, axis)

@@ -1,4 +1,16 @@
-import { combineLatest, isObservable, map, Observable, of, Subscriber, switchMap, takeUntil } from "rxjs"
+import {
+    combineLatest,
+    distinctUntilChanged,
+    isObservable,
+    map,
+    Observable,
+    of,
+    Subscriber,
+    switchMap,
+    takeUntil
+} from "rxjs"
+
+import { isEqual } from "lodash"
 
 import { ElementInput, isElementInput } from "@ngutil/common"
 import {
@@ -9,6 +21,7 @@ import {
     FloatingPositionAltInput,
     FloatingPositionAnchorOptions,
     FloatingPositionContentOptions,
+    FloatingPositionDims,
     FloatingPositionPlacementOptions,
     floatingPositionToStyle,
     Rect,
@@ -21,40 +34,42 @@ import { FloatingTrait } from "./_base"
 export type PositionTraitElementRef = ElementInput | Window | "layer" | "viewport"
 
 export type PositionTraitOptions = {
-    content?: FloatingPositionContentOptions & MinMaxSizes
+    content?: Omit<FloatingPositionContentOptions, "constraints"> & { constraints?: SizeConstraintsInput }
     anchor?: FloatingPositionAnchorOptions & { ref: PositionTraitElementRef }
     placement?: FloatingPositionPlacementOptions & { ref: PositionTraitElementRef }
     horizontalAlt?: FloatingPositionAltInput
     verticalAlt?: FloatingPositionAltInput
 }
 
-type SizeInput = number | ElementInput | Observable<number> | Observable<ElementInput>
-interface MinMaxSizes {
+/**
+ * Width ot height input values
+ *
+ * - `number`: excact value
+ * - `ElementInput`: element reference, and take the dimension from it
+ * - `link`: take the dimension from the anchor element and only apply on connection dimension.
+ *    eg.: `anchor.link = "left bottom"` and `content.link = "left top"`, in this case only width will be applied.
+ */
+type SizeInputConst = number | ElementInput
+type SizeInput = SizeInputConst | Observable<SizeInputConst>
+
+interface SizeConstraintsInput {
     minWidth?: SizeInput
     maxWidth?: SizeInput
     minHeight?: SizeInput
     maxHeight?: SizeInput
 }
 
+type SizeConstraints = NonNullable<FloatingPositionDims["constraints"]>
+
 type Watches = {
     content: Observable<Dimension>
     anchor: Observable<Rect>
     placement: Observable<Rect>
+    constraints: Observable<ConstraintsResult>
 }
 
-type SizeWatches = {
-    minWidth: Observable<number>
-    maxWidth: Observable<number>
-    minHeight: Observable<number>
-    maxHeight: Observable<number>
-}
-
-interface MinMaxSizesResult {
-    minWidth: number
-    maxWidth: number
-    minHeight: number
-    maxHeight: number
-}
+type ConstraintWatches = { [K in keyof SizeConstraints]-?: Observable<NonNullable<SizeConstraints[K]>> }
+type ConstraintsResult = Required<SizeConstraints>
 
 export class PositionTrait implements FloatingTrait<FloatingPosition> {
     readonly name = "position"
@@ -85,35 +100,30 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
             const dimWatcher = injector.get(DimensionWatcher)
             const rectWatcher = injector.get(RectWatcher)
 
-            const dimWatches: Watches = {
+            const constraints = this.options.content.constraints || {}
+            const constraintsWatches: ConstraintWatches = {
+                minWidth: sizeWatcher(dimWatcher, "width", constraints.minWidth),
+                maxWidth: sizeWatcher(dimWatcher, "width", constraints.maxWidth),
+                minHeight: sizeWatcher(dimWatcher, "height", constraints.minHeight),
+                maxHeight: sizeWatcher(dimWatcher, "height", constraints.maxHeight)
+            }
+
+            const watches: Watches = {
                 content: dimWatcher.watch(floatingRef.container, "border-box"),
                 anchor: refWatcher(rectWatcher, this.options.anchor.ref, floatingRef),
-                placement: refWatcher(rectWatcher, this.options.placement.ref, floatingRef)
+                placement: refWatcher(rectWatcher, this.options.placement.ref, floatingRef),
+                constraints: combineLatest(constraintsWatches)
             }
 
-            const sizeWatches: SizeWatches = {
-                minWidth: sizeWatcher(dimWatcher, "width", this.options.content.minWidth),
-                maxWidth: sizeWatcher(dimWatcher, "width", this.options.content.maxWidth),
-                minHeight: sizeWatcher(dimWatcher, "height", this.options.content.minHeight),
-                maxHeight: sizeWatcher(dimWatcher, "height", this.options.content.maxHeight)
-            }
-
-            const watches = {
-                dims: combineLatest(dimWatches),
-                size: combineLatest(sizeWatches)
-            }
-
-            return (
-                combineLatest(watches)
-                    // .pipe(distinctUntilChanged(isEqual))
-                    .subscribe(({ dims, size }) => {
-                        const pos = floatingPosition({ dims, options: this.options })
-                        const floatingEl = floatingRef.container.nativeElement
-                        Object.assign(floatingEl.style, floatingPositionToStyle(pos))
-                        Object.assign(floatingEl.style, sizesToStyle(pos, size))
-                        dest.next(pos)
-                    })
-            )
+            return combineLatest(watches)
+                .pipe(distinctUntilChanged(isEqual))
+                .subscribe(dims => {
+                    const pos = floatingPosition({ dims, options: this.options })
+                    const floatingEl = floatingRef.container.nativeElement
+                    Object.assign(floatingEl.style, floatingPositionToStyle(pos))
+                    Object.assign(floatingEl.style, constraintsToStyle(pos, dims.constraints))
+                    dest.next(pos)
+                })
         }).pipe(takeUntil(floatingRef.state.onExecute("disposing")))
     }
 }
@@ -141,7 +151,7 @@ function sizeWatcher(dimWatcher: DimensionWatcher, prop: "width" | "height", siz
     return of(NaN)
 }
 
-function sizesToStyle(pos: FloatingPosition, sizes: MinMaxSizesResult): Partial<CSSStyleDeclaration> {
+function constraintsToStyle(pos: FloatingPosition, sizes: ConstraintsResult): Partial<CSSStyleDeclaration> {
     const { minWidth, maxWidth, minHeight, maxHeight } = sizes
     const { width, height } = pos.placement.area
     return {
