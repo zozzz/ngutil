@@ -159,13 +159,9 @@ const MINMAX_NAMES: Array<MinMaxNames> = ["minWidth", "minHeight", "maxWidth", "
 
 function constraintsToStyle(pos: FloatingPosition, sizes: ConstraintsResult, options: SizeConstraintsInput) {
     const result: Partial<CSSStyleDeclaration> = {}
-
     for (const name of MINMAX_NAMES) {
         result[name] = constraintValue(pos, options, name, sizes[name])
     }
-
-    console.log(result)
-
     return result
 }
 
