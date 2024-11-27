@@ -166,7 +166,7 @@ class FloatingTrigger {
             fallAnimation(),
             slideNearAnimation(),
             slideAwayAnimation(),
-            rippleRevealAnimation({ x: event.clientX, y: event.clientY }),
+            rippleRevealAnimation({ origin: { x: event.clientX, y: event.clientY } }),
             focus({ connect: this.focus }),
             closeTrigger()
         )

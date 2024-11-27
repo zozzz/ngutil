@@ -163,15 +163,19 @@ export function slideAwayAnimation(size: number = 40) {
 const RippleRevealAnimation: AnimationSet = {
     show: [
         style({ clipPath: "circle({{ radiusStart }} at {{ origin }})" }),
-        animate(
-            `${Duration.Snail} ${Ease.Acceleration}`,
-            style({ clipPath: "circle({{ radiusEnd }} at {{ origin }})" })
-        )
+        animate(`{{ duration }}ms ${Ease.Acceleration}`, style({ clipPath: "circle({{ radiusEnd }} at {{ origin }})" }))
     ],
     hide: [animate(timing, style({ opacity: 0 }))]
 }
 
-export function rippleRevealAnimation(origin: Position, initialRadius: number = 0) {
+type RippleRevealAnimationOptions = {
+    origin: Position
+    initialRadius?: number
+    duration?: number
+}
+
+export function rippleRevealAnimation(options: RippleRevealAnimationOptions) {
+    const { origin, initialRadius = 0, duration = Duration.SlowMs } = options
     return new AnimationTrait(RippleRevealAnimation, position => {
         const animOrigin = rectContainsPoint(position.content.rect, origin)
             ? origin
@@ -181,7 +185,8 @@ export function rippleRevealAnimation(origin: Position, initialRadius: number = 
         return {
             radiusStart: `${initialRadius}px`,
             radiusEnd: `${radius}px`,
-            origin: `${animOrigin.x - x}px ${animOrigin.y - y}px`
+            origin: `${animOrigin.x - x}px ${animOrigin.y - y}px`,
+            duration: duration
         }
     })
 }
