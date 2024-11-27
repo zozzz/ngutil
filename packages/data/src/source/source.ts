@@ -2,8 +2,10 @@ import { DataSource as CdkDataSource, CollectionViewer } from "@angular/cdk/coll
 
 import {
     BehaviorSubject,
+    catchError,
     combineLatest,
     distinctUntilChanged,
+    filter,
     map,
     merge,
     Observable,
@@ -25,7 +27,7 @@ import { ConnectProtocol, deepClone, deepFreeze, isFalsy } from "@ngutil/common"
 
 import type { Model, ModelRef } from "../model"
 import type { DataProvider } from "../provider/provider"
-import type { QueryWithSlice, Slice } from "../query"
+import type { QueryResult, QueryWithSlice, Slice } from "../query"
 import { querySubject } from "../query"
 import { type CollectionStore, MemoryStore, type PartialCollection } from "../store"
 
@@ -49,13 +51,11 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         query: this.query$,
         reload: merge(this.#reload, this.provider.changed$)
     }).pipe(
-        tap(() => this.#setBusy(true)),
         // TODO: maybe silent reset or prevent items$ chenges
         // TODO: alternative solution use cacheId, and query item from store with this cacheId
         switchMap(({ query }) => this.store.clear().pipe(map(() => query))),
         switchMap(query =>
             this.slice$.pipe(
-                tap(() => this.#setBusy(true)),
                 map(slice => {
                     return { ...query, slice }
                 })
@@ -65,7 +65,6 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     )
 
     readonly items$: Observable<PartialCollection<T>> = this.#query.pipe(
-        tap(() => this.#setBusy(true)),
         switchMap(v => (this.provider.isAsync ? timer(DEBOUNCE_TIME).pipe(map(() => v)) : of(v))),
         switchMap(query =>
             this.store.hasSlice(query.slice).pipe(
@@ -74,7 +73,16 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                     if (hasSlice) {
                         return this.store.getSlice(query.slice).pipe(take(1))
                     } else {
+                        if (this.provider.isAsync) {
+                            this.#setBusy(true)
+                        }
                         return this.provider.queryList(query).pipe(
+                            take(1),
+                            tap(() => this.#setBusy(false)),
+                            catchError(() => {
+                                this.#setBusy(false)
+                                return of({ items: [], total: undefined } satisfies QueryResult<T>)
+                            }),
                             switchMap(result => {
                                 if (result.total != null) {
                                     this.total$.next(result.total)
@@ -87,12 +95,12 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                 })
             )
         ),
-        tap(() => this.#setBusy(false)),
         shareReplay({ bufferSize: 1, refCount: true })
     )
 
     readonly isEmpty$ = combineLatest({ busy: this.isBusy$, items: this.items$ }).pipe(
-        map(({ busy, items }) => !busy && items.every(isFalsy)),
+        filter(({ busy }) => !busy),
+        map(({ items }) => items.every(isFalsy)),
         shareReplay({ bufferSize: 1, refCount: true })
     )
 
