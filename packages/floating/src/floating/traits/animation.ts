@@ -2,8 +2,16 @@ import { animate, AnimationBuilder, AnimationMetadata, style } from "@angular/an
 
 import { map, Observable, of, Subscriber, switchMap, take, tap } from "rxjs"
 
-import { animationObservable } from "@ngutil/graphics"
-import { Duration, Ease, FloatingPosition, FloatingPositionDirection } from "@ngutil/style"
+import { animationObservable, maxPossibleRadius } from "@ngutil/graphics"
+import {
+    Duration,
+    Ease,
+    FloatingPosition,
+    FloatingPositionDirection,
+    Position,
+    rectContainsPoint,
+    rectOrigin
+} from "@ngutil/style"
 
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
@@ -150,4 +158,30 @@ export function slideNearAnimation(size: number = 40) {
 
 export function slideAwayAnimation(size: number = 40) {
     return slideAnimation(size)
+}
+
+const RippleRevealAnimation: AnimationSet = {
+    show: [
+        style({ clipPath: "circle({{ radiusStart }} at {{ origin }})" }),
+        animate(
+            `${Duration.Snail} ${Ease.Acceleration}`,
+            style({ clipPath: "circle({{ radiusEnd }} at {{ origin }})" })
+        )
+    ],
+    hide: [animate(timing, style({ opacity: 0 }))]
+}
+
+export function rippleRevealAnimation(origin: Position, initialRadius: number = 0) {
+    return new AnimationTrait(RippleRevealAnimation, position => {
+        const animOrigin = rectContainsPoint(position.content.rect, origin)
+            ? origin
+            : rectOrigin(position.content.rect, "center middle")
+        const { x, y, width, height } = position.content.rect
+        const radius = maxPossibleRadius(animOrigin.x, animOrigin.y, width, height)
+        return {
+            radiusStart: `${initialRadius}px`,
+            radiusEnd: `${radius}px`,
+            origin: `${animOrigin.x - x}px ${animOrigin.y - y}px`
+        }
+    })
 }

@@ -112,3 +112,7 @@ export function rectContract(rect: Rect, padding: SidesInput): Rect {
         height: rect.height - normMargin.top.value - normMargin.bottom.value
     }
 }
+
+export function rectContainsPoint(rect: Rect, point: Position): boolean {
+    return point.x >= rect.x && point.x < rect.x + rect.width && point.y >= rect.y && point.y < rect.y + rect.height
+}

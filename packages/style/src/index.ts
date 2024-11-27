@@ -15,14 +15,5 @@ export {
 } from "./util/alignment"
 export { inAnimation, inTransition, isAnimating } from "./util/in-animation"
 export * from "./util/floating-position"
-export {
-    Dimension,
-    Rect,
-    Position,
-    rectConstraint,
-    rectContract,
-    rectExpand,
-    rectMoveOrigin,
-    rectOrigin
-} from "./util/rect"
+export * from "./util/rect"
 export { SidesInput, sidesNormalize, Sides } from "./util/sides"

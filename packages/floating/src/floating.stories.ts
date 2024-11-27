@@ -20,6 +20,7 @@ import {
     FloatingService,
     focus,
     position,
+    rippleRevealAnimation,
     slideAwayAnimation,
     slideNearAnimation,
     style
@@ -125,7 +126,7 @@ class FloatingTrigger {
     readonly alwaysOnTop = input(AlwaysOnTop.None)
     readonly backdrop = input<"crop" | "solid">("solid")
 
-    open(event: Event) {
+    open(event: MouseEvent) {
         let placementRect: Subscription | undefined = undefined
         let positionSub: Subscription | undefined = undefined
         this.#build(event).subscribe(event => {
@@ -143,7 +144,7 @@ class FloatingTrigger {
         })
     }
 
-    #build(event: Event) {
+    #build(event: MouseEvent) {
         const factory = this.floating.from(FloatingPopover, { alwaysOnTop: this.alwaysOnTop() }).trait(
             position({
                 anchor: { ref: this.el, link: this.anchorLink()!, margin: 0 },
@@ -165,6 +166,7 @@ class FloatingTrigger {
             fallAnimation(),
             slideNearAnimation(),
             slideAwayAnimation(),
+            rippleRevealAnimation({ x: event.clientX, y: event.clientY }),
             focus({ connect: this.focus }),
             closeTrigger()
         )
