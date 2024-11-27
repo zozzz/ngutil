@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.69](https://github.com/zozzz/ngutil/compare/0.0.68...0.0.69) (2024-11-27)
+
+
+### Bug Fixes
+
+* **data:** improve isBusy handling ([78de330](https://github.com/zozzz/ngutil/commit/78de330443559232f48c507356b032ec845da7d6))
+* **data:** incorrectly exclude busy state update ([2dd03c6](https://github.com/zozzz/ngutil/commit/2dd03c63f57e3e7ff18183fd49391fc5a803c188))
+
 ## [0.0.68](https://github.com/zozzz/ngutil/compare/0.0.67...0.0.68) (2024-11-27)
 
 
