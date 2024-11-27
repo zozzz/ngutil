@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.67](https://github.com/zozzz/ngutil/compare/0.0.66...0.0.67) (2024-11-27)
+
+
+### Features
+
+* **floating:** add `link | viewport` options to content constraints ([75fc060](https://github.com/zozzz/ngutil/commit/75fc06070940ae3627fff2cb8178fb8e59a4d756))
+* **floating:** rippleRevealAnimation ([3e26ae5](https://github.com/zozzz/ngutil/commit/3e26ae58f19397279e762bd9166dc35584b975d1))
+
+
+### Other changes
+
+* remove console.log ([4350c71](https://github.com/zozzz/ngutil/commit/4350c718f8862949998d6578173261627b98dd17))
+
 ## [0.0.66](https://github.com/zozzz/ngutil/compare/0.0.65...0.0.66) (2024-11-23)
 
 
