@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.68](https://github.com/zozzz/ngutil/compare/0.0.67...0.0.68) (2024-11-27)
+
+
+### Features
+
+* **floating:** more rippleRevealAnimation options ([6e0b084](https://github.com/zozzz/ngutil/commit/6e0b084e7c4b7528879f9a7d3f50c6c52ba4128f))
+
 ## [0.0.67](https://github.com/zozzz/ngutil/compare/0.0.66...0.0.67) (2024-11-27)
 
 
