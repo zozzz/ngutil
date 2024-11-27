@@ -68,6 +68,7 @@ export interface FloatingPosition {
         area: Readonly<Rect>
     }
     connection: Position
+    direction: FloatingPositionDirection
     constraints?: FloatingPositionConstraintsInput
 }
 
@@ -126,7 +127,14 @@ export function floatingPosition({ dims, options }: FloatingPositionInput): Floa
         }
     }
 
-    const position = { placement, anchor, content, connection: ZERO_CONNECTION, constrains: dims.constraints }
+    const position = {
+        placement,
+        anchor,
+        content,
+        connection: ZERO_CONNECTION,
+        constrains: dims.constraints,
+        direction: FloatingPositionDirection.Down
+    }
     const area = placementArea(position, anchor.link, content.link)
     setPlacement(position, area)
 
@@ -138,6 +146,7 @@ export function floatingPosition({ dims, options }: FloatingPositionInput): Floa
         applyAlts(position, FloatingPositionAltAxis.Vertical, options.verticalAlt)
     }
 
+    position.direction = floatingPositionDirection(position)
     return position
 }
 

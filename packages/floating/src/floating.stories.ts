@@ -149,9 +149,11 @@ class FloatingTrigger {
                 anchor: { ref: this.el, link: this.anchorLink()!, margin: 0 },
                 content: {
                     link: this.contentLink()!,
-                    // constraints: { minWidth: this.el, minHeight: 150, maxWidth: this.el }
-                    constraints: { minWidth: 50, minHeight: 1, maxWidth: this.el }
+                    constraints: { minWidth: this.el, minHeight: 150, maxWidth: this.el }
+                    // constraints: { minWidth: 50, minHeight: 1, maxWidth: this.el }
                     // constraints: { minWidth: 50, minHeight: 200, maxWidth: 50 }
+                    // constraints: { minWidth: "link", minHeight: "link", maxWidth: "link", maxHeight: "link" }
+                    // constraints: { minWidth: "viewport", maxWidth: "viewport" }
                 },
                 placement: { ref: "viewport", padding: 20 },
                 horizontalAlt: "flip",

@@ -22,6 +22,7 @@ import {
     FloatingPositionAnchorOptions,
     FloatingPositionContentOptions,
     FloatingPositionDims,
+    FloatingPositionDirection,
     FloatingPositionPlacementOptions,
     floatingPositionToStyle,
     Rect,
@@ -49,7 +50,7 @@ export type PositionTraitOptions = {
  * - `link`: take the dimension from the anchor element and only apply on connection dimension.
  *    eg.: `anchor.link = "left bottom"` and `content.link = "left top"`, in this case only width will be applied.
  */
-type SizeInputConst = number | ElementInput
+type SizeInputConst = number | ElementInput | "link" | "viewport"
 type SizeInput = SizeInputConst | Observable<SizeInputConst>
 
 interface SizeConstraintsInput {
@@ -121,7 +122,7 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
                     const pos = floatingPosition({ dims, options: this.options })
                     const floatingEl = floatingRef.container.nativeElement
                     Object.assign(floatingEl.style, floatingPositionToStyle(pos))
-                    Object.assign(floatingEl.style, constraintsToStyle(pos, dims.constraints))
+                    Object.assign(floatingEl.style, constraintsToStyle(pos, dims.constraints, constraints))
                     dest.next(pos)
                 })
         }).pipe(takeUntil(floatingRef.state.onExecute("disposing")))
@@ -139,7 +140,9 @@ function refWatcher(rectWatcher: RectWatcher, ref: PositionTraitElementRef, floa
 }
 
 function sizeWatcher(dimWatcher: DimensionWatcher, prop: "width" | "height", size?: SizeInput): Observable<number> {
-    if (typeof size === "number") {
+    if (size === "viewport") {
+        return dimWatcher.watch(window, "border-box").pipe(map(dim => dim[prop]))
+    } else if (typeof size === "number") {
         return of(size)
     } else if (isElementInput(size)) {
         return dimWatcher.watch(size, "border-box").pipe(map(value => value[prop]))
@@ -151,15 +154,49 @@ function sizeWatcher(dimWatcher: DimensionWatcher, prop: "width" | "height", siz
     return of(NaN)
 }
 
-function constraintsToStyle(pos: FloatingPosition, sizes: ConstraintsResult): Partial<CSSStyleDeclaration> {
-    const { minWidth, maxWidth, minHeight, maxHeight } = sizes
-    const { width, height } = pos.placement.area
-    return {
-        minWidth: isNaN(minWidth) ? "auto" : `${Math.min(width, minWidth)}px`,
-        minHeight: isNaN(minHeight) ? "auto" : `${Math.min(height, minHeight)}px`,
-        maxWidth: isNaN(maxWidth) ? `${width}px` : `${Math.min(width, maxWidth)}px`,
-        maxHeight: isNaN(maxHeight) ? `${height}px` : `${Math.min(height, maxHeight)}px`
+type MinMaxNames = keyof SizeConstraints
+const MINMAX_NAMES: Array<MinMaxNames> = ["minWidth", "minHeight", "maxWidth", "maxHeight"]
+
+function constraintsToStyle(pos: FloatingPosition, sizes: ConstraintsResult, options: SizeConstraintsInput) {
+    const result: Partial<CSSStyleDeclaration> = {}
+
+    for (const name of MINMAX_NAMES) {
+        result[name] = constraintValue(pos, options, name, sizes[name])
     }
+
+    console.log(result)
+
+    return result
+}
+
+const DIM_DIRECTIONS: Record<"width" | "height", Array<FloatingPositionDirection>> = {
+    width: [FloatingPositionDirection.Up, FloatingPositionDirection.Down, FloatingPositionDirection.Center],
+    height: [FloatingPositionDirection.Left, FloatingPositionDirection.Right, FloatingPositionDirection.Center]
+}
+
+function constraintValue(pos: FloatingPosition, options: SizeConstraintsInput, name: MinMaxNames, value: number) {
+    const wh = name.substring(3).toLowerCase() as "width" | "height"
+    const maxValue = pos.placement.area[wh]
+
+    // determine default or link value
+    if (value == null || isNaN(value)) {
+        const src = options[name]
+
+        // if the given min/max value is link then test witch sides connected, and only use connected side value
+        if (src === "link" && DIM_DIRECTIONS[wh].includes(pos.direction)) {
+            return `${Math.min(maxValue, pos.anchor.rect[wh])}px`
+        }
+
+        // only return maxWidth / maxHeight, becuse minWidth / minHeight is auto if not presen
+        const minmax = name.substring(0, 3) as "min" | "max"
+        if (minmax === "max") {
+            return `${maxValue}px`
+        }
+
+        return "auto"
+    }
+
+    return `${Math.min(maxValue, value)}px`
 }
 
 export function position(options: PositionTraitOptions) {

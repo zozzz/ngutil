@@ -3,7 +3,7 @@ import { animate, AnimationBuilder, AnimationMetadata, style } from "@angular/an
 import { map, Observable, of, Subscriber, switchMap, take, tap } from "rxjs"
 
 import { animationObservable } from "@ngutil/graphics"
-import { Duration, Ease, FloatingPosition, FloatingPositionDirection, floatingPositionDirection } from "@ngutil/style"
+import { Duration, Ease, FloatingPosition, FloatingPositionDirection } from "@ngutil/style"
 
 import { FloatingRef } from "../floating-ref"
 import { FloatingTrait } from "./_base"
@@ -139,8 +139,7 @@ const SlideAnimationParams: { [K in FloatingPositionDirection]: { tx: number; ty
 
 function slideAnimation(size: number) {
     return new AnimationTrait(SlideAnimation, position => {
-        const direction = floatingPositionDirection(position)
-        const { tx, ty } = SlideAnimationParams[direction]
+        const { tx, ty } = SlideAnimationParams[position.direction]
         return { tx: `${tx * size}px`, ty: `${ty * size}px` }
     })
 }
