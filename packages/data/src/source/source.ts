@@ -51,12 +51,14 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         query: this.query$,
         reload: merge(this.#reload, this.provider.changed$)
     }).pipe(
+        // tap(() => this.#setBusy(true)),
         // TODO: maybe silent reset or prevent items$ chenges
         // TODO: alternative solution use cacheId, and query item from store with this cacheId
         switchMap(({ query }) => this.store.clear().pipe(map(() => query))),
         switchMap(query =>
             this.slice$.pipe(
                 map(slice => {
+                    // this.#setBusy(true)
                     return { ...query, slice }
                 })
             )
@@ -73,16 +75,14 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                     if (hasSlice) {
                         return this.store.getSlice(query.slice).pipe(take(1))
                     } else {
-                        if (this.provider.isAsync) {
-                            this.#setBusy(true)
-                        }
+                        this.#setBusy(true)
                         return this.provider.queryList(query).pipe(
                             take(1),
-                            tap(() => this.#setBusy(false)),
                             catchError(() => {
                                 this.#setBusy(false)
                                 return of({ items: [], total: undefined } satisfies QueryResult<T>)
                             }),
+                            tap(() => this.#setBusy(false)),
                             switchMap(result => {
                                 if (result.total != null) {
                                     this.total$.next(result.total)
@@ -182,7 +182,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     #setBusy(busy: boolean) {
         if (this.isBusy$.value !== busy) {
             // dont set true when not async provider, but false is also set
-            if (busy && this.provider.isAsync) {
+            if (busy && !this.provider.isAsync) {
                 return
             }
             this.isBusy$.next(busy)
