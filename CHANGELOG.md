@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.70](https://github.com/zozzz/ngutil/compare/0.0.69...0.0.70) (2024-11-29)
+
+
+### Other changes
+
+* replace lodash with lodash-es ([2e5477a](https://github.com/zozzz/ngutil/commit/2e5477ae55f55be38ecaf44a68a2cf3523249050))
+
 ## [0.0.69](https://github.com/zozzz/ngutil/compare/0.0.68...0.0.69) (2024-11-27)
 
 
