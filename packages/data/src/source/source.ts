@@ -21,7 +21,7 @@ import {
     timer
 } from "rxjs"
 
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 
 import { ConnectProtocol, deepClone, deepFreeze, isFalsy } from "@ngutil/common"
 

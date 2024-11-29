@@ -1,4 +1,4 @@
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 import { Primitive } from "utility-types"
 
 import { DeepReadonly, toSorted } from "@ngutil/common"

@@ -3,7 +3,7 @@ import { FormControl } from "@angular/forms"
 
 import { debounceTime, distinctUntilChanged, map, Observable, shareReplay, startWith } from "rxjs"
 
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 
 import { isFalsy } from "../util"
 

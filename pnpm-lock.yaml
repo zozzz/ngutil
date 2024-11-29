@@ -41,10 +41,10 @@ importers:
       '@nx/devkit':
         specifier: 19.8.2
         version: 19.8.2(nx@19.8.2(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.13))(@swc/types@0.1.7)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.13)))
-      '@types/lodash':
+      '@types/lodash-es':
         specifier: ^4.17.0
-        version: 4.17.0
-      lodash:
+        version: 4.17.12
+      lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
       react:
@@ -267,6 +267,9 @@ importers:
       '@ngutil/style':
         specifier: workspace:*
         version: link:../../dist/packages/style
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -443,6 +446,9 @@ importers:
         specifier: ^2.4.1
         version: 2.4.2
     devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.0
+        version: 4.17.0
       json-schema-to-typescript:
         specifier: ^14.0.0
         version: 14.0.0
@@ -4061,6 +4067,9 @@ packages:
 
   '@types/keyv@3.1.4':
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
+
+  '@types/lodash-es@4.17.12':
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
 
   '@types/lodash@4.17.0':
     resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
@@ -15799,6 +15808,10 @@ snapshots:
   '@types/keyv@3.1.4':
     dependencies:
       '@types/node': 20.12.7
+
+  '@types/lodash-es@4.17.12':
+    dependencies:
+      '@types/lodash': 4.17.0
 
   '@types/lodash@4.17.0': {}
 

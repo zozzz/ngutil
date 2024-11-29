@@ -1,6 +1,6 @@
 import { TrackByFunction } from "@angular/core"
 
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 import { Primitive } from "utility-types"
 
 import { filterBy, pathGetterCompile } from "../query"

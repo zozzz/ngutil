@@ -3,7 +3,7 @@ import { inject, Injectable, NgZone } from "@angular/core"
 
 import { distinctUntilChanged, Observable, of, shareReplay, Subscriber } from "rxjs"
 
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 
 import { coerceElement, ElementInput } from "@ngutil/common"
 

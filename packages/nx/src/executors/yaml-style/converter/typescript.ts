@@ -94,9 +94,9 @@ function _convertToEls(
 
 const UnitVariants: { [key: string]: { postfix: string; convert: (v: any) => any } } = {
     // eslint-disable-next-line prettier/prettier
-    s: { postfix: "Ms", convert: value => value * 1000 },
+    "s": { postfix: "Ms", convert: value => value * 1000 },
     // eslint-disable-next-line prettier/prettier
-    ms: { postfix: "Ms", convert: value => value },
+    "ms": { postfix: "Ms", convert: value => value },
     "%": { postfix: "Percent", convert: value => value / 100.0 }
 }
 

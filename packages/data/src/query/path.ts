@@ -1,4 +1,4 @@
-import { flattenDepth } from "lodash"
+import { flattenDepth } from "lodash-es"
 
 type GetterFn = (srcs: any[]) => any[]
 export type PathGetter<T = any, R = any> = (obj: T) => R[]

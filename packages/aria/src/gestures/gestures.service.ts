@@ -17,7 +17,7 @@ import {
     tap
 } from "rxjs"
 
-import { flatten } from "lodash"
+import { flatten } from "lodash-es"
 import { Mutable } from "utility-types"
 
 import { coerceElement, ElementInput } from "@ngutil/common"

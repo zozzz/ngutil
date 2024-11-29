@@ -1,4 +1,4 @@
-import { isPlainObject as _isPlainObject, cloneDeep } from "lodash"
+import { isPlainObject as _isPlainObject, cloneDeep } from "lodash-es"
 
 import { DeepReadonly } from "./types/readonly"
 

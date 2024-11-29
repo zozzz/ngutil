@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop"
 
 import { animationFrames, map, Observable, of, scan, shareReplay, startWith, Subject, switchMap, takeWhile } from "rxjs"
 
-import { clamp } from "lodash"
+import { clamp } from "lodash-es"
 import { Mutable } from "utility-types"
 
 import { DeepReadonly } from "@ngutil/common"

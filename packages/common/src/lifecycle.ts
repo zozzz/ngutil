@@ -24,7 +24,7 @@ import {
     throwError
 } from "rxjs"
 
-import { flatten } from "lodash"
+import { flatten } from "lodash-es"
 
 export type LifecycleHandler = () => ObservableInput<unknown> | null | undefined | void
 

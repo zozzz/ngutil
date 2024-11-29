@@ -10,7 +10,7 @@ import {
     takeUntil
 } from "rxjs"
 
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 
 import { ElementInput, isElementInput } from "@ngutil/common"
 import {
