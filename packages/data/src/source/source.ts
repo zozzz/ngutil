@@ -121,7 +121,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         return this.setSlice({ start: 0, end: Infinity })
     }
 
-    realod() {
+    reload() {
         this.#reload.next()
     }
 
