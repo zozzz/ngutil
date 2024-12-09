@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/aria",
-  "version": "0.0.72",
+  "version": "0.0.73",
   "devDependencies": {
     "@storybook/angular": "8.2.8"
   },

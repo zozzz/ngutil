@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.73](https://github.com/zozzz/ngutil/compare/0.0.72...0.0.73) (2024-12-09)
+
+
+### Bug Fixes
+
+* **aria:** gesture extendabilyti imporovemets ([5349f23](https://github.com/zozzz/ngutil/commit/5349f2303eff49803db2c096c136ceaea3c4e191))
+
 ## [0.0.72](https://github.com/zozzz/ngutil/compare/0.0.71...0.0.72) (2024-12-09)
 
 ## [0.0.71](https://github.com/zozzz/ngutil/compare/0.0.70...0.0.71) (2024-12-09)
