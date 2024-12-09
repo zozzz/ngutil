@@ -1,17 +1,76 @@
 /* eslint-disable max-len */
 import { Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
-import { Component, effect, ElementRef, inject, viewChild } from "@angular/core"
+import { DOCUMENT } from "@angular/common"
+import { Component, computed, Directive, effect, ElementRef, inject, input } from "@angular/core"
 
-import { Subject, takeUntil } from "rxjs"
+import { GestureDarg, GestureDargHorizontal, GestureDargVertical, gestureDrag } from "./gesture-drag"
+import { GestureDomEvent, GesturePointerType } from "./gesture-event"
+import { GestureLongTap } from "./gesture-longtap"
+import { GestureTap } from "./gesture-tap"
+import { GestureService } from "./gesture.service"
 
-import { Dragging } from "./gestures"
-import { GesturesService } from "./gestures.service"
+type DraggableType = "any" | "horizontal" | "vertical" | "mouse"
+
+const DraggingMouse = gestureDrag({ filterPointerTypes: [GesturePointerType.Mouse] })
+
+@Directive({
+    selector: "[nuDraggable]",
+    standalone: true
+})
+class Draggable {
+    readonly #el = inject(ElementRef)
+    readonly #svc = inject(GestureService)
+
+    readonly dtype = input.required<DraggableType>({ alias: "nuDraggable" })
+    readonly dragGesture = computed(() => {
+        const dtype = this.dtype()
+        switch (dtype) {
+            case "any":
+                return GestureDarg
+            case "horizontal":
+                return GestureDargHorizontal
+            case "vertical":
+                return GestureDargVertical
+            case "mouse":
+                return DraggingMouse
+        }
+    })
+
+    constructor() {
+        effect(() => {
+            const dgesture = this.dragGesture()
+
+            this.#svc.listen(this.#el, dgesture, GestureLongTap, GestureTap).subscribe(event => {
+                console.log("RESULT", event)
+                if (event.type === "gesture-drag") {
+                    const { phase, target, moveBy } = event.detail
+
+                    if (phase === "end") {
+                        Object.assign(target.style, {
+                            transform: "translate(0px, 0px)",
+                            background: "transparent"
+                        })
+                    } else {
+                        // const rect = target.getBoundingClientRect()
+                        Object.assign(target.style, {
+                            transform: `translate(${moveBy.x}px, ${moveBy.y}px)`,
+                            background: "red"
+                        })
+                    }
+                }
+            })
+
+            this.#svc.watch(this.#el, dgesture, GestureLongTap, GestureTap).subscribe()
+        })
+    }
+}
 
 @Component({
     standalone: true,
     selector: "gesture-test",
-    providers: [GesturesService],
+
+    imports: [Draggable],
     styles: `
         :host {
             display: block;
@@ -33,9 +92,11 @@ import { GesturesService } from "./gestures.service"
         }
     `,
     template: `
-        <button (click)="destroy.next()">DESTROY</button>
-        <div #drag class="garea">DRAG1</div>
-        <div #drag2 class="garea">DRAG2</div>
+        <!-- <button (click)="destroy.next()">DESTROY</button> -->
+        <div class="garea" nuDraggable="any">DRAG ANY</div>
+        <div class="garea" nuDraggable="horizontal">DRAG HORIZONTAL</div>
+        <div class="garea" nuDraggable="vertical">DRAG VERTICAL</div>
+        <div class="garea" nuDraggable="mouse">DRAG MOUSE ONLY</div>
         <div class="garea">SOMETHING</div>
         <div class="garea">SOMETHING</div>
         <div class="garea">SOMETHING</div>
@@ -45,46 +106,24 @@ import { GesturesService } from "./gestures.service"
     `
 })
 class GestureTest {
-    readonly #svc = inject(GesturesService)
-
-    readonly drag = viewChild("drag", { read: ElementRef })
-    readonly destroy = new Subject()
+    readonly #doc = inject(DOCUMENT)
+    readonly #el = inject(ElementRef)
 
     constructor() {
-        effect(() => {
-            const drag = this.drag()
-            if (!drag) {
-                return
-            }
+        const xx = ["gesture-drag", "gesture-tap", "gesture-longtap"]
 
-            this.#svc
-                .watch(drag, Dragging)
-                .pipe(takeUntil(this.destroy))
-                .subscribe(dragEvent => {
-                    // console.log(dragEvent)
-                    const target = dragEvent.target
-
-                    if (dragEvent.phase === "end") {
-                        Object.assign(target.style, {
-                            transform: "translate(0px, 0px)",
-                            background: "transparent"
-                        })
-                    } else {
-                        // const rect = target.getBoundingClientRect()
-                        Object.assign(target.style, {
-                            transform: `translate(${dragEvent.pointers[0].distance.x}px, ${dragEvent.pointers[0].distance.y}px)`,
-                            background: "red"
-                        })
-                    }
-                })
-        })
+        for (const x of xx) {
+            this.#el.nativeElement.addEventListener(x, (e: GestureDomEvent<any>) => {
+                console.log(e.type, e.detail.phase, `prevented = ${e.defaultPrevented}`)
+            })
+        }
     }
 }
 
 export default {
     title: "Gestures",
     component: GestureTest,
-    decorators: [moduleMetadata({ imports: [] })]
+    decorators: [moduleMetadata({ imports: [], providers: [GestureService] })]
     // parameters: {
     //     layout: "fullscreen",
     //     controls: { include: [] }

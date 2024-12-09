@@ -1,6 +1,7 @@
 import { isPlainObject as _isPlainObject, cloneDeep } from "lodash-es"
 
 import { DeepReadonly } from "./types/readonly"
+import { IfAny, IfTuple } from "./types/util"
 
 // export { deepFreeze }
 
@@ -59,27 +60,44 @@ export function toSorted<T>(items: readonly T[], fn: (a: T, b: T) => number): T[
     }
 }
 
-type FalsyReturns = null | undefined | false | 0 | ""
+type FalsyIfNull<O> = O extends null ? null : never
+type FalsyIfUndefined<O> = O extends undefined ? undefined : never
+type FalsyIfBool<O> = O extends boolean ? false : never
+type FalsyIfString<O> = O extends string ? "" : never
+type FalsyIfNumber<O> = O extends number ? 0 : never
+type FalsyIfTuple<O> = IfTuple<O, O, never, never>
+type FalsyIfAny<O> = IfAny<O, O, never>
 
-export function isFalsy(value: any): value is FalsyReturns {
+export type IsFalsy<O> =
+    | FalsyIfNull<O>
+    | FalsyIfUndefined<O>
+    | FalsyIfBool<O>
+    | FalsyIfString<O>
+    | FalsyIfNumber<O>
+    | FalsyIfTuple<O>
+    | FalsyIfAny<O>
+
+export function isFalsy<T>(value: T): value is IsFalsy<T> & T {
     if (value == null) {
         return true
-    } else if (Array.isArray(value)) {
-        return value.length === 0
-    } else if (isPlainObject(value)) {
-        return Object.keys(value).length === 0
-    } else if (value instanceof Set) {
-        return value.size === 0
-    } else if (value instanceof Map) {
-        return value.size === 0
     } else if (typeof value === "string") {
         return value.length === 0
     } else if (typeof value === "number") {
         return isNaN(value) || value === 0
+    } else if (Array.isArray(value)) {
+        return value.length === 0
+    } else if (isPlainObject(value)) {
+        return Object.keys(value).length === 0
+    } else if ((value as any) instanceof Set) {
+        return (value as any).size === 0
+    } else if ((value as any) instanceof Map) {
+        return (value as any).size === 0
     }
     return value === false
 }
 
-export function isTruthy<T>(value: T): value is Exclude<T, FalsyReturns> {
+export type IsTruthy<T> = Exclude<T, undefined | null | false | "" | 0>
+
+export function isTruthy<T>(value: T): value is IsTruthy<T> {
     return !isFalsy(value)
 }
