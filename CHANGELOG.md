@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.71](https://github.com/zozzz/ngutil/compare/0.0.70...0.0.71) (2024-12-09)
+
+
+### Bug Fixes
+
+* **data:** typo ([f74b701](https://github.com/zozzz/ngutil/commit/f74b701e4105fc4de91215c99e9582e025416a82))
+
 ## [0.0.70](https://github.com/zozzz/ngutil/compare/0.0.69...0.0.70) (2024-11-29)
 
 
