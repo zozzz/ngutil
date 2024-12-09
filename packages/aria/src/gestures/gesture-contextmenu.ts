@@ -1,24 +1,21 @@
 import { filter, Observable, of } from "rxjs"
 
 import { Gesture, GestureCaptureState, GestureOptions } from "./gesture"
-import { GestureEvent, GesturePhase } from "./gesture-event"
+import { GestureDetail, GesturePhase } from "./gesture-event"
 
-export type ContextMenuEvent = GestureEvent<"contextmenu">
+export type ContextMenuEvent = GestureDetail<"contextmenu">
 export type ContextMenuOptions = GestureOptions<ContextMenuGesture>
 
 export class ContextMenuGesture extends Gesture<ContextMenuEvent> {
     constructor(options?: ContextMenuOptions) {
-        super("contextmenu", ["touchstart", "touchend", "mousedown", "mouseup"], {
-            ...options,
-            filterMouseButtons: [2]
-        })
+        super("contextmenu", { ...options, mouseButtons: [2] })
     }
 
-    override capture(events: Observable<GestureEvent>): Observable<GestureCaptureState> {
+    override capture(events: Observable<GestureDetail>): Observable<GestureCaptureState> {
         return of(GestureCaptureState.Maybe)
     }
 
-    override handle(events: Observable<GestureEvent>): Observable<ContextMenuEvent> {
+    override handle(events: Observable<GestureDetail>): Observable<ContextMenuEvent> {
         return super.handle(events.pipe(filter(event => event.phase === GesturePhase.End)))
     }
 }

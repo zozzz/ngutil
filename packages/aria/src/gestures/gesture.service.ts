@@ -28,7 +28,7 @@ import { Position } from "@ngutil/style"
 
 import { Gesture, GestureCaptureState } from "./gesture"
 import {
-    GestureDomEvent,
+    GestureDetail,
     GestureEvent,
     GestureListenerConfig,
     GestureOrigin,
@@ -50,22 +50,22 @@ export type GestureWatchReturns<T extends Array<Gesture>> = Observable<
     GestureEventDiscriminator<GesturesToEventsType<T>>
 >
 
-export type GestureListenReturns<T extends Array<Gesture>> = Observable<GestureDomEvent<GesturesToEventsType<T>>>
+export type GestureListenReturns<T extends Array<Gesture>> = Observable<GestureEvent<GesturesToEventsType<T>>>
 
 interface BeginState {
-    startEvent: GestureEvent
+    detail: GestureDetail
     gestures: Map<Gesture, GestureCaptureState>
     includeScrollDistance: boolean
 }
 
 interface CaptureState {
-    events: GestureEvent[]
+    events: GestureDetail[]
     gestures: BeginState["gestures"]
     includeScrollDistance: BeginState["includeScrollDistance"]
 }
 
 interface CaptureSelectState {
-    events: GestureEvent[]
+    events: GestureDetail[]
     gesture?: Gesture
     watchers?: Array<Watcher>
 }
@@ -83,15 +83,15 @@ export class GestureService {
     readonly #document = inject(DOCUMENT)
 
     #watchers: Watcher[] = []
-    readonly #trigger = new Subject<GestureEvent>()
+    readonly #trigger = new Subject<GestureDetail>()
 
-    readonly #moving: Observable<GestureEvent> = merge(
+    readonly #moving: Observable<GestureDetail> = merge(
         ...Object.keys(Listeners)
             .filter(name => Listeners[name].phase === GesturePhase.Moving)
             .map(name => this.#listen(name, Listeners[name]))
     ).pipe(share())
 
-    readonly #end: Observable<GestureEvent> = merge(
+    readonly #end: Observable<GestureDetail> = merge(
         ...Object.keys(Listeners)
             .filter(name => Listeners[name].phase === GesturePhase.End)
             .map(name => this.#listen(name, Listeners[name]))
@@ -127,12 +127,13 @@ export class GestureService {
                 ),
                 // Select active watchers
                 map(event => {
+                    updatePointers(event)
                     const eventTarget = event.target
                     let includeScrollDistance = false
                     const gestures = this.#watchers
                         .filter(
                             ({ gesture, el }) =>
-                                gesture.filterByEvent(event) &&
+                                gesture.shouldCapture(event) &&
                                 (el === eventTarget || ("contains" in el && el.contains(eventTarget)))
                         )
                         .reduce(
@@ -146,7 +147,7 @@ export class GestureService {
                             new Map() as BeginState["gestures"]
                         )
 
-                    return { startEvent: event, gestures, includeScrollDistance } satisfies BeginState
+                    return { detail: event, gestures, includeScrollDistance } satisfies BeginState
                 }),
                 filter(({ gestures }) => gestures.size > 0),
                 tap(this.#disableTouchAction)
@@ -156,7 +157,7 @@ export class GestureService {
     })
 
     readonly #gesture = this.#begin.pipe(
-        switchMap(({ startEvent, gestures, includeScrollDistance }) => {
+        switchMap(({ detail: startEvent, gestures, includeScrollDistance }) => {
             const pointerType = startEvent.pointerType
             const startAt = startEvent.origin.timeStamp
             const dispatchEvent = startEvent.target[DISPATCH_EVENT].bind(startEvent.target)
@@ -173,7 +174,7 @@ export class GestureService {
                       this.#scrollDistance(startEvent.target).pipe(startWith({ x: 0, y: 0 }))
                   ]).pipe(
                       map(([src, distance]) => {
-                          ;(src as Mutable<GestureEvent>).scrollDistance = distance
+                          ;(src as Mutable<GestureDetail>).scrollDistance = distance
                           return src
                       })
                   )
@@ -199,7 +200,7 @@ export class GestureService {
                     return merge(
                         src.pipe(tap(event => state.events.push(event))),
                         ...Array.from(gestures.keys()).map(gesture =>
-                            gesture.capture(src.pipe(filter(gesture.filterByEvent))).pipe(
+                            gesture.capture(src.pipe(filter(gesture.shouldCapture.bind(gesture)))).pipe(
                                 takeWhile(result => result !== GestureCaptureState.Skip, true),
                                 tap(result => gestures.set(gesture, result))
                             )
@@ -255,13 +256,17 @@ export class GestureService {
 
             return selectGesture.pipe(
                 switchMap(({ events, gesture }) =>
-                    gesture.handle(eventStream.pipe(startWith(...events), filter(gesture.filterByEvent))).pipe(
-                        takeWhile(v => v.phase !== GesturePhase.End, true),
-                        tap((e: Mutable<GestureEvent>) =>
-                            dispatchEvent(new CustomEvent(e.type, { detail: e, bubbles: true, cancelable: true }))
+                    gesture
+                        .handle(eventStream.pipe(startWith(...events), filter(gesture.isRelevantEvent.bind(gesture))))
+                        .pipe(
+                            takeWhile(v => v.phase !== GesturePhase.End, true),
+                            tap(detail =>
+                                dispatchEvent(
+                                    new CustomEvent(gesture.name, { detail, bubbles: true, cancelable: true })
+                                )
+                            )
+                            // finalize(() => console.log("GESTURE FINALIZE")),
                         )
-                        // finalize(() => console.log("GESTURE FINALIZE")),
-                    )
                 ),
                 // finalize(() => console.log("FINALIZE RESULT")),
                 finalize(this.#enableTouchAction)
@@ -280,7 +285,7 @@ export class GestureService {
     }
 
     listen<T extends Array<Gesture>>(el: ElementInput, ...gestures: T): GestureListenReturns<T> {
-        return new Observable((dst: Subscriber<GestureEvent>) =>
+        return new Observable((dst: Subscriber<GestureDetail>) =>
             this.#zone.runOutsideAngular(() => {
                 const element = coerceElement(el)
                 const next = dst.next.bind(dst)
@@ -288,13 +293,13 @@ export class GestureService {
                     element[ADD_EVENT_LISTENER](gesture.name as any, next)
                     dst.add(element[REMOVE_EVENT_LISTENER].bind(element, gesture.name as any, next as any))
                 }
-                dst.add(this.watch(element, ...gestures).subscribe())
+                dst.add(this.#watch(element, ...gestures).subscribe())
             })
         ) as any
     }
 
-    watch<T extends Array<Gesture>>(el: ElementInput, ...gestures: T): GestureWatchReturns<T> {
-        return new Observable((dst: Subscriber<GestureEvent>) =>
+    #watch<T extends Array<Gesture>>(el: ElementInput, ...gestures: T): GestureWatchReturns<T> {
+        return new Observable((dst: Subscriber<GestureDetail>) =>
             this.#zone.runOutsideAngular(() => {
                 const element = coerceElement(el)
                 const watchers = gestures.map(gesture => {
@@ -328,15 +333,15 @@ export class GestureService {
                           phase,
                           pointerType,
                           target: origin.target as HTMLElement
-                      }) as GestureEvent
+                      }) as GestureDetail
                 : (origin: GestureOrigin) => {
                       if (origin.cancelable) {
                           origin.preventDefault()
                       }
-                      return { origin, phase, pointerType } as GestureEvent
+                      return { origin, phase, pointerType } as GestureDetail
                   }
 
-        return new Observable((dst: Subscriber<GestureEvent>) =>
+        return new Observable((dst: Subscriber<GestureDetail>) =>
             this.#zone.runOutsideAngular(() => {
                 const listener = (origin: GestureOrigin) => {
                     if (origin.defaultPrevented) {
@@ -418,7 +423,7 @@ function pointersFromEvent(event: MouseEvent | TouchEvent): Position[] {
     }
 }
 
-function updatePointers(state: Mutable<GestureEvent>): GestureEvent {
+function updatePointers(state: Mutable<GestureDetail>): GestureDetail {
     if (state.phase === GesturePhase.Start) {
         state.pointers = pointersFromEvent(state.origin).map(v => {
             return { start: v, current: v, distance: { x: 0, y: 0 }, direction: { x: 0, y: 0 } }

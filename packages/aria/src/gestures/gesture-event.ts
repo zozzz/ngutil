@@ -1,11 +1,13 @@
 import { Position } from "@ngutil/style"
 
 // export interface GestureDomEvent<T extends> extends CustomEvent { }
-export type GestureDomEvent<T extends GestureEvent> =
-    T extends GestureEvent<infer N> ? CustomEvent<T> & { type: N } : never
+export type GestureEvent<T extends GestureDetail> =
+    T extends GestureDetail<infer N> ? CustomEvent<T> & { type: N } : never
 
-export interface GestureEvent<T extends string = string> {
-    readonly type: T
+const PHANTOM = Symbol("phantom")
+
+export interface GestureDetail<T extends string = string> {
+    readonly [PHANTOM]: T
     readonly origin: GestureOrigin
     readonly target: HTMLElement
     readonly pointerType: GesturePointerType

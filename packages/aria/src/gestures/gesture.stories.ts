@@ -5,14 +5,14 @@ import { DOCUMENT } from "@angular/common"
 import { Component, computed, Directive, effect, ElementRef, inject, input } from "@angular/core"
 
 import { GestureDarg, GestureDargHorizontal, GestureDargVertical, gestureDrag } from "./gesture-drag"
-import { GestureDomEvent, GesturePointerType } from "./gesture-event"
+import { GestureEvent, GesturePointerType } from "./gesture-event"
 import { GestureLongTap } from "./gesture-longtap"
 import { GestureTap } from "./gesture-tap"
 import { GestureService } from "./gesture.service"
 
 type DraggableType = "any" | "horizontal" | "vertical" | "mouse"
 
-const DraggingMouse = gestureDrag({ filterPointerTypes: [GesturePointerType.Mouse] })
+const DraggingMouse = gestureDrag({ pointerTypes: [GesturePointerType.Mouse] })
 
 @Directive({
     selector: "[nuDraggable]",
@@ -58,10 +58,14 @@ class Draggable {
                             background: "red"
                         })
                     }
+                } else if (event.type === "gesture-tap") {
+                    const detail = event.detail
+                } else if (event.type === "gesture-longtap") {
+                    const detail = event.detail
                 }
             })
 
-            this.#svc.watch(this.#el, dgesture, GestureLongTap, GestureTap).subscribe()
+            this.#svc.listen(this.#el, dgesture, GestureLongTap, GestureTap).subscribe()
         })
     }
 }
@@ -113,7 +117,7 @@ class GestureTest {
         const xx = ["gesture-drag", "gesture-tap", "gesture-longtap"]
 
         for (const x of xx) {
-            this.#el.nativeElement.addEventListener(x, (e: GestureDomEvent<any>) => {
+            this.#el.nativeElement.addEventListener(x, (e: GestureEvent<any>) => {
                 console.log(e.type, e.detail.phase, `prevented = ${e.defaultPrevented}`)
             })
         }

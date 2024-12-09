@@ -1,23 +1,20 @@
 import { combineLatest, filter, map, Observable, startWith, timer } from "rxjs"
 
 import { Gesture, GestureCaptureState, GestureOptions } from "./gesture"
-import { GestureEvent, GesturePhase, GesturePointerType } from "./gesture-event"
+import { GestureDetail, GesturePhase, GesturePointerType } from "./gesture-event"
 
-export type GestureLongtapEvent = GestureEvent<"gesture-longtap">
-export type GestureLongtapOptions = GestureOptions<GestureLongTapImpl>
+export type GestureLongTapDetail = GestureDetail<"gesture-longtap">
+export type GestureLongTapOptions = GestureOptions<GestureLongTapImpl>
 
-export class GestureLongTapImpl extends Gesture<GestureLongtapEvent> {
-    constructor(options?: GestureLongtapOptions) {
-        super("gesture-longtap", ["touchstart", "touchmove", "touchend", "touchcancel"], {
-            filterPointerTypes: [GesturePointerType.Touch],
-            ...options
-        })
+export class GestureLongTapImpl extends Gesture<GestureLongTapDetail> {
+    constructor(options?: GestureLongTapOptions) {
+        super("gesture-longtap", { pointerTypes: [GesturePointerType.Touch], ...options })
     }
 
-    override capture(events: Observable<GestureEvent>): Observable<GestureCaptureState> {
+    override capture(events: Observable<GestureDetail>): Observable<GestureCaptureState> {
         return combineLatest({ timeWithin: timer(this.timeWithin).pipe(startWith(null)), event: events }).pipe(
             map(({ timeWithin, event }) => {
-                if (event.pointers.length !== 1 || event.elapsed > this.timeWithin) {
+                if (event.elapsed > this.timeWithin) {
                     return GestureCaptureState.Skip
                 }
 
@@ -37,14 +34,14 @@ export class GestureLongTapImpl extends Gesture<GestureLongtapEvent> {
         )
     }
 
-    override handle(events: Observable<GestureEvent>) {
+    override handle(events: Observable<GestureDetail>) {
         return super.handle(
             events.pipe(filter(event => event.phase === GesturePhase.Start || event.phase === GesturePhase.End))
         )
     }
 }
 
-export function gestureLongTap(options?: GestureLongtapOptions) {
+export function gestureLongTap(options?: GestureLongTapOptions) {
     return new GestureLongTapImpl(options)
 }
 
