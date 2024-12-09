@@ -6,7 +6,7 @@ import { GestureDetail, GesturePhase } from "./gesture-event"
 export type GestureTapDetail = GestureDetail<"gesture-tap">
 export type GestureTapOptions = GestureOptions<GestureTapImpl>
 
-export class GestureTapImpl extends Gesture<GestureTapDetail> {
+export class GestureTapImpl<T extends GestureTapDetail = GestureTapDetail> extends Gesture<T> {
     constructor(options?: GestureTapOptions) {
         super("gesture-tap", options)
     }

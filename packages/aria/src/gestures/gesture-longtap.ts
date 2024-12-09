@@ -6,7 +6,7 @@ import { GestureDetail, GesturePhase, GesturePointerType } from "./gesture-event
 export type GestureLongTapDetail = GestureDetail<"gesture-longtap">
 export type GestureLongTapOptions = GestureOptions<GestureLongTapImpl>
 
-export class GestureLongTapImpl extends Gesture<GestureLongTapDetail> {
+export class GestureLongTapImpl<T extends GestureLongTapDetail = GestureLongTapDetail> extends Gesture<T> {
     constructor(options?: GestureLongTapOptions) {
         super("gesture-longtap", { pointerTypes: [GesturePointerType.Touch], ...options })
     }

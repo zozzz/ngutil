@@ -13,7 +13,7 @@ export interface GestureDragDetail extends GestureDetail<"gesture-drag"> {
 
 export type GestureDragOptions = GestureOptions<GestureDragImpl>
 
-export class GestureDragImpl extends Gesture<GestureDragDetail> {
+export class GestureDragImpl<T extends GestureDragDetail = GestureDragDetail> extends Gesture<T> {
     readonly horizontal?: boolean
     readonly vertical?: boolean
 
@@ -49,13 +49,13 @@ export class GestureDragImpl extends Gesture<GestureDragDetail> {
                   ? updateHorizontalOnly
                   : updateVerticalOnly
 
-        return super.handle(events).pipe(tap(updater))
+        return super.handle(events).pipe(tap(updater<T>))
     }
 }
 
 type UpdaterFn = (event: Mutable<GestureDragDetail>) => void
 
-function updateVerticalOnly(event: Mutable<GestureDragDetail>) {
+function updateVerticalOnly<T extends GestureDragDetail>(event: Mutable<T>) {
     const pointer = event.pointers[0]
     pointer.distance.x = 0
     pointer.direction.x = 0
@@ -63,7 +63,7 @@ function updateVerticalOnly(event: Mutable<GestureDragDetail>) {
     updateEvent(event, updateByScrollDistanceVertical)
 }
 
-function updateHorizontalOnly(event: Mutable<GestureDragDetail>) {
+function updateHorizontalOnly<T extends GestureDragDetail>(event: Mutable<T>) {
     const pointer = event.pointers[0]
     pointer.distance.y = 0
     pointer.direction.y = 0
@@ -71,16 +71,16 @@ function updateHorizontalOnly(event: Mutable<GestureDragDetail>) {
     updateEvent(event, updateByScrollDistanceHorizontal)
 }
 
-function updateAnyDirection(event: Mutable<GestureDragDetail>) {
+function updateAnyDirection<T extends GestureDragDetail>(event: Mutable<T>) {
     updateEvent(event, updateByScrollDistanceBoth)
 }
 
-function updateEvent(event: Mutable<GestureDragDetail>, scrollUpdate: UpdaterFn) {
+function updateEvent<T extends GestureDragDetail>(event: Mutable<T>, scrollUpdate: UpdaterFn) {
     event.moveBy = { ...event.pointers[0].distance }
     scrollUpdate(event)
 }
 
-function updateByScrollDistanceVertical(event: Mutable<GestureDragDetail>) {
+function updateByScrollDistanceVertical<T extends GestureDragDetail>(event: Mutable<T>) {
     const sd = event.scrollDistance
     if (sd == null) {
         return
@@ -88,7 +88,7 @@ function updateByScrollDistanceVertical(event: Mutable<GestureDragDetail>) {
     event.moveBy.y += sd.y
 }
 
-function updateByScrollDistanceHorizontal(event: Mutable<GestureDragDetail>) {
+function updateByScrollDistanceHorizontal<T extends GestureDragDetail>(event: Mutable<T>) {
     const sd = event.scrollDistance
     if (sd == null) {
         return
@@ -96,7 +96,7 @@ function updateByScrollDistanceHorizontal(event: Mutable<GestureDragDetail>) {
     event.moveBy.x += sd.x
 }
 
-function updateByScrollDistanceBoth(event: Mutable<GestureDragDetail>) {
+function updateByScrollDistanceBoth<T extends GestureDragDetail>(event: Mutable<T>) {
     const sd = event.scrollDistance
     if (sd == null) {
         return
