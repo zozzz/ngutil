@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.74](https://github.com/zozzz/ngutil/compare/0.0.73...0.0.74) (2024-12-10)
+
+
+### Bug Fixes
+
+* **aria:** Simplify gesture impl extension ([87fe1d2](https://github.com/zozzz/ngutil/commit/87fe1d21cd9d75c780eb61857a304ed10df97acc))
+
 ## [0.0.73](https://github.com/zozzz/ngutil/compare/0.0.72...0.0.73) (2024-12-09)
 
 
