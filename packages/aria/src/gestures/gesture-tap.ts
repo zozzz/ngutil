@@ -3,13 +3,11 @@ import { filter, map, Observable } from "rxjs"
 import { Gesture, GestureCaptureState, GestureOptions } from "./gesture"
 import { GestureDetail, GesturePhase } from "./gesture-event"
 
-export type GestureTapDetail = GestureDetail<"gesture-tap">
+export type GestureTapDetail = GestureDetail
 export type GestureTapOptions = GestureOptions<GestureTapImpl>
 
 export class GestureTapImpl<T extends GestureTapDetail = GestureTapDetail> extends Gesture<T> {
-    constructor(options?: GestureTapOptions) {
-        super("gesture-tap", options)
-    }
+    readonly type = "gesture-tap"
 
     override capture(events: Observable<GestureDetail>): Observable<GestureCaptureState> {
         return events.pipe(

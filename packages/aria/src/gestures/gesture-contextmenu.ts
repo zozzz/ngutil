@@ -3,12 +3,13 @@ import { filter, Observable, of } from "rxjs"
 import { Gesture, GestureCaptureState, GestureOptions } from "./gesture"
 import { GestureDetail, GesturePhase } from "./gesture-event"
 
-export type ContextMenuEvent = GestureDetail<"contextmenu">
+export type ContextMenuEvent = GestureDetail
 export type ContextMenuOptions = GestureOptions<ContextMenuGesture>
 
 export class ContextMenuGesture extends Gesture<ContextMenuEvent> {
+    readonly type = "gesture-contextmenu"
     constructor(options?: ContextMenuOptions) {
-        super("contextmenu", { ...options, mouseButtons: [2] })
+        super({ ...options, mouseButtons: [2] })
     }
 
     override capture(events: Observable<GestureDetail>): Observable<GestureCaptureState> {

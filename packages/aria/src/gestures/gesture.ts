@@ -17,10 +17,19 @@ export const enum GestureCaptureState {
     Instant = 4
 }
 
-type _GestureOptions = Partial<Omit<Gesture<any>, "originTypes" | "name" | FunctionKeys<Gesture<any>>>>
+type _GestureOptions = Partial<Omit<Gesture<any>, "originTypes" | "type" | FunctionKeys<Gesture<any>>>>
 export type GestureOptions<T extends object> = Partial<Omit<T, keyof Gesture<any> | FunctionKeys<T>>> & _GestureOptions
 
+export type GestureEvent<G extends Gesture> = G extends Gesture<infer E> & { type: infer T }
+    ? CustomEvent<E> & { type: T }
+    : never
+
 export abstract class Gesture<T extends GestureDetail = GestureDetail> {
+    /**
+     * The name of the gesture
+     */
+    abstract readonly type: string
+
     /**
      * Gestures that depends on move distance, like drag, use this option
      */
@@ -61,10 +70,7 @@ export abstract class Gesture<T extends GestureDetail = GestureDetail> {
      */
     readonly originTypes: Array<string>
 
-    constructor(
-        public readonly name: string,
-        options: _GestureOptions = {}
-    ) {
+    constructor(options?: _GestureOptions) {
         Object.assign(this, options)
         this.originTypes = Object.keys(Listeners).filter(v => this.pointerTypes.includes(Listeners[v].pointerType))
     }

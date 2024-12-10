@@ -26,10 +26,9 @@ import { Mutable } from "utility-types"
 import { __zone_symbol__, coerceElement, ElementInput, isFalsy, isTruthy } from "@ngutil/common"
 import { Position } from "@ngutil/style"
 
-import { Gesture, GestureCaptureState } from "./gesture"
+import { Gesture, GestureCaptureState, GestureEvent } from "./gesture"
 import {
     GestureDetail,
-    GestureEvent,
     GestureListenerConfig,
     GestureOrigin,
     GesturePhase,
@@ -42,7 +41,7 @@ const REMOVE_EVENT_LISTENER = __zone_symbol__("removeEventListener")
 const DISPATCH_EVENT = __zone_symbol__("dispatchEvent")
 
 type GesturesToEventsType<T extends Array<Gesture>> =
-    T extends Array<infer G> ? (G extends Gesture<infer E> ? E : never) : never
+    T extends Array<infer G> ? (G extends Gesture ? GestureEvent<G> : never) : never
 
 type GestureEventDiscriminator<T> = T extends { type: infer N } ? { type: N } & T : never
 
@@ -50,7 +49,7 @@ export type GestureWatchReturns<T extends Array<Gesture>> = Observable<
     GestureEventDiscriminator<GesturesToEventsType<T>>
 >
 
-export type GestureListenReturns<T extends Array<Gesture>> = Observable<GestureEvent<GesturesToEventsType<T>>>
+export type GestureListenReturns<T extends Array<Gesture>> = Observable<GesturesToEventsType<T>>
 
 interface BeginState {
     detail: GestureDetail
@@ -262,7 +261,7 @@ export class GestureService {
                             takeWhile(v => v.phase !== GesturePhase.End, true),
                             tap(detail =>
                                 dispatchEvent(
-                                    new CustomEvent(gesture.name, { detail, bubbles: true, cancelable: true })
+                                    new CustomEvent(gesture.type, { detail, bubbles: true, cancelable: true })
                                 )
                             )
                             // finalize(() => console.log("GESTURE FINALIZE")),
@@ -290,8 +289,8 @@ export class GestureService {
                 const element = coerceElement(el)
                 const next = dst.next.bind(dst)
                 for (const gesture of gestures) {
-                    element[ADD_EVENT_LISTENER](gesture.name as any, next)
-                    dst.add(element[REMOVE_EVENT_LISTENER].bind(element, gesture.name as any, next as any))
+                    element[ADD_EVENT_LISTENER](gesture.type as any, next)
+                    dst.add(element[REMOVE_EVENT_LISTENER].bind(element, gesture.type as any, next as any))
                 }
                 dst.add(this.#watch(element, ...gestures).subscribe())
             })

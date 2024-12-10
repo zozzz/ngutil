@@ -7,18 +7,19 @@ import { Position } from "@ngutil/style"
 import { Gesture, GestureCaptureState, GestureOptions } from "./gesture"
 import { GestureDetail } from "./gesture-event"
 
-export interface GestureDragDetail extends GestureDetail<"gesture-drag"> {
+export interface GestureDragDetail extends GestureDetail {
     moveBy: Position
 }
 
 export type GestureDragOptions = GestureOptions<GestureDragImpl>
 
 export class GestureDragImpl<T extends GestureDragDetail = GestureDragDetail> extends Gesture<T> {
+    readonly type = "gesture-drag"
     readonly horizontal?: boolean
     readonly vertical?: boolean
 
     constructor(options?: GestureDragOptions) {
-        super("gesture-drag", { includeScrollDistance: true, ...options })
+        super({ includeScrollDistance: true, ...options })
 
         if (this.horizontal == null && this.vertical == null) {
             this.horizontal = true

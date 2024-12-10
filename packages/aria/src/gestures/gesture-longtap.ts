@@ -3,12 +3,13 @@ import { combineLatest, filter, map, Observable, startWith, timer } from "rxjs"
 import { Gesture, GestureCaptureState, GestureOptions } from "./gesture"
 import { GestureDetail, GesturePhase, GesturePointerType } from "./gesture-event"
 
-export type GestureLongTapDetail = GestureDetail<"gesture-longtap">
+export type GestureLongTapDetail = GestureDetail
 export type GestureLongTapOptions = GestureOptions<GestureLongTapImpl>
 
 export class GestureLongTapImpl<T extends GestureLongTapDetail = GestureLongTapDetail> extends Gesture<T> {
+    readonly type = "gesture-longtap"
     constructor(options?: GestureLongTapOptions) {
-        super("gesture-longtap", { pointerTypes: [GesturePointerType.Touch], ...options })
+        super({ pointerTypes: [GesturePointerType.Touch], ...options })
     }
 
     override capture(events: Observable<GestureDetail>): Observable<GestureCaptureState> {
