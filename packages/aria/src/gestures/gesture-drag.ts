@@ -110,6 +110,6 @@ export function gestureDrag(options?: GestureDragOptions) {
     return new GestureDragImpl(options)
 }
 
-export const GestureDarg = gestureDrag()
-export const GestureDargHorizontal = gestureDrag({ horizontal: true, vertical: false })
-export const GestureDargVertical = gestureDrag({ horizontal: false, vertical: true })
+export const GestureDrag = gestureDrag()
+export const GestureDragHorizontal = gestureDrag({ horizontal: true, vertical: false })
+export const GestureDragVertical = gestureDrag({ horizontal: false, vertical: true })

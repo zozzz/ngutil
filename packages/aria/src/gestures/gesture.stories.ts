@@ -5,7 +5,7 @@ import { DOCUMENT } from "@angular/common"
 import { Component, computed, Directive, effect, ElementRef, inject, input } from "@angular/core"
 
 import { GestureEvent } from "./gesture"
-import { GestureDarg, GestureDargHorizontal, GestureDargVertical, gestureDrag } from "./gesture-drag"
+import { GestureDrag, gestureDrag, GestureDragHorizontal, GestureDragVertical } from "./gesture-drag"
 import { GesturePointerType } from "./gesture-event"
 import { GestureLongTap } from "./gesture-longtap"
 import { GestureTap } from "./gesture-tap"
@@ -28,11 +28,11 @@ class Draggable {
         const dtype = this.dtype()
         switch (dtype) {
             case "any":
-                return GestureDarg
+                return GestureDrag
             case "horizontal":
-                return GestureDargHorizontal
+                return GestureDragHorizontal
             case "vertical":
-                return GestureDargVertical
+                return GestureDragVertical
             case "mouse":
                 return DraggingMouse
         }
