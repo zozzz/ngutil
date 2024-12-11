@@ -125,15 +125,16 @@ export class GestureService {
                     )
                 ),
                 // Select active watchers
-                map(event => {
-                    updatePointers(event)
-                    const eventTarget = event.origin.target as HTMLElement
+                map((detail: Mutable<GestureDetail>) => {
+                    updatePointers(detail)
+                    const eventTarget = detail.origin.target as HTMLElement
+                    detail.target = eventTarget
                     let includeScrollDistance = false
                     const gestures = this.#watchers
                         .filter(
                             ({ gesture, el }) =>
                                 (el === eventTarget || ("contains" in el && el.contains(eventTarget))) &&
-                                gesture.shouldCapture(event)
+                                gesture.shouldCapture(detail)
                         )
                         .reduce(
                             (gestures, { gesture }) => {
@@ -146,7 +147,7 @@ export class GestureService {
                             new Map() as BeginState["gestures"]
                         )
 
-                    return { detail: event, gestures, includeScrollDistance } satisfies BeginState
+                    return { detail: detail, gestures, includeScrollDistance } satisfies BeginState
                 }),
                 filter(({ gestures }) => gestures.size > 0),
                 tap(this.#disableTouchAction)
