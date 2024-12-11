@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.75](https://github.com/zozzz/ngutil/compare/0.0.74...0.0.75) (2024-12-11)
+
+
+### Bug Fixes
+
+* **aria:** minor fixes in gesture service ([a7b072b](https://github.com/zozzz/ngutil/commit/a7b072bfe5c9111860ad7344a70b27815b35be10))
+
 ## [0.0.74](https://github.com/zozzz/ngutil/compare/0.0.73...0.0.74) (2024-12-10)
 
 

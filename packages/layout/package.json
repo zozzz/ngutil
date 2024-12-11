@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/layout",
-  "version": "0.0.74",
+  "version": "0.0.75",
   "peerDependencies": {
     "@angular/animations": "18.2.6",
     "@angular/common": "18.2.6",
