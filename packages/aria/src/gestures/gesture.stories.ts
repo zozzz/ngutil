@@ -43,7 +43,7 @@ class Draggable {
             const dgesture = this.dragGesture()
 
             this.#svc.listen(this.#el, dgesture, GestureLongTap, GestureTap).subscribe(event => {
-                console.log("RESULT", event)
+                // console.log("RESULT", event)
                 if (event.type === "gesture-drag") {
                     const { phase, target, moveBy } = event.detail
 
@@ -102,6 +102,7 @@ class Draggable {
         <div class="garea" nuDraggable="horizontal">DRAG HORIZONTAL</div>
         <div class="garea" nuDraggable="vertical">DRAG VERTICAL</div>
         <div class="garea" nuDraggable="mouse">DRAG MOUSE ONLY</div>
+        <button (click)="onClick($event)">SIMPLE BUTTON</button>
         <div class="garea">SOMETHING</div>
         <div class="garea">SOMETHING</div>
         <div class="garea">SOMETHING</div>
@@ -119,9 +120,13 @@ class GestureTest {
 
         for (const x of xx) {
             this.#el.nativeElement.addEventListener(x, (e: GestureEvent<any>) => {
-                console.log(e.type, e.detail.phase, `prevented = ${e.defaultPrevented}`)
+                // console.log(e.type, e.detail.phase, `prevented = ${e.defaultPrevented}`)
             })
         }
+    }
+
+    onClick(event: Event) {
+        console.log("CLICK", event)
     }
 }
 

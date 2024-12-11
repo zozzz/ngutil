@@ -127,7 +127,7 @@ export class GestureService {
                 // Select active watchers
                 map(event => {
                     updatePointers(event)
-                    const eventTarget = event.target
+                    const eventTarget = event.origin.target as HTMLElement
                     let includeScrollDistance = false
                     const gestures = this.#watchers
                         .filter(
@@ -159,7 +159,8 @@ export class GestureService {
         switchMap(({ detail: startEvent, gestures, includeScrollDistance }) => {
             const pointerType = startEvent.pointerType
             const startAt = startEvent.origin.timeStamp
-            const dispatchEvent = startEvent.target[DISPATCH_EVENT].bind(startEvent.target)
+            const targetEl = startEvent.origin.target as HTMLElement
+            const dispatchEvent = targetEl[DISPATCH_EVENT].bind(targetEl)
 
             const eventStreamInit = this.#eventStream.pipe(
                 startWith(startEvent),
@@ -168,7 +169,7 @@ export class GestureService {
 
             const eventStreamSource = !includeScrollDistance
                 ? eventStreamInit
-                : combineLatest([eventStreamInit, this.#scrollDistance(startEvent.target)]).pipe(
+                : combineLatest([eventStreamInit, this.#scrollDistance(targetEl)]).pipe(
                       map(([src, distance]) => {
                           ;(src as Mutable<GestureDetail>).scrollDistance = distance
                           return src
@@ -181,12 +182,13 @@ export class GestureService {
                         updatePointers({
                             ...state,
                             ...curr,
+                            target: targetEl,
                             elapsed: curr.origin.timeStamp - startAt!
                         }),
                     startEvent
                 ),
                 takeWhile(event => event.phase !== GesturePhase.End, true),
-                // finalize(() => console.log("FINALIZE WATCH")),
+                // finalize(() => console.log("FINALIZE STREAM")),
                 share()
             )
 
@@ -205,7 +207,7 @@ export class GestureService {
                             )
                     ).pipe(map(() => state))
                 })
-                // ,finalize(() => console.log("FINALIZE CAPTURE"))
+                // finalize(() => console.log("FINALIZE CAPTURE"))
             )
 
             const selectGesture = captureState.pipe(
@@ -249,13 +251,20 @@ export class GestureService {
                 takeWhile(isFalsy, true),
                 filter(isTruthy),
                 takeWhile(v => v!.gesture != null, false)
+                // tap((v: CaptureSelectState) => v.events.forEach(({ origin }) => preventDefault(origin)))
                 // finalize(() => console.log("FINALIZE SELECT"))
             ) as Observable<Required<CaptureSelectState>>
 
             return selectGesture.pipe(
                 switchMap(({ events, gesture }) =>
                     gesture
-                        .handle(eventStream.pipe(startWith(...events), filter(gesture.isRelevantEvent.bind(gesture))))
+                        .handle(
+                            eventStream.pipe(
+                                startWith(...events),
+                                tap(({ origin }) => preventDefault(origin)),
+                                filter(gesture.isRelevantEvent.bind(gesture))
+                            )
+                        )
                         .pipe(
                             takeWhile(v => v.phase !== GesturePhase.End, true),
                             tap(detail =>
@@ -263,7 +272,7 @@ export class GestureService {
                                     new CustomEvent(gesture.type, { detail, bubbles: true, cancelable: true })
                                 )
                             )
-                            // finalize(() => console.log("GESTURE FINALIZE")),
+                            // finalize(() => console.log("GESTURE FINALIZE"))
                         )
                 ),
                 // finalize(() => console.log("FINALIZE RESULT")),
@@ -323,29 +332,13 @@ export class GestureService {
     #listen(name: string, config: GestureListenerConfig) {
         const { phase, pointerType, options } = config
 
-        const toResult =
-            phase === GesturePhase.Start
-                ? (origin: GestureOrigin) =>
-                      ({
-                          origin,
-                          phase,
-                          pointerType,
-                          target: origin.target as HTMLElement
-                      }) as GestureDetail
-                : (origin: GestureOrigin) => {
-                      if (origin.cancelable) {
-                          origin.preventDefault()
-                      }
-                      return { origin, phase, pointerType } as GestureDetail
-                  }
-
         return new Observable((dst: Subscriber<GestureDetail>) =>
             this.#zone.runOutsideAngular(() => {
                 const listener = (origin: GestureOrigin) => {
                     if (origin.defaultPrevented) {
                         return
                     }
-                    dst.next(toResult(origin))
+                    dst.next({ origin, phase, pointerType } as GestureDetail)
                 }
 
                 // console.log("addEventListener", name)
@@ -449,4 +442,11 @@ function updatePointers(state: Mutable<GestureDetail>): GestureDetail {
 
 function direction(prev: number, curr: number): -1 | 0 | 1 {
     return curr > prev ? 1 : curr < prev ? -1 : 0
+}
+
+function preventDefault(event: Event) {
+    if (event.cancelable && !event.defaultPrevented) {
+        // console.log(`PREVENT ${event.type}`)
+        event.preventDefault()
+    }
 }
