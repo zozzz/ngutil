@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.77](https://github.com/zozzz/ngutil/compare/0.0.76...0.0.77) (2024-12-11)
+
+
+### Bug Fixes
+
+* **aria:** fix typo in GestureDarg -> GestureDrag ([36605ba](https://github.com/zozzz/ngutil/commit/36605ba9d4d5185f08e9c8aa0bff645dfab0e9d5))
+
 ## [0.0.76](https://github.com/zozzz/ngutil/compare/0.0.75...0.0.76) (2024-12-11)
 
 ## [0.0.75](https://github.com/zozzz/ngutil/compare/0.0.74...0.0.75) (2024-12-11)
