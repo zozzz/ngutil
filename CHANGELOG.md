@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.79](https://github.com/zozzz/ngutil/compare/0.0.78...0.0.79) (2024-12-11)
+
 ## [0.0.78](https://github.com/zozzz/ngutil/compare/0.0.77...0.0.78) (2024-12-11)
 
 
