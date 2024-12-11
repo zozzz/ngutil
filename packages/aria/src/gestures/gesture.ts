@@ -33,17 +33,17 @@ export abstract class Gesture<T extends GestureDetail = GestureDetail> {
     /**
      * Gestures that depends on move distance, like drag, use this option
      */
-    readonly distanceInclusion = 10
+    readonly distanceInclusion: number = 10
 
     /**
      * Gestures thet dependnso on time frame, like longtap, use this option
      */
-    readonly timeWithin = 300
+    readonly timeWithin: number = 300
 
     /**
      * The priority of the gesture
      */
-    readonly priority = 0
+    readonly priority: number = 0
 
     /**
      * Should the gesture include the scroll distance

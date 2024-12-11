@@ -132,8 +132,8 @@ export class GestureService {
                     const gestures = this.#watchers
                         .filter(
                             ({ gesture, el }) =>
-                                gesture.shouldCapture(event) &&
-                                (el === eventTarget || ("contains" in el && el.contains(eventTarget)))
+                                (el === eventTarget || ("contains" in el && el.contains(eventTarget))) &&
+                                gesture.shouldCapture(event)
                         )
                         .reduce(
                             (gestures, { gesture }) => {
@@ -198,12 +198,14 @@ export class GestureService {
                     const state: CaptureState = { events: [], gestures, includeScrollDistance }
                     return merge(
                         src.pipe(tap(event => state.events.push(event))),
-                        ...Array.from(gestures.keys()).map(gesture =>
-                            gesture.capture(src.pipe(filter(gesture.shouldCapture.bind(gesture)))).pipe(
-                                takeWhile(result => result !== GestureCaptureState.Skip, true),
-                                tap(result => gestures.set(gesture, result))
+                        ...Array.from(gestures.keys())
+                            .sort(sortByPripority)
+                            .map(gesture =>
+                                gesture.capture(src.pipe(filter(gesture.shouldCapture.bind(gesture)))).pipe(
+                                    takeWhile(result => result !== GestureCaptureState.Skip, true),
+                                    tap(result => gestures.set(gesture, result))
+                                )
                             )
-                        )
                     ).pipe(map(() => state))
                 })
                 // ,finalize(() => console.log("FINALIZE CAPTURE"))
