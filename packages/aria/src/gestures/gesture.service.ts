@@ -74,7 +74,7 @@ interface Watcher {
     readonly gesture: Gesture
 }
 
-const SCROLL_LISTENER_OPTIONS: AddEventListenerOptions = { passive: true }
+const SCROLL_LISTENER_OPTIONS: AddEventListenerOptions = { passive: true, capture: true }
 
 @Injectable({ providedIn: "root" })
 export class GestureService {
@@ -168,10 +168,7 @@ export class GestureService {
 
             const eventStreamSource = !includeScrollDistance
                 ? eventStreamInit
-                : combineLatest([
-                      eventStreamInit,
-                      this.#scrollDistance(startEvent.target).pipe(startWith({ x: 0, y: 0 }))
-                  ]).pipe(
+                : combineLatest([eventStreamInit, this.#scrollDistance(startEvent.target)]).pipe(
                       map(([src, distance]) => {
                           ;(src as Mutable<GestureDetail>).scrollDistance = distance
                           return src
@@ -381,6 +378,7 @@ export class GestureService {
                     const current = scrollPosition()
                     dst.next({ x: current.x - initial.x, y: current.y - initial.y })
                 }
+                dst.next({ x: 0, y: 0 })
                 this.#document[ADD_EVENT_LISTENER]("scroll", listener, SCROLL_LISTENER_OPTIONS)
                 return () => {
                     this.#document[REMOVE_EVENT_LISTENER]("scroll", listener, SCROLL_LISTENER_OPTIONS)
