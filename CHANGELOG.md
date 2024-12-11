@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.78](https://github.com/zozzz/ngutil/compare/0.0.77...0.0.78) (2024-12-11)
+
+
+### Bug Fixes
+
+* **aria:** Gesture ([4706a1d](https://github.com/zozzz/ngutil/commit/4706a1d7879c608bc125d3b4e7c1019c9a3c2cdf))
+
 ## [0.0.77](https://github.com/zozzz/ngutil/compare/0.0.76...0.0.77) (2024-12-11)
 
 
