@@ -2,10 +2,11 @@
 import { Meta, moduleMetadata, StoryFn, StoryObj } from "@storybook/angular"
 
 import { AsyncPipe } from "@angular/common"
-import { Component, inject } from "@angular/core"
+import { Component, Directive, ElementRef, HostListener, inject, input } from "@angular/core"
 
 import { ActivityService } from "../activity/activity.service"
 import { FocusState } from "./focus-state.directive"
+import { FocusOrigin, FocusService } from "./focus.service"
 import { Focusable } from "./focusable.directive"
 
 @Component({
@@ -54,6 +55,11 @@ import { Focusable } from "./focusable.directive"
                 color: #fff;
             }
 
+            &[focus~="touch"] > pre {
+                background: rgb(26, 90, 83);
+                color: #fff;
+            }
+
             &[focusWithin] > pre {
                 opacity: 0.8;
             }
@@ -66,6 +72,38 @@ import { Focusable } from "./focusable.directive"
 })
 class FocusableComponent {
     focus = inject(FocusState)
+}
+
+@Directive({
+    selector: ".remove-me",
+    standalone: true,
+    hostDirectives: [Focusable]
+})
+class RemoveMe {
+    readonly #el: ElementRef<HTMLElement> = inject(ElementRef)
+
+    @HostListener("click")
+    onClick() {
+        this.#el.nativeElement.parentElement?.removeChild(this.#el.nativeElement)
+    }
+}
+
+@Directive({
+    selector: "[focusOrigin]",
+    standalone: true
+})
+class FocusOriginDirective {
+    el = inject(ElementRef)
+    focusSvc = inject(FocusService)
+    focusOrigin = input.required<FocusOrigin>()
+
+    @HostListener("click", ["$event"])
+    onClick(event: Event) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+
+        this.focusSvc.focus(this.el, this.focusOrigin())
+    }
 }
 
 @Component({
@@ -117,7 +155,7 @@ class ActivityComponent {
 export default {
     title: "Focus / Focusable",
     component: FocusableComponent,
-    decorators: [moduleMetadata({ imports: [FormField, ActivityComponent] })]
+    decorators: [moduleMetadata({ imports: [FormField, ActivityComponent, RemoveMe, FocusOriginDirective] })]
     // parameters: {
     //     layout: "fullscreen",
     //     controls: { include: [] }
@@ -144,11 +182,11 @@ export const Basic: StoryFn<Story> = args => {
         <story-focusable></story-focusable>
         <story-focusable>
             <story-focusable>
-                <story-focusable></story-focusable>
-                <story-focusable></story-focusable>
-                <story-focusable></story-focusable>
+                <story-focusable><button class="remove-me">REMOVE</button></story-focusable>
+                <story-focusable><button [attr.inert]="inert ? '' : null" (click)="inert=true">INERT</button></story-focusable>
+                <story-focusable><button [attr.disabled]="disabled ? '' : null" (click)="disabled=true">DISABLED</button></story-focusable>
             </story-focusable>
-            <story-focusable></story-focusable>
+            <story-focusable [focusOrigin]="'touch'">TOUCH FOCUS</story-focusable>
             <story-focusable></story-focusable>
         </story-focusable>
         <story-focusable>
