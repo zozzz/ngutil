@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.80](https://github.com/zozzz/ngutil/compare/0.0.79...0.0.80) (2025-01-16)
+
+
+### Bug Fixes
+
+* **aria:** Improve focus detection changes ([cb27938](https://github.com/zozzz/ngutil/commit/cb27938bb1f4627e1cf3f0b02a0b5f494793edcc))
+
 ## [0.0.79](https://github.com/zozzz/ngutil/compare/0.0.78...0.0.79) (2024-12-11)
 
 ## [0.0.78](https://github.com/zozzz/ngutil/compare/0.0.77...0.0.78) (2024-12-11)
