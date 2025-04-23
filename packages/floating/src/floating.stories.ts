@@ -30,7 +30,6 @@ import { AlwaysOnTop } from "./layer"
 
 @Component({
     selector: "floating-trigger",
-    standalone: true,
     imports: [ReactiveFormsModule],
     hostDirectives: [Focusable],
     styles: [
@@ -221,7 +220,6 @@ class FloatingTrigger {
 
 @Component({
     selector: "floating-popover",
-    standalone: true,
     imports: [JsonPipe],
     styles: [
         `
@@ -256,7 +254,6 @@ class FloatingPopover {
 }
 
 @Component({
-    standalone: true,
     selector: "floatings",
     imports: [FloatingTrigger],
     styles: [
@@ -283,7 +280,7 @@ class FloatingPopover {
         <floating-trigger />
     `
 })
-class Floatings {}
+class Floatings { }
 
 export default {
     title: "Floatings",

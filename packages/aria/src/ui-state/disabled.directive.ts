@@ -6,7 +6,6 @@ import { UiState } from "./ui-state"
 @Directive({
     selector: "[nuDisabled], [nuDisabledWhen]",
     exportAs: "disabled",
-    standalone: true,
     host: {
         "[attr.aria-disabled]": "yes() ? 'true' : 'false'",
         "[attr.disabled]": "yes() ? '' : null",

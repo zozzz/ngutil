@@ -10,7 +10,6 @@ import { ReadonlyDirective } from "./readonly.directive"
 import { UiState } from "./ui-state"
 
 @Component({
-    standalone: true,
     selector: "gesture-test",
     imports: [BusyDirective, DisabledDirective, ReadonlyDirective, JsonPipe],
     providers: [UiState],

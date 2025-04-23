@@ -8,10 +8,9 @@ import { SlotDirective, SlotOutletDirective, SlotsService } from "./slots.servic
 type StorySlots = "top" | "right" | "bottom" | "left"
 
 @Injectable()
-class StorySlotsService extends SlotsService<StorySlots> {}
+class StorySlotsService extends SlotsService<StorySlots> { }
 
 @Directive({
-    standalone: true,
     selector: "[storySlot]",
     inputs: [{ name: "slot", alias: "storySlot" }]
 })
@@ -20,7 +19,6 @@ class StorySlot extends SlotDirective<StorySlots> {
 }
 
 @Directive({
-    standalone: true,
     selector: "[storySlotOutlet]",
     inputs: [{ name: "slot", alias: "storySlotOutlet" }]
 })
@@ -29,7 +27,6 @@ class StorySlotOutlet extends SlotOutletDirective<StorySlots> {
 }
 
 @Component({
-    standalone: true,
     selector: "nu-story-slot",
     imports: [StorySlotOutlet],
     providers: [StorySlotsService],

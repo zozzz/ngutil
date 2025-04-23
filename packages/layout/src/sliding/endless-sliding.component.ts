@@ -16,7 +16,6 @@ let uid = 0
 @Component({
     selector: "nu-endless-sliding",
     exportAs: "nuEndlessSliding",
-    standalone: true,
     imports: [SlidingComponent, SlidingItemDirective, NgTemplateOutlet],
     template: `
         <nu-sliding (changes)="onSlidingChange($event)" [lazy]="true">

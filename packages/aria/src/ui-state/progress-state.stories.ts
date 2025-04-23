@@ -11,7 +11,6 @@ import { ProgressSegmentRef, ProgressState } from "./progress-state"
 
 @Component({
     selector: "progress-bar",
-    standalone: true,
     styles: [
         `
             :host {
@@ -37,7 +36,6 @@ class ProgressBar {
 }
 
 @Component({
-    standalone: true,
     selector: "progress-test",
     imports: [AsyncPipe, ProgressBar],
     providers: [ProgressState],
@@ -106,7 +104,6 @@ class ProgressTest {
 
 @Component({
     selector: "manual-increment",
-    standalone: true,
     imports: [ProgressBar],
     styles: [
         `

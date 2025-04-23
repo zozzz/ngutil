@@ -3,14 +3,11 @@ import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
 
 import { BehaviorSubject, combineLatest, debounceTime, map, Observable, of, shareReplay, switchMap } from "rxjs"
 
-import { ElementInput } from "dist/packages/common"
-
-import { ConnectProtocol, isElementInput } from "@ngutil/common"
+import { ConnectProtocol, ElementInput, isElementInput } from "@ngutil/common"
 
 import { FocusChanges, FocusService } from "./focus.service"
 
 @Directive({
-    standalone: true,
     host: {
         "[attr.focus]": "origin()",
         "[attr.focusWithin]": "within()"

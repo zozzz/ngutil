@@ -11,8 +11,7 @@ export const enum ItemAnimationState {
 
 @Component({
     selector: "nu-sliding-item",
-    standalone: true,
     styleUrl: "./sliding-item.component.scss",
     template: `<ng-content />`
 })
-export class SlidingItemComponent {}
+export class SlidingItemComponent { }

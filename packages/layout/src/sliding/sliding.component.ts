@@ -15,7 +15,6 @@ const anim = `${Duration.Fast} ${Ease.Acceleration}`
 
 @Component({
     selector: "nu-sliding",
-    standalone: true,
     imports: [CommonModule, SlidingItemComponent],
     styleUrl: "./sliding.component.scss",
     animations: [
@@ -26,7 +25,6 @@ const anim = `${Duration.Fast} ${Ease.Acceleration}`
             state(ItemAnimationState.FastIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
             state(ItemAnimationState.LeftIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
             state(ItemAnimationState.RightIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
-
             transition(`* => ${ItemAnimationState.LeftOut}`, [
                 style({ width: "*", ...absolute, transform: "translateX(0)" }),
                 animate(anim, style({ transform: "translateX(-100%)" }))

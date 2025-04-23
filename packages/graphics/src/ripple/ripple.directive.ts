@@ -5,7 +5,6 @@ import { Destructible, IDisposable } from "@ngutil/common"
 import { maxPossibleRadius } from "../util"
 
 @Directive({
-    standalone: true,
     selector: "ng-template[nuRipple]",
     exportAs: "nuRipple"
 })
@@ -108,7 +107,7 @@ export class Ripple implements IDisposable {
 
     start() {
         // eslint-disable-next-line no-extra-semi
-        ;(this as { isRunning: boolean }).isRunning = true
+        ; (this as { isRunning: boolean }).isRunning = true
         // XXX: force style apply
         const opacity = typeof window !== "undefined" ? Number(window.getComputedStyle(this.el).opacity) : 1
         this.el.style.opacity = opacity ? "0.3" : "0.3"
@@ -134,7 +133,7 @@ export class Ripple implements IDisposable {
 
     #transBegin = () => {
         // eslint-disable-next-line no-extra-semi
-        ;(this as { isRunning: boolean }).isRunning = true
+        ; (this as { isRunning: boolean }).isRunning = true
     }
 
     #transEnd = (event: TransitionEvent) => {
@@ -148,7 +147,7 @@ export class Ripple implements IDisposable {
             }
         } else if (event.propertyName === "transform") {
             // eslint-disable-next-line no-extra-semi
-            ;(this as { isRunning: boolean }).isRunning = false
+            ; (this as { isRunning: boolean }).isRunning = false
             if (this.#autoDestroy) {
                 this.dispose()
             }

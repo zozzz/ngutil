@@ -17,7 +17,6 @@ const DEFAULT_POSITION = L9Range.coerce("left")
 @Component({
     selector: "nu-docking-panel",
     exportAs: "nuDockingPanel",
-    standalone: true,
     host: {
         "[style.grid-area]": "gridArea()",
         "[style.--nudp-content-size.px]": "contentSize()",

@@ -6,7 +6,6 @@ import { Component } from "@angular/core"
 import { NuDockingLayout } from "./index"
 
 @Component({
-    standalone: true,
     selector: "story-docking",
     imports: [NuDockingLayout],
     template: `

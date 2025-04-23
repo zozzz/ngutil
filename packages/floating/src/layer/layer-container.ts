@@ -60,7 +60,6 @@ export class RootLayer extends LayerContainer {
 }
 
 @Directive({
-    standalone: true,
     providers: [{ provide: LayerContainer, useExisting: IndividualLayer }]
 })
 export class IndividualLayer extends LayerContainer {

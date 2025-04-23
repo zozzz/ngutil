@@ -6,7 +6,6 @@ import { UiState } from "./ui-state"
 @Directive({
     selector: "[nuReadonly], [nuReadonlyWhen]",
     exportAs: "readonly",
-    standalone: true,
     host: {
         "[attr.aria-readonly]": "yes() ? 'true' : 'false'",
         "[attr.readonly]": "yes() ? '' : null"

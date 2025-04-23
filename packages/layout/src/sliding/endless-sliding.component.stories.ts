@@ -7,7 +7,6 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations"
 import { EndlessSlidingComponent } from "./index"
 
 @Component({
-    standalone: true,
     selector: "story-endless-sliding",
     imports: [EndlessSlidingComponent],
     styles: [

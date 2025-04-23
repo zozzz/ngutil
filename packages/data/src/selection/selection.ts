@@ -14,16 +14,19 @@ export interface Selection<T extends Model> {
 export abstract class SelectionModel<T extends Model> {}
 
 @Directive({
-    selector: "[nuSelction='single']"
+    selector: "[nuSelction='single']",
+    standalone: false
 })
 export class SingleSelection<T extends Model> extends SelectionModel<T> {}
 
 @Directive({
-    selector: "[nuSelction='multi']"
+    selector: "[nuSelction='multi']",
+    standalone: false
 })
 export class MultiSelection<T extends Model> extends SelectionModel<T> {}
 
 @Directive({
-    selector: "[nuSelction]:not([nuSelction='single']):not([nuSelction='multi'])"
+    selector: "[nuSelction]:not([nuSelction='single']):not([nuSelction='multi'])",
+    standalone: false
 })
 export class SelectionProxy {}

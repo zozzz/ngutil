@@ -27,7 +27,7 @@ export type UiStateSource = "parent" | "self" | string
 
 export type UiStateSelector = string
 
-@Directive({ standalone: true })
+@Directive({})
 export class UiState<N extends string = string, S extends UiStateSource = UiStateSource> {
     readonly #parent = inject(UiState, { skipSelf: true, optional: true })
 

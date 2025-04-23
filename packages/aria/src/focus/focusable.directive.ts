@@ -7,7 +7,6 @@ import { FocusState } from "./focus-state.directive"
 // TODO: what happens when disabled is changed
 
 @Directive({
-    standalone: true,
     selector: "[nuFocusable]",
     exportAs: "nuFocusable",
     host: {

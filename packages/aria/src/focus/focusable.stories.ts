@@ -10,7 +10,6 @@ import { FocusOrigin, FocusService } from "./focus.service"
 import { Focusable } from "./focusable.directive"
 
 @Component({
-    standalone: true,
     selector: "story-focusable",
     hostDirectives: [Focusable],
     styles: `
@@ -76,7 +75,6 @@ class FocusableComponent {
 
 @Directive({
     selector: ".remove-me",
-    standalone: true,
     hostDirectives: [Focusable]
 })
 class RemoveMe {
@@ -89,8 +87,7 @@ class RemoveMe {
 }
 
 @Directive({
-    selector: "[focusOrigin]",
-    standalone: true
+    selector: "[focusOrigin]"
 })
 class FocusOriginDirective {
     el = inject(ElementRef)
@@ -107,7 +104,6 @@ class FocusOriginDirective {
 }
 
 @Component({
-    standalone: true,
     selector: "story-form-field",
     hostDirectives: [FocusState],
     styles: `
@@ -138,11 +134,10 @@ class FocusOriginDirective {
     `,
     template: ` <ng-content></ng-content> `
 })
-class FormField {}
+class FormField { }
 
 @Component({
     selector: "story-activity",
-    standalone: true,
     imports: [AsyncPipe],
     providers: [ActivityService],
     template: ` <div>IsInactive: {{ (isInactive$ | async) ? "true" : "false" }}</div> `

@@ -4,8 +4,7 @@ import type { ItemAnimationState } from "./sliding-item.component"
 
 @Directive({
     selector: "ng-template[nuSlidingItem]",
-    exportAs: "nuSlidingItem",
-    standalone: true
+    exportAs: "nuSlidingItem"
 })
 export class SlidingItemDirective {
     readonly tpl = inject(TemplateRef)

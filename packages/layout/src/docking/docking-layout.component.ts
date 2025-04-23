@@ -15,7 +15,6 @@ export type DockingRange =
 @Component({
     selector: "nu-docking",
     exportAs: "nuDocking",
-    standalone: true,
     imports: [DockingBackdropComponent],
     styleUrl: "./docking-layout.component.scss",
     template: `

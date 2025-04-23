@@ -58,14 +58,12 @@ export type DataSourceProxyInput<T extends Model> = DataSourceProxy<T> | DataSou
  * ```
  */
 @Directive({
-    standalone: true,
     selector: "[nuDataSource]",
     exportAs: "nuDataSource"
 })
 export class DataSourceProxy<T extends Model>
     extends CdkDataSource<T | undefined>
-    implements OnDestroy, ConnectProtocol
-{
+    implements OnDestroy, ConnectProtocol {
     @Input({ required: true, alias: "nuDataSource" })
     set value(value: DataSourceProxyInput<T>) {
         this.#valueSub?.unsubscribe()
@@ -122,7 +120,6 @@ export class DataSourceProxy<T extends Model>
 }
 
 @Directive({
-    standalone: true,
     selector: "[nuDataSource][filter]"
 })
 export class DataSourceProxyFilter<T extends Model, F extends Filter<T>> {
@@ -138,7 +135,6 @@ export class DataSourceProxyFilter<T extends Model, F extends Filter<T>> {
 }
 
 @Directive({
-    standalone: true,
     selector: "[nuDataSource][sorter]"
 })
 export class DataSourceProxySorter<T extends Model, S extends Sorter<T>> {
@@ -154,7 +150,6 @@ export class DataSourceProxySorter<T extends Model, S extends Sorter<T>> {
 }
 
 @Directive({
-    standalone: true,
     selector: "[nuDataSource][slimer]"
 })
 export class DataSourceProxySlimer<T extends Model, S extends Slimer<T>> {
@@ -170,7 +165,6 @@ export class DataSourceProxySlimer<T extends Model, S extends Slimer<T>> {
 }
 
 @Directive({
-    standalone: true,
     selector: "[nuDataSource][grouper]"
 })
 export class DataSourceProxyGrouper<T extends Model, G extends Grouper<T>> {
@@ -186,7 +180,6 @@ export class DataSourceProxyGrouper<T extends Model, G extends Grouper<T>> {
 }
 
 @Directive({
-    standalone: true,
     selector: "[nuDataSource][nuBusy]"
 })
 export class DataSourceProxyBusy {

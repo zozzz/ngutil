@@ -16,8 +16,7 @@ type DraggableType = "any" | "horizontal" | "vertical" | "mouse"
 const DraggingMouse = gestureDrag({ pointerTypes: [GesturePointerType.Mouse] })
 
 @Directive({
-    selector: "[nuDraggable]",
-    standalone: true
+    selector: "[nuDraggable]"
 })
 class Draggable {
     readonly #el = inject(ElementRef)
@@ -72,7 +71,6 @@ class Draggable {
 }
 
 @Component({
-    standalone: true,
     selector: "gesture-test",
 
     imports: [Draggable],

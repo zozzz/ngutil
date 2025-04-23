@@ -6,7 +6,6 @@ import { UiState } from "./ui-state"
 @Directive({
     selector: "[nuBusy], [nuBusyWhen]",
     exportAs: "busy",
-    standalone: true,
     host: {
         "[attr.aria-busy]": "yes() ? 'true' : 'false'",
         "[attr.inert]": "state.isInert() ? '' : null"

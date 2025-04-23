@@ -14,7 +14,6 @@ interface User {
 }
 
 @Component({
-    standalone: true,
     selector: "basic-list",
     imports: [AsyncPipe],
     template: `
@@ -34,7 +33,6 @@ class BasicListComponent {
 }
 
 @Component({
-    standalone: true,
     selector: "virtual-list",
     imports: [ScrollingModule],
     template: `
@@ -48,7 +46,6 @@ class VirtualListComponent {
 }
 
 @Component({
-    standalone: true,
     imports: [DataSourceProxy, BasicListComponent, VirtualListComponent],
     template: `
         <basic-list [nuDataSource]="users1" />

@@ -7,7 +7,6 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations"
 import { NuSlidingLayout, SlidingComponent } from "./index"
 
 @Component({
-    standalone: true,
     selector: "story-sliding",
     imports: [NuSlidingLayout],
     styles: [
