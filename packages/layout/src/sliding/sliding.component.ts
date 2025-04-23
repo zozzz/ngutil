@@ -91,74 +91,71 @@ export class SlidingComponent {
     readonly changes = output<SlidingComponent>()
 
     constructor() {
-        effect(
-            () => {
-                const activeIndex = this.active()
-                const items = this.items()
-                const lazy = this.lazy()
-                const preferred = this.preferred()
-                const currentActiveIndex = items.findIndex(item => item.active())
-                if (activeIndex === currentActiveIndex) {
-                    if (items[activeIndex]?.active()) {
-                        return
-                    }
+        effect(() => {
+            const activeIndex = this.active()
+            const items = this.items()
+            const lazy = this.lazy()
+            const preferred = this.preferred()
+            const currentActiveIndex = items.findIndex(item => item.active())
+            if (activeIndex === currentActiveIndex) {
+                if (items[activeIndex]?.active()) {
+                    return
                 }
+            }
 
-                let activeItem: SlidingItemDirective | undefined
-                let inAnimation: ItemAnimationState | null = null
+            let activeItem: SlidingItemDirective | undefined
+            let inAnimation: ItemAnimationState | null = null
 
-                for (let i = 0; i < items.length; i++) {
-                    const item = items[i]
-                    const isActive = i === activeIndex
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i]
+                const isActive = i === activeIndex
 
-                    if (isActive) {
-                        activeItem = item
-                    } else {
-                        const currentlyActive = item.active()
-                        item.active.set(false)
+                if (isActive) {
+                    activeItem = item
+                } else {
+                    const currentlyActive = item.active()
+                    item.active.set(false)
 
-                        if (lazy === false && !item.rendered()) {
-                            item.rendered.set(true)
-                        }
+                    if (lazy === false && !item.rendered()) {
+                        item.rendered.set(true)
+                    }
 
-                        if (item.animation() || item.rendered()) {
-                            if (currentlyActive) {
-                                if (activeIndex < currentActiveIndex) {
-                                    item.animation.set(ItemAnimationState.RightOut)
-                                    inAnimation = ItemAnimationState.LeftIn
-                                } else {
-                                    item.animation.set(ItemAnimationState.LeftOut)
-                                    inAnimation = ItemAnimationState.RightIn
-                                }
+                    if (item.animation() || item.rendered()) {
+                        if (currentlyActive) {
+                            if (activeIndex < currentActiveIndex) {
+                                item.animation.set(ItemAnimationState.RightOut)
+                                inAnimation = ItemAnimationState.LeftIn
                             } else {
-                                item.animation.set(ItemAnimationState.FastOut)
+                                item.animation.set(ItemAnimationState.LeftOut)
+                                inAnimation = ItemAnimationState.RightIn
                             }
+                        } else {
+                            item.animation.set(ItemAnimationState.FastOut)
                         }
                     }
                 }
+            }
 
-                if (activeItem) {
-                    if (inAnimation) {
-                        activeItem.animation.set(inAnimation)
-                    } else if (items.length === 1) {
-                        activeItem.animation.set(ItemAnimationState.FastIn)
-                    } else if (activeIndex < currentActiveIndex) {
-                        activeItem.animation.set(ItemAnimationState.LeftIn)
-                    } else {
-                        activeItem.animation.set(ItemAnimationState.RightIn)
-                    }
-                    activeItem.active.set(true)
-                    activeItem.rendered.set(true)
+            if (activeItem) {
+                if (inAnimation) {
+                    activeItem.animation.set(inAnimation)
+                } else if (items.length === 1) {
+                    activeItem.animation.set(ItemAnimationState.FastIn)
+                } else if (activeIndex < currentActiveIndex) {
+                    activeItem.animation.set(ItemAnimationState.LeftIn)
+                } else {
+                    activeItem.animation.set(ItemAnimationState.RightIn)
                 }
+                activeItem.active.set(true)
+                activeItem.rendered.set(true)
+            }
 
-                const preferredClamp = clamp(preferred, 0, items.length - 1)
-                if (preferred !== preferredClamp) {
-                    this.preferred.set(preferredClamp)
-                }
+            const preferredClamp = clamp(preferred, 0, items.length - 1)
+            if (preferred !== preferredClamp) {
+                this.preferred.set(preferredClamp)
+            }
 
-                this.changes.emit(this)
-            },
-            { allowSignalWrites: true }
-        )
+            this.changes.emit(this)
+        })
     }
 }

@@ -16,11 +16,8 @@ export class SlidingItemDirective {
     readonly activated = output<boolean>()
 
     constructor() {
-        effect(
-            () => {
-                this.activated.emit(this.active())
-            },
-            { allowSignalWrites: true }
-        )
+        effect(() => {
+            this.activated.emit(this.active())
+        })
     }
 }
