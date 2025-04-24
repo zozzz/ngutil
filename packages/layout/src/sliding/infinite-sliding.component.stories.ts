@@ -1,14 +1,14 @@
 /* eslint-disable max-len */
-import { Meta, moduleMetadata, StoryObj } from "@storybook/angular/"
+import { Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
 import { Component, viewChild } from "@angular/core"
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations"
 
-import { EndlessSlidingComponent } from "./index"
+import { InfiniteSlideDirective, InfiniteSlidingComponent } from "./index"
 
 @Component({
-    selector: "story-endless-sliding",
-    imports: [EndlessSlidingComponent],
+    selector: "story-infinite-sliding",
+    imports: [InfiniteSlidingComponent, InfiniteSlideDirective],
     styles: [
         `
             .container {
@@ -42,14 +42,14 @@ import { EndlessSlidingComponent } from "./index"
                 <button (click)="pushItem()">PUSH</button>
             </div>
 
-            <nu-endless-sliding #sliding class="tabs">
-                <ng-template #item let-item> Content: {{ item }} </ng-template>
-            </nu-endless-sliding>
+            <nu-infinite-sliding #sliding class="tabs">
+                <ng-template nuInfiniteSlide let-item> Content: {{ item }} </ng-template>
+            </nu-infinite-sliding>
         </div>
     `
 })
-class StoryEndlessSlidingLayout {
-    readonly sliding = viewChild.required("sliding", { read: EndlessSlidingComponent })
+class StoryInfiniteSlidingLayout {
+    readonly sliding = viewChild.required("sliding", { read: InfiniteSlidingComponent })
     #counter = 0
 
     unshiftItem() {
@@ -62,8 +62,8 @@ class StoryEndlessSlidingLayout {
 }
 
 export default {
-    title: "Layout / EndlessSlidingLayout",
-    component: StoryEndlessSlidingLayout,
+    title: "Layout / InfiniteSlidingLayout",
+    component: StoryInfiniteSlidingLayout,
     decorators: [moduleMetadata({ imports: [BrowserAnimationsModule] })],
     parameters: {
         layout: "fullscreen",
@@ -74,11 +74,11 @@ export default {
             props: {
                 ...args
             },
-            template: `<story-endless-sliding></story-endless-sliding>`
+            template: `<story-infinite-sliding></story-infinite-sliding>`
         }
     }
 } as Meta
 
-type Story = StoryObj<StoryEndlessSlidingLayout>
+type Story = StoryObj<StoryInfiniteSlidingLayout>
 
 export const Simple: Story = {}

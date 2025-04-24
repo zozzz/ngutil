@@ -1,14 +1,14 @@
 /* eslint-disable max-len */
-import { Meta, moduleMetadata, StoryObj } from "@storybook/angular/"
+import { Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
 import { Component, viewChild } from "@angular/core"
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations"
 
-import { NuSlidingLayout, SlidingComponent } from "./index"
+import { SlideDirective, SlidingComponent } from "./index"
 
 @Component({
     selector: "story-sliding",
-    imports: [NuSlidingLayout],
+    imports: [SlidingComponent, SlideDirective],
     styles: [
         `
             .container {
@@ -47,7 +47,7 @@ import { NuSlidingLayout, SlidingComponent } from "./index"
 
             <nu-sliding #tabs class="tabs" [lazy]="true">
                 @for (item of items; track item; let index = $index) {
-                    <ng-template nuSlidingItem (activated)="onActivate($event)">
+                    <ng-template nuSlide (activated)="onActivate($event)">
                         <div class="tab-conent">
                             <div>Contetn of {{ item }}</div>
                             @for (row of [].constructor(index + 1); track item; let rowIdx = $index) {
@@ -85,7 +85,7 @@ class StorySlidingLayout {
 export default {
     title: "Layout / SlidingLayout",
     component: StorySlidingLayout,
-    decorators: [moduleMetadata({ imports: [NuSlidingLayout, BrowserAnimationsModule] })],
+    decorators: [moduleMetadata({ imports: [BrowserAnimationsModule] })],
     parameters: {
         layout: "fullscreen",
         controls: { include: [] }

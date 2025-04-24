@@ -1,13 +1,12 @@
-import { animate, state, style, transition, trigger } from "@angular/animations"
+import { animate, AnimationEvent, state, style, transition, trigger } from "@angular/animations"
 import { CommonModule } from "@angular/common"
-import { Component, computed, contentChildren, effect, input, output, signal } from "@angular/core"
+import { Component, computed, contentChildren, effect, input, model, output } from "@angular/core"
 
 import { clamp } from "lodash-es"
 
 import { Duration, Ease } from "@ngutil/style"
 
-import { ItemAnimationState, SlidingItemComponent } from "./sliding-item.component"
-import { SlidingItemDirective } from "./sliding-item.directive"
+import { SlideAnimationState, SlideDirective, SlideState } from "./slide.directive"
 
 const absolute = { position: "absolute", top: "0px", left: "0px" }
 
@@ -15,29 +14,52 @@ const anim = `${Duration.Fast} ${Ease.Acceleration}`
 
 @Component({
     selector: "nu-sliding",
-    imports: [CommonModule, SlidingItemComponent],
-    styleUrl: "./sliding.component.scss",
+    imports: [CommonModule],
+    styles: `
+        :host {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+            overflow: hidden;
+            position: relative;
+
+            .nu-slide {
+                grid-column: 1;
+                grid-row: 1;
+
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                position: relative;
+
+                overflow: hidden;
+            }
+        }
+    `,
     animations: [
         trigger("animate", [
-            state(ItemAnimationState.FastOut, style({ display: "none", ...absolute, transform: "translateX(-100%)" })),
-            state(ItemAnimationState.LeftOut, style({ display: "none", ...absolute, transform: "translateX(-100%)" })),
-            state(ItemAnimationState.RightOut, style({ display: "none", ...absolute, transform: "translateX(100%)" })),
-            state(ItemAnimationState.FastIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
-            state(ItemAnimationState.LeftIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
-            state(ItemAnimationState.RightIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
-            transition(`* => ${ItemAnimationState.LeftOut}`, [
+            state(SlideAnimationState.FastOut, style({ display: "none", ...absolute, transform: "translateX(-100%)" })),
+            state(SlideAnimationState.LeftOut, style({ display: "none", ...absolute, transform: "translateX(-100%)" })),
+            state(SlideAnimationState.RightOut, style({ display: "none", ...absolute, transform: "translateX(100%)" })),
+            state(SlideAnimationState.FastIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
+            state(SlideAnimationState.LeftIn, style({ display: "", position: "relative", transform: "translateX(0)" })),
+            state(
+                SlideAnimationState.RightIn,
+                style({ display: "", position: "relative", transform: "translateX(0)" })
+            ),
+            transition(`* => ${SlideAnimationState.LeftOut}`, [
                 style({ width: "*", ...absolute, transform: "translateX(0)" }),
                 animate(anim, style({ transform: "translateX(-100%)" }))
             ]),
-            transition(`* => ${ItemAnimationState.RightOut}`, [
+            transition(`* => ${SlideAnimationState.RightOut}`, [
                 style({ width: "*", ...absolute, transform: "translateX(0)" }),
                 animate(anim, style({ transform: "translateX(100%)" }))
             ]),
-            transition(`* => ${ItemAnimationState.LeftIn}`, [
+            transition(`* => ${SlideAnimationState.LeftIn}`, [
                 style({ display: "", position: "relative", transform: "translateX(-100%)" }),
                 animate(anim, style({ transform: "translateX(0)" }))
             ]),
-            transition(`* => ${ItemAnimationState.RightIn}`, [
+            transition(`* => ${SlideAnimationState.RightIn}`, [
                 style({ display: "", position: "relative", transform: "translateX(100%)" }),
                 animate(anim, style({ transform: "translateX(0%)" }))
             ])
@@ -47,9 +69,14 @@ const anim = `${Duration.Fast} ${Ease.Acceleration}`
         @if (items(); as _items) {
             @for (item of _items; track item; let index = $index) {
                 @if (item.rendered()) {
-                    <nu-sliding-item [@animate]="item.animation()">
+                    <div
+                        class="nu-slide"
+                        [@animate]="item.animation()"
+                        (@animate.start)="onAnimationEvent($event, item)"
+                        (@animate.done)="onAnimationEvent($event, item)"
+                    >
                         <ng-template [ngTemplateOutlet]="item.tpl" />
-                    </nu-sliding-item>
+                    </div>
                 }
             }
         }
@@ -59,7 +86,7 @@ export class SlidingComponent {
     /**
      * List of items
      */
-    readonly items = contentChildren(SlidingItemDirective)
+    readonly items = contentChildren(SlideDirective)
 
     /**
      * Lazily rendering items
@@ -69,7 +96,7 @@ export class SlidingComponent {
     /**
      * Index of the preferred item
      */
-    readonly preferred = signal(0)
+    readonly preferred = model(0)
 
     /**
      * Index of the active item
@@ -101,8 +128,8 @@ export class SlidingComponent {
                 }
             }
 
-            let activeItem: SlidingItemDirective | undefined
-            let inAnimation: ItemAnimationState | null = null
+            let activeItem: SlideDirective | undefined
+            let inAnimation: SlideAnimationState | null = null
 
             for (let i = 0; i < items.length; i++) {
                 const item = items[i]
@@ -121,14 +148,14 @@ export class SlidingComponent {
                     if (item.animation() || item.rendered()) {
                         if (currentlyActive) {
                             if (activeIndex < currentActiveIndex) {
-                                item.animation.set(ItemAnimationState.RightOut)
-                                inAnimation = ItemAnimationState.LeftIn
+                                item.animation.set(SlideAnimationState.RightOut)
+                                inAnimation = SlideAnimationState.LeftIn
                             } else {
-                                item.animation.set(ItemAnimationState.LeftOut)
-                                inAnimation = ItemAnimationState.RightIn
+                                item.animation.set(SlideAnimationState.LeftOut)
+                                inAnimation = SlideAnimationState.RightIn
                             }
                         } else {
-                            item.animation.set(ItemAnimationState.FastOut)
+                            item.animation.set(SlideAnimationState.FastOut)
                         }
                     }
                 }
@@ -138,11 +165,11 @@ export class SlidingComponent {
                 if (inAnimation) {
                     activeItem.animation.set(inAnimation)
                 } else if (items.length === 1) {
-                    activeItem.animation.set(ItemAnimationState.FastIn)
+                    activeItem.animation.set(SlideAnimationState.FastIn)
                 } else if (activeIndex < currentActiveIndex) {
-                    activeItem.animation.set(ItemAnimationState.LeftIn)
+                    activeItem.animation.set(SlideAnimationState.LeftIn)
                 } else {
-                    activeItem.animation.set(ItemAnimationState.RightIn)
+                    activeItem.animation.set(SlideAnimationState.RightIn)
                 }
                 activeItem.active.set(true)
                 activeItem.rendered.set(true)
@@ -155,5 +182,15 @@ export class SlidingComponent {
 
             this.changes.emit(this)
         })
+    }
+
+    onAnimationEvent(event: AnimationEvent, item: SlideDirective) {
+        const isHiding = event.toState.endsWith("-out")
+        const isBegin = event.phaseName === "start"
+        if (isBegin) {
+            item.state.emit(isHiding ? SlideState.Hiding : SlideState.Showing)
+        } else {
+            item.state.emit(isHiding ? SlideState.Hidden : SlideState.Shown)
+        }
     }
 }

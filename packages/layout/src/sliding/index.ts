@@ -1,15 +1,4 @@
-import { NgModule } from "@angular/core"
-
-import { EndlessSlidingComponent } from "./endless-sliding.component"
-import { SlidingItemDirective } from "./sliding-item.directive"
-import { SlidingComponent } from "./sliding.component"
-
-export { EndlessSlidingComponent, SlidingItemDirective, SlidingComponent }
-
-const members = [EndlessSlidingComponent, SlidingItemDirective, SlidingComponent]
-
-@NgModule({
-    imports: members,
-    exports: members
-})
-export class NuSlidingLayout { }
+export * from "./infinite-slide.directive"
+export * from "./infinite-sliding.component"
+export * from "./slide.directive"
+export * from "./sliding.component"

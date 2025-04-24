@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Meta, moduleMetadata, StoryObj } from "@storybook/angular/"
+import { Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
 import { Component } from "@angular/core"
 

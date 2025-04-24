@@ -4,15 +4,15 @@
 
 ```html
 <nu-sliding>
-    <ng-template nuSlidingItem>
+    <ng-template nuSlide>
         content...
     </ng-template>
 
-    <ng-template nuSlidingItem>
+    <ng-template nuSlide>
         content...
     </ng-template>
 
-    <ng-template nuSlidingItem>
+    <ng-template nuSlide>
         content...
     </ng-template>
 </nu-sliding>
