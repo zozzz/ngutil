@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.83](https://github.com/zozzz/ngutil/compare/0.0.82...0.0.83) (2025-04-24)
+
+
+### Features
+
+* **common:** add isEqual ([1c0ccd8](https://github.com/zozzz/ngutil/commit/1c0ccd80c8c2bd470d646b767f304897bb53856e))
+
 ## [0.0.82](https://github.com/zozzz/ngutil/compare/0.0.81...0.0.82) (2025-04-24)
 
 
