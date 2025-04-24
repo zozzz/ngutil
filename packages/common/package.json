@@ -2,8 +2,8 @@
   "name": "@ngutil/common",
   "version": "0.0.81",
   "peerDependencies": {
-    "@angular/cdk": "18.2.6",
-    "@angular/core": "18.2.6",
+    "@angular/cdk": "19.2.11",
+    "@angular/core": "19.2.8",
     "lodash": "^4.17.21",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2",

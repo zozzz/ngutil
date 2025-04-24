@@ -11,8 +11,8 @@
     }
   },
   "peerDependencies": {
-    "@angular/common": "18.2.6",
-    "@angular/core": "18.2.6",
+    "@angular/common": "19.2.8",
+    "@angular/core": "19.2.8",
     "@ngutil/common": "workspace:*",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2"
