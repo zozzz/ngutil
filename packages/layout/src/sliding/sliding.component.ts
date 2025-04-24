@@ -2,7 +2,7 @@ import { animate, AnimationEvent, state, style, transition, trigger } from "@ang
 import { CommonModule } from "@angular/common"
 import { Component, computed, contentChildren, effect, input, model, output } from "@angular/core"
 
-import { clamp } from "lodash-es"
+import { clamp } from "es-toolkit"
 
 import { Duration, Ease } from "@ngutil/style"
 

@@ -1,4 +1,4 @@
-import { isPlainObject } from "lodash"
+import { isPlainObject } from "es-toolkit"
 
 import { kebabCase } from "../../../util"
 import { CommonOptions, ConvertData, ConverterOptions } from "./abstract"
@@ -113,7 +113,7 @@ function _mapConverter(options: ScssOptions, data: any, path: string[], parent: 
  *   <placeholderProperty>: value;
  * }
  */
-function placeholderConverter(options: ScssOptions, data: ConvertData) {}
+function placeholderConverter(options: ScssOptions, data: ConvertData) { }
 
 export function flatten(data: ConvertData): Flattened[] {
     const res = []

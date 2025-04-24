@@ -93,8 +93,6 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@types/lodash-es": "^4.17.0",
-    "lodash-es": "^4.17.21",
     "es-toolkit": "^1.35.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2",

@@ -6,7 +6,7 @@
     "@angular/core": "19.2.8",
     "@ngutil/aria": "workspace:*",
     "@ngutil/common": "workspace:*",
-    "lodash": "^4.17.21",
+    "es-toolkit": "^1.35.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2",
     "utility-types": "^3.11.0"

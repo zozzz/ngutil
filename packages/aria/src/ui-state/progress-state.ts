@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop"
 
 import { animationFrames, map, Observable, of, scan, shareReplay, startWith, Subject, switchMap, takeWhile } from "rxjs"
 
-import { clamp } from "lodash-es"
+import { clamp } from "es-toolkit"
 import { Mutable } from "utility-types"
 
 import { DeepReadonly } from "@ngutil/common"
@@ -123,15 +123,17 @@ export class ProgressState {
     readonly value = toSignal(this.value$)
 
     readonly percent$: Observable<number> = this.value$.pipe(
-        map(value =>
-            value != null
-                ? clamp(
-                      Object.values(value).reduce((a, b) => a + b.share, 0),
-                      0,
-                      1
-                  )
-                : 0
-        ),
+        map(value => {
+            if (value == null) {
+                return 0
+            }
+
+            return clamp(
+                Object.values(value).reduce((a, b) => a + b.share, 0),
+                0,
+                1
+            )
+        }),
         shareReplay({ bufferSize: 1, refCount: true })
     )
 

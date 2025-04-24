@@ -1,4 +1,4 @@
-import { flattenDepth } from "lodash-es"
+import { flatten } from "es-toolkit"
 
 type GetterFn = (srcs: any[]) => any[]
 export type PathGetter<T = any, R = any> = (obj: T) => R[]
@@ -18,7 +18,7 @@ const IsNumber = /^\d+$/
 
 function makeGetter(part: string, parent: GetterFn): GetterFn {
     if (part === "*") {
-        return obj => flattenDepth(parent(obj), 1)
+        return obj => flatten(parent(obj), 1)
     } else {
         const key = IsNumber.test(part) ? Number(part) : part
         return obj => parent(obj).map(v => (v != null ? v[key] : undefined))

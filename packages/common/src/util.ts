@@ -1,4 +1,4 @@
-import { isPlainObject as _isPlainObject, cloneDeep } from "lodash-es"
+import { cloneDeep, isPlainObject } from "es-toolkit"
 
 import { DeepReadonly } from "./types/readonly"
 import { IfAny, IfTuple } from "./types/util"
@@ -7,7 +7,8 @@ import { IfAny, IfTuple } from "./types/util"
 
 export const deepClone: <T>(obj: T) => T = typeof structuredClone === "function" ? structuredClone : cloneDeep
 // export const deepFreeze: <T>(obj: T) => DeepReadonly<T> = o => Object.freeze(o) as any
-export const isPlainObject: (arg: any) => arg is { [key: string]: any } = _isPlainObject as any
+// export const isPlainObject: (arg: any) => arg is { [key: string]: any } = _isPlainObject as any
+export { isPlainObject }
 
 export function deepFreeze<T>(obj: T): DeepReadonly<T> {
     if (obj == null) {
@@ -18,16 +19,16 @@ export function deepFreeze<T>(obj: T): DeepReadonly<T> {
         obj.clear =
             obj.delete =
             obj.set =
-                function () {
-                    throw new Error("map is read-only")
-                }
+            function () {
+                throw new Error("map is read-only")
+            }
     } else if (obj instanceof Set) {
         obj.add =
             obj.clear =
             obj.delete =
-                function () {
-                    throw new Error("set is read-only")
-                }
+            function () {
+                throw new Error("set is read-only")
+            }
     }
 
     // Freeze self

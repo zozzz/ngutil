@@ -1,4 +1,4 @@
-import { camelCase, kebabCase, upperFirst } from "lodash"
+import { camelCase, kebabCase, upperFirst } from "es-toolkit"
 
 export { camelCase, kebabCase }
 

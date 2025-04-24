@@ -1,6 +1,6 @@
 import { map, Observable } from "rxjs"
 
-import { flattenDeep, isEqual } from "lodash-es"
+import { flattenDeep, isEqual } from "es-toolkit"
 
 import { deepClone, isPlainObject } from "@ngutil/common"
 

@@ -10,7 +10,8 @@
     "@angular/core": "19.2.8",
     "@ngutil/aria": "workspace:*",
     "@ngutil/common": "workspace:*",
-    "@ngutil/style": "workspace:*"
+    "@ngutil/style": "workspace:*",
+    "es-toolkit": "^1.35.0"
   },
   "publishConfig": {
     "access": "public",

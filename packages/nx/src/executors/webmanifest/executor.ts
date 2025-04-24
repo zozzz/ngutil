@@ -1,7 +1,7 @@
 import { type ExecutorContext } from "@nx/devkit"
+import { isPlainObject } from "es-toolkit"
 import { favicons } from "favicons"
 import * as fs from "fs/promises"
-import { isPlainObject } from "lodash"
 import * as path from "path"
 import { rimraf } from "rimraf"
 

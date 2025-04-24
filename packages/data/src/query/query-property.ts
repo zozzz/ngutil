@@ -1,6 +1,6 @@
 import { BehaviorSubject, combineLatest, map, Observable, shareReplay } from "rxjs"
 
-import { isEqual } from "lodash-es"
+import { isEqual } from "es-toolkit"
 
 import { deepClone, deepFreeze } from "@ngutil/common"
 

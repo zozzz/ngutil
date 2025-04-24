@@ -1,4 +1,4 @@
-import { flattenDeep, intersection } from "lodash-es"
+import { flattenDeep, intersection } from "es-toolkit"
 
 import { AsPrimitive, deepClone, isFalsy, isPlainObject, isTruthy, MaxRecursion } from "@ngutil/common"
 

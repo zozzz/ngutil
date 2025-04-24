@@ -1,4 +1,4 @@
-import { clamp } from "lodash-es"
+import { clamp } from "es-toolkit"
 
 import {
     AlignHorizontalOpposite,
@@ -299,7 +299,7 @@ function altStringToFns(input: FloatingPositionAltConst): FloatingPositionAltNor
     }
 }
 
-function none(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {}
+function none(pos: FloatingPosition, axis: FloatingPositionAltAxis): void { }
 
 function flip(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {
     const wh: "width" | "height" = axis === FloatingPositionAltAxis.Horizontal ? "width" : "height"
@@ -309,7 +309,7 @@ function flip(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {
     return greatest(pos, axis)
 }
 
-function shift(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {}
+function shift(pos: FloatingPosition, axis: FloatingPositionAltAxis): void { }
 
 function greatest(pos: FloatingPosition, axis: FloatingPositionAltAxis): void {
     _bySize(pos, axis, (a, b) => a >= b)
