@@ -1,4 +1,4 @@
-import { computed, Directive, effect, inject, input } from "@angular/core"
+import { computed, Directive, inject, input } from "@angular/core"
 
 import { ConnectProtocol, ElementInput, isElementInput } from "@ngutil/common"
 
@@ -38,11 +38,6 @@ export class Focusable implements ConnectProtocol {
 
         return 0
     })
-
-    constructor() {
-        // TODO: miért kell ez?, ha nincs itt akkor nem frissül
-        effect(() => this._tabindex(), { allowSignalWrites: false })
-    }
 
     connect(value: Focusable | FocusState | ElementInput) {
         if (value instanceof FocusState || isElementInput(value)) {

@@ -20,7 +20,7 @@ import {
     tap
 } from "rxjs"
 
-import { isEqual } from "lodash-es"
+import { isEqual } from "es-toolkit"
 import { focusable, type FocusableElement, isFocusable } from "tabbable"
 
 import { coerceElement, ElementInput } from "@ngutil/common"
@@ -104,6 +104,8 @@ export class FocusService {
             map(({ activity, focus, blur, overrides }) => {
                 const override = overrides.get(focus as any)
 
+                // console.log({ activity, focus, blur, overrides })
+
                 // If focus in with alt+tab
                 if (blur === document && activity.origin === "keyboard") {
                     return { origin: override || "program", element: focus } satisfies FocusChanges
@@ -115,7 +117,7 @@ export class FocusService {
 
                 // If press tab button, first fire the event in the currently focused element
                 if (focus === blur) {
-                    return null
+                    return { origin: null, element: focus } satisfies FocusChanges
                 }
 
                 // When press tab, the activity is on the current fucesd element,
@@ -175,15 +177,20 @@ export class FocusService {
     #setOrigin(el: ElementInput, origin: FocusOrigin) {
         const target = coerceElement(el)
         const map = this.#originOverrides.value
-        map.set(target, origin)
-        this.#originOverrides.next(map)
+        const old = map.get(target)
+        if (old !== origin) {
+            map.set(target, origin)
+            this.#originOverrides.next(map)
+        }
     }
 
     #delOrigin(el: ElementInput) {
         const target = coerceElement(el)
         const map = this.#originOverrides.value
-        map.delete(target)
-        this.#originOverrides.next(map)
+        if (map.has(target)) {
+            map.delete(target)
+            this.#originOverrides.next(map)
+        }
     }
 }
 

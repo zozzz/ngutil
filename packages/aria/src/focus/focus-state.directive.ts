@@ -1,7 +1,7 @@
-import { Directive, effect, ElementRef, inject } from "@angular/core"
+import { Directive, ElementRef, inject } from "@angular/core"
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
 
-import { BehaviorSubject, combineLatest, debounceTime, map, Observable, of, shareReplay, switchMap } from "rxjs"
+import { BehaviorSubject, combineLatest, map, Observable, of, shareReplay, switchMap } from "rxjs"
 
 import { ConnectProtocol, ElementInput, isElementInput } from "@ngutil/common"
 
@@ -31,7 +31,7 @@ export class FocusState implements ConnectProtocol {
     )
 
     readonly event$: Observable<FocusChanges> = combineLatest([this.#self, this.#connEvent]).pipe(
-        debounceTime(100),
+        // debounceTime(100), // TODO: miért volt ez itt?
         map(values => values.find(v => v.origin != null) || this.#default),
         shareReplay(1)
     )
@@ -44,8 +44,6 @@ export class FocusState implements ConnectProtocol {
     readonly within = toSignal(this.within$, { rejectErrors: true, manualCleanup: true })
 
     constructor() {
-        // TODO: miért kell ez?, ha nincs itt akkor nem frissül
-        effect(() => this.origin(), { allowSignalWrites: false })
         this.#parent?.connect(this).pipe(takeUntilDestroyed()).subscribe()
     }
 
