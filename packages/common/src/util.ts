@@ -1,4 +1,4 @@
-import { cloneDeep, isPlainObject } from "es-toolkit"
+import { isEqual as _isEqual, cloneDeep, isPlainObject } from "es-toolkit"
 
 import { DeepReadonly } from "./types/readonly"
 import { IfAny, IfTuple } from "./types/util"
@@ -9,6 +9,9 @@ export const deepClone: <T>(obj: T) => T = typeof structuredClone === "function"
 // export const deepFreeze: <T>(obj: T) => DeepReadonly<T> = o => Object.freeze(o) as any
 // export const isPlainObject: (arg: any) => arg is { [key: string]: any } = _isPlainObject as any
 export { isPlainObject }
+
+// TODO: submit es-toolkit pr for this
+export const isEqual: <A, B extends A>(a: A, b: B) => a is B = _isEqual as unknown as any
 
 export function deepFreeze<T>(obj: T): DeepReadonly<T> {
     if (obj == null) {
