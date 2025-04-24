@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.0.82](https://github.com/zozzz/ngutil/compare/0.0.81...0.0.82) (2025-04-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **layout:** refactor Sliding
+
+### Features
+
+* **aria:** Add dirty ui state ([4d4a92f](https://github.com/zozzz/ngutil/commit/4d4a92f04923aaea21162a0cba6e75a985b461c8))
+* **layout:** refactor Sliding ([fef7d17](https://github.com/zozzz/ngutil/commit/fef7d17e5c5fc60ce605e2fc5433e9b0ff744d5c))
+* replace lodash-es -> es-toolkit ([9bbd451](https://github.com/zozzz/ngutil/commit/9bbd451cbdc6b612380d3c6b66afecb3ed594ff9))
+
+
+### Bug Fixes
+
+* **aria:** remove origin when clicking on unfocusable element ([7fb7615](https://github.com/zozzz/ngutil/commit/7fb761507ab3aa7e3eb1f3c61505a83a8381f94b))
+
+
+### Other changes
+
+* update nx & angular ([38cdbb2](https://github.com/zozzz/ngutil/commit/38cdbb29b62eb7e0777cf176d7b69af628674804))
+* update packages ([c60b62a](https://github.com/zozzz/ngutil/commit/c60b62ad366fef407dae947fcb61b61229aa89cf))
+
 ## [0.0.81](https://github.com/zozzz/ngutil/compare/0.0.80...0.0.81) (2025-03-13)
 
 ## [0.0.80](https://github.com/zozzz/ngutil/compare/0.0.79...0.0.80) (2025-01-16)
