@@ -1,5 +1,14 @@
 import { NgTemplateOutlet } from "@angular/common"
-import { ChangeDetectionStrategy, Component, computed, contentChild, linkedSignal, model, signal } from "@angular/core"
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    contentChild,
+    linkedSignal,
+    model,
+    signal,
+    untracked
+} from "@angular/core"
 
 import { InfiniteSlideDirective } from "./infinite-slide.directive"
 import { SlideDirective, SlideState } from "./slide.directive"
@@ -8,23 +17,23 @@ import { SlidingComponent } from "./sliding.component"
 export type InfiniteSlideContext<T> = { $implicit: T }
 
 export interface InfiniteSlideData<T> {
-    position: -1 | 1
+    position: -1 | 0 | 1
     data: T
 }
 
 class Item<T> {
     readonly id: string
     readonly state = signal<SlideState>(SlideState.Pending)
+    // readonly data: WritableSignal<T>
 
-    currentState = SlideState.Pending
-
-    constructor(readonly data: T) {
+    constructor(public data: T) {
         this.id = `${++uid}`
+        // this.data = signal<T>(data)
     }
 
     setState(state: SlideState): void {
-        if (this.currentState !== state) {
-            this.currentState = state
+        const current = untracked(this.state)
+        if (current !== state) {
             this.state.set(state)
         }
     }
@@ -88,8 +97,13 @@ export class InfiniteSlidingComponent<T = any> {
     push(data: T) {
         this.data.set({ position: 1, data })
     }
+
     unshift(data: T) {
         this.data.set({ position: -1, data })
+    }
+
+    update(data: T) {
+        this.data.set({ position: 0, data })
     }
 }
 
@@ -99,7 +113,17 @@ function insertData<T>(list: Array<Item<T>>, slideData: InfiniteSlideData<T> | u
     }
 
     const { position, data } = slideData
-    if (position === -1) {
+    if (position === 0) {
+        const visible = list.find(item =>
+            [SlideState.Pending, SlideState.Showing, SlideState.Shown].includes(item.state())
+        )
+        if (!visible) {
+            return [...list, new Item(data)]
+        } else {
+            visible.data = data
+            return list.slice(0)
+        }
+    } else if (position === -1) {
         return [new Item(data), ...list]
     } else {
         return [...list, new Item(data)]

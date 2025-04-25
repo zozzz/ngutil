@@ -40,6 +40,7 @@ import { InfiniteSlideDirective, InfiniteSlidingComponent } from "./index"
             <div class="buttons">
                 <button (click)="unshiftItem()">UNSHIFT</button>
                 <button (click)="pushItem()">PUSH</button>
+                <button (click)="updateCurrent()">UPDATE</button>
             </div>
 
             <nu-infinite-sliding #sliding class="tabs">
@@ -58,6 +59,10 @@ class StoryInfiniteSlidingLayout {
 
     pushItem() {
         this.sliding().push(++this.#counter)
+    }
+
+    updateCurrent() {
+        this.sliding().update(++this.#counter)
     }
 }
 
