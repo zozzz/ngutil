@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.86](https://github.com/zozzz/ngutil/compare/0.0.85...0.0.86) (2025-04-25)
+
 ## [0.0.85](https://github.com/zozzz/ngutil/compare/0.0.84...0.0.85) (2025-04-25)
 
 
