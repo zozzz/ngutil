@@ -13,6 +13,11 @@ export { isPlainObject }
 // TODO: submit es-toolkit pr for this
 export const isEqual: <A, B extends A>(a: A, b: B) => a is B = _isEqual as unknown as any
 
+export function isEqualStrict<A, B extends A>(a: A, b: B): a is B {
+    return a === b
+}
+// export const isEqualStrict: <A, B extends A>(a: A, b: B) => a is B = (a, b) => a === b
+
 export function deepFreeze<T>(obj: T): DeepReadonly<T> {
     if (obj == null) {
         return obj as any
