@@ -1,17 +1,7 @@
 import { computed, Directive, ElementRef, inject } from "@angular/core"
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop"
 
-import {
-    BehaviorSubject,
-    combineLatest,
-    distinctUntilChanged,
-    map,
-    Observable,
-    of,
-    shareReplay,
-    switchMap,
-    tap
-} from "rxjs"
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, shareReplay, switchMap } from "rxjs"
 
 import { ConnectProtocol, ElementInput, isElementInput, isEqual } from "@ngutil/common"
 
@@ -42,7 +32,6 @@ export class FocusState implements ConnectProtocol {
     )
 
     readonly event$: Observable<FocusOriginEvent> = combineLatest([this.#self, this.#connEvent]).pipe(
-        tap(v => console.log(this.#el.nativeElement, v[0], v[1])),
         // debounceTime(100), // TODO: miért volt ez itt?
         map(([self, conn]) => (self.origin !== null ? self : conn.origin !== null ? conn : this.#default)),
         distinctUntilChanged(isEqual),
