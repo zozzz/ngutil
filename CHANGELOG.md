@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.0.85](https://github.com/zozzz/ngutil/compare/0.0.84...0.0.85) (2025-04-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **aria:** Refactor FocusService, and optimize FocusState
+
+### Features
+
+* **common:** isEqualStrict ([7471e7e](https://github.com/zozzz/ngutil/commit/7471e7e4bd8b9eaa4f44ca3902dec184595ede4f))
+* **layout:** Infinite sliding update current slide ([8a12826](https://github.com/zozzz/ngutil/commit/8a128263b13548c263794f71256249007c99fa00))
+
+
+### Bug Fixes
+
+* **aria:** Refactor FocusService, and optimize FocusState ([ba2f43c](https://github.com/zozzz/ngutil/commit/ba2f43c8ec5e6a78df1ccc87c67d3dca00ad617a))
+
 ## [0.0.84](https://github.com/zozzz/ngutil/compare/0.0.83...0.0.84) (2025-04-24)
 
 ## [0.0.83](https://github.com/zozzz/ngutil/compare/0.0.82...0.0.83) (2025-04-24)
