@@ -1,7 +1,6 @@
 import { FocusTrapFactory } from "@angular/cdk/a11y"
 import { DOCUMENT } from "@angular/common"
 import { inject, Injectable, NgZone } from "@angular/core"
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 
 import {
     BehaviorSubject,
@@ -13,19 +12,21 @@ import {
     map,
     merge,
     Observable,
+    of,
+    scan,
     shareReplay,
-    startWith,
     Subject,
     Subscriber,
-    tap
+    switchMap,
+    tap,
+    timer
 } from "rxjs"
 
-import { isEqual } from "es-toolkit"
 import { focusable, type FocusableElement, isFocusable } from "tabbable"
 
-import { coerceElement, ElementInput } from "@ngutil/common"
+import { coerceElement, ElementInput, isEqual, isEqualStrict } from "@ngutil/common"
 
-import { ActivityOrigin, ActivityService } from "../activity"
+import { ActivityEvent, ActivityOrigin, ActivityService } from "../activity"
 
 const EVENT_OPTIONS: AddEventListenerOptions = {
     capture: true,
@@ -34,15 +35,18 @@ const EVENT_OPTIONS: AddEventListenerOptions = {
 
 export type FocusOrigin = ActivityOrigin | null
 
-export interface FocusChanges {
+export interface FocusOriginEvent {
+    element: Node
     origin: FocusOrigin
-    element: HTMLElement
 }
 
-export interface FocusableEvent {
-    origin: FocusOrigin
-    exact: boolean
-    node: Node
+interface EventState {
+    activity?: ActivityEvent
+    focus?: Node
+    blur?: Node
+    nextOrigin?: FocusOrigin
+    event?: FocusOriginEvent
+    deferred?: FocusOriginEvent
 }
 
 @Injectable({ providedIn: "root" })
@@ -52,9 +56,9 @@ export class FocusService {
     readonly #zone = inject(NgZone)
     readonly #document = inject(DOCUMENT)
 
-    readonly #originOverrides = new BehaviorSubject<Map<HTMLElement, FocusOrigin>>(new Map())
+    readonly #originOverrides = new BehaviorSubject<Map<Node, ActivityOrigin>>(new Map())
 
-    readonly #focus = listener(this.#document, this.#zone, "focus", EVENT_OPTIONS).pipe(
+    readonly #focus: Observable<Node> = listener(this.#document, this.#zone, "focus", EVENT_OPTIONS).pipe(
         connect(focus =>
             this.#zone.runOutsideAngular(() => {
                 let lastFocused: Node | null = null
@@ -86,75 +90,109 @@ export class FocusService {
             })
         ),
 
-        distinctUntilChanged(strictEq)
+        distinctUntilChanged(isEqualStrict)
     )
 
-    readonly #blurEvent = listener(this.#document, this.#zone, "blur", EVENT_OPTIONS).pipe(startWith(null))
+    readonly #blurEvent = listener(this.#document, this.#zone, "blur", EVENT_OPTIONS)
     readonly #blurSide = new Subject<Node>()
-    readonly #blur = merge(this.#blurEvent, this.#blurSide).pipe(distinctUntilChanged(strictEq))
+    readonly #blur: Observable<Node> = merge(this.#blurEvent, this.#blurSide).pipe(distinctUntilChanged(isEqualStrict))
 
-    readonly events: Observable<FocusChanges> = this.#zone.runOutsideAngular(() =>
-        combineLatest({
-            activity: this.#activity.events$.pipe(filter(event => event.type !== "mousemove")),
-            focus: this.#focus,
-            blur: this.#blur.pipe(tap(el => this.#delOrigin(el as any))),
-            overrides: this.#originOverrides
-        }).pipe(
-            takeUntilDestroyed(),
-            map(({ activity, focus, blur, overrides }) => {
-                const override = overrides.get(focus as any)
+    readonly events: Observable<FocusOriginEvent> = this.#zone.runOutsideAngular(() => {
+        const activity = this.#activity.events$.pipe(
+            filter(activity => activity.type !== "mousemove"),
+            map(activity => ({ activity }) satisfies Partial<EventState>)
+        )
+        const focus = this.#focus.pipe(map(focus => ({ focus }) satisfies Partial<EventState>))
+        const blur = this.#blur.pipe(map(blur => ({ blur }) satisfies Partial<EventState>))
 
-                // console.log({ activity, focus, blur, overrides })
+        const event = merge(activity, focus, blur).pipe(
+            scan<EventState, EventState>((state, curr) => {
+                const result: EventState = { ...state, event: undefined, deferred: undefined }
 
-                // If focus in with alt+tab
-                if (blur === document && activity.origin === "keyboard") {
-                    return { origin: override || "program", element: focus } satisfies FocusChanges
+                if (curr.blur != null) {
+                    if (curr.blur === state.focus) {
+                        result.deferred = { element: curr.blur, origin: null }
+                    } else if (state.deferred && state.deferred.origin == null) {
+                        result.deferred = state.deferred
+                    }
+                } else if (curr.focus != null) {
+                    if (
+                        curr.focus === document &&
+                        state.blur === curr.focus &&
+                        (!state.deferred || !state.deferred.origin)
+                    ) {
+                        result.deferred = { element: curr.focus, origin: null }
+                        result.nextOrigin = "program"
+                        return result
+                    }
+
+                    if (state.nextOrigin) {
+                        result.event = { element: curr.focus, origin: state.nextOrigin }
+                        result.nextOrigin = undefined
+                    } else if (state.activity) {
+                        result.event = { element: curr.focus, origin: state.activity.origin }
+                    }
+                } else if (curr.activity) {
+                    delete result.nextOrigin
+                    if (
+                        state.event &&
+                        curr.activity.origin !== "keyboard" &&
+                        state.event.origin !== curr.activity.origin
+                    ) {
+                        result.deferred = { ...state.event, origin: curr.activity.origin }
+                    }
                 }
-
-                if (focus === document) {
-                    return { origin: override || "program", element: focus } satisfies FocusChanges
-                }
-
-                // If press tab button, first fire the event in the currently focused element
-                if (focus === blur) {
-                    return { origin: null, element: focus } satisfies FocusChanges
-                }
-
-                // When press tab, the activity is on the current fucesd element,
-                // so when blur is changed to it, the focus change is completed
-                if (activity.origin === "keyboard" && isActivityElement(activity.node, blur)) {
-                    return { origin: override || "keyboard", element: focus } satisfies FocusChanges
-                }
-
-                if (isActivityElement(activity.node, focus)) {
-                    return { origin: override || activity.origin, element: focus }
+                return { ...result, ...curr }
+            }, {} as EventState),
+            switchMap(state => {
+                if (state.deferred) {
+                    return timer(20).pipe(
+                        map(() => {
+                            state.event = state.deferred
+                            delete state.deferred
+                            return state
+                        })
+                    )
                 } else {
-                    return { origin: override || "program", element: focus } satisfies FocusChanges
+                    return of(state)
                 }
             }),
-            filter(v => !!v),
+            map(state => state.event),
+            filter(event => !!event)
+        )
+
+        return combineLatest({ event, overrides: this.#originOverrides }).pipe(
+            map(({ event, overrides }) => {
+                const override = overrides.get(event.element)
+
+                if (override != null) {
+                    overrides.delete(event.element)
+                    event.origin = override || event.origin
+                }
+
+                return event
+            }),
             distinctUntilChanged(isEqual),
             shareReplay({ bufferSize: 1, refCount: true })
         )
-    )
+    })
 
     watch(element: ElementInput) {
         const el = coerceElement(element)
         return this.events.pipe(
             map(event => {
-                if (
-                    event.element &&
-                    (event.element === el || (typeof el.contains === "function" && el.contains(event.element)))
-                ) {
+                if (event.element && (event.element === el || el.contains(event.element))) {
                     return event
                 }
-                return { element: el, origin: null } as FocusChanges
+                return { element: el, origin: null } as FocusOriginEvent
             })
         )
     }
 
-    focus(node: ElementInput, origin: FocusOrigin | null) {
-        this.#setOrigin(node, origin)
+    focus(node: ElementInput, origin?: ActivityOrigin) {
+        if (origin != null) {
+            this.#setOrigin(node, origin)
+        }
         coerceElement(node).focus()
     }
 
@@ -174,7 +212,7 @@ export class FocusService {
         return this.#focusTrap.create(coerceElement(inside), deferCaptureElements)
     }
 
-    #setOrigin(el: ElementInput, origin: FocusOrigin) {
+    #setOrigin(el: ElementInput, origin: ActivityOrigin) {
         const target = coerceElement(el)
         const map = this.#originOverrides.value
         const old = map.get(target)
@@ -194,22 +232,14 @@ export class FocusService {
     }
 }
 
-function isActivityElement(activityEl?: Node | null, focused?: Node | null): boolean {
-    return activityEl != null && focused != null && (activityEl === focused || focused.contains(activityEl))
-}
-
 function listener(doc: Document, zone: NgZone, type: Event["type"], options: AddEventListenerOptions) {
     return new Observable((dst: Subscriber<Node>) =>
         zone.runOutsideAngular(() => {
             const handler = (e: Event) => {
-                dst.next(e.target as Node)
+                dst.next(e.target! as Node)
             }
             document.addEventListener(type, handler, options)
             return () => document.removeEventListener(type, handler, options)
         })
     )
-}
-
-function strictEq(a: any, b: any): boolean {
-    return a === b
 }

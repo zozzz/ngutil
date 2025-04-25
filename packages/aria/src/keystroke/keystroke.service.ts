@@ -105,7 +105,7 @@ export class KeystrokeService {
         if (isElementInput(activation)) {
             return this.#focusActivation(coerceElement(activation))
         } else if (activation instanceof FocusState) {
-            return activation.origin$.pipe(map(origin => origin != null))
+            return activation.event$.pipe(map(({ origin }) => origin != null))
         } else {
             return from(activation).pipe(
                 switchMap(value => {

@@ -4,9 +4,9 @@ import { Meta, moduleMetadata, StoryFn, StoryObj } from "@storybook/angular"
 import { AsyncPipe } from "@angular/common"
 import { Component, Directive, ElementRef, HostListener, inject, input } from "@angular/core"
 
-import { ActivityService } from "../activity/activity.service"
+import { ActivityOrigin, ActivityService } from "../activity/activity.service"
 import { FocusState } from "./focus-state.directive"
-import { FocusOrigin, FocusService } from "./focus.service"
+import { FocusService } from "./focus.service"
 import { Focusable } from "./focusable.directive"
 
 @Component({
@@ -39,33 +39,33 @@ import { Focusable } from "./focusable.directive"
                 }
             }
 
-            &[focus~="mouse"] > pre {
+            &[focus-present~="mouse"] > pre {
                 background: red;
                 color: #fff;
             }
 
-            &[focus~="program"] > pre {
+            &[focus-present~="program"] > pre {
                 background: green;
                 color: #fff;
             }
 
-            &[focus~="keyboard"] > pre {
+            &[focus-present~="keyboard"] > pre {
                 background: blue;
                 color: #fff;
             }
 
-            &[focus~="touch"] > pre {
+            &[focus-present~="touch"] > pre {
                 background: rgb(26, 90, 83);
                 color: #fff;
             }
 
-            &[focusWithin] > pre {
+            &[focus-within] > pre {
                 opacity: 0.8;
             }
         }
     `,
     template: `
-        <pre>origin = {{ focus.origin() }} - within: {{ focus.within() }}</pre>
+        <pre>self = {{ focus.self() }} - within: {{ focus.within() }} - has: {{ focus.has() }}</pre>
         <div><ng-content /></div>
     `
 })
@@ -92,9 +92,9 @@ class RemoveMe {
 class FocusOriginDirective {
     el = inject(ElementRef)
     focusSvc = inject(FocusService)
-    focusOrigin = input.required<FocusOrigin>()
+    focusOrigin = input.required<ActivityOrigin>()
 
-    @HostListener("click", ["$event"])
+    @HostListener("mousedown", ["$event"])
     onClick(event: Event) {
         event.preventDefault()
         event.stopImmediatePropagation()
