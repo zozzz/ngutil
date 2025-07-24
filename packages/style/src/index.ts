@@ -4,6 +4,7 @@ export { Ease, Duration } from "./sass"
 export { DimensionWatcher, WatchBox } from "./services/dimension-watcher.service"
 export { PositionWatcher } from "./services/position-watcher.service"
 export { RectWatcher } from "./services/rect-watcher.service"
+export { NodeRemovedWatcher } from "./services/node-removed-watcher.service"
 
 export {
     AlignmentInput,
