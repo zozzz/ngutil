@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.87](https://github.com/zozzz/ngutil/compare/0.0.86...0.0.87) (2025-07-24)
+
+
+### Features
+
+* **style:** NodeRemovedWatcher ([a9b2fe8](https://github.com/zozzz/ngutil/commit/a9b2fe8d6400c8edffddf00963b24cdd6857cbdd))
+
+
+### Bug Fixes
+
+* **floating:** hide floating element when the anchor is removed ([84a70cc](https://github.com/zozzz/ngutil/commit/84a70cc632bbb6ad1e64579f130e97cd0cbf7adc))
+* **floating:** not completed the subscription on hide ([aa7c386](https://github.com/zozzz/ngutil/commit/aa7c386a6da0c0b868f0fa3929b7738ba270ef74))
+
 ## [0.0.86](https://github.com/zozzz/ngutil/compare/0.0.85...0.0.86) (2025-04-25)
 
 ## [0.0.85](https://github.com/zozzz/ngutil/compare/0.0.84...0.0.85) (2025-04-25)
