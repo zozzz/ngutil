@@ -40,7 +40,7 @@ export abstract class FloatingFactory {
                 if (event.type === "disposing") {
                     disposing = true
                 }
-                if (event.type === "cleanup") {
+                if (event.type === "disposed") {
                     dest.complete()
                 }
             })
@@ -51,7 +51,7 @@ export abstract class FloatingFactory {
                 showSub.unsubscribe()
                 channelSub.unsubscribe()
                 if (!disposing) {
-                    ref.hide().subscribe()
+                    ref.close().subscribe()
                 }
             }
         })

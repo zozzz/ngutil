@@ -28,16 +28,16 @@ import { flatten } from "es-toolkit"
 
 export type LifecycleHandler = () => ObservableInput<unknown> | null | undefined | void
 
-export class StopLifecycle extends Error { }
+export class StopLifecycle extends Error {}
 
 export type LifecycleOptions = Record<string, { order?: "parallel" | "sequential"; cancellable?: boolean }>
 
 export type LifecycleRemap<A, B> =
     A extends Lifecycle<infer AO, infer AS>
-    ? B extends Lifecycle<infer BO, infer BS>
-    ? Partial<{ [K in AS]: BS }>
-    : never
-    : never
+        ? B extends Lifecycle<infer BO, infer BS>
+            ? Partial<{ [K in AS]: BS }>
+            : never
+        : never
 
 export class Lifecycle<T extends LifecycleOptions, S extends keyof T = keyof T> {
     readonly states: T
@@ -177,16 +177,12 @@ export class Lifecycle<T extends LifecycleOptions, S extends keyof T = keyof T> 
     }
 
     destroy() {
-        ; (this as any).#handlers = null
+        ;(this as any).#handlers = null
         this.#until.next()
         this.#until.complete()
     }
 
     #run(state: S) {
-        if (this.#handlers == null || !this.states[state]) {
-            return of(true)
-        }
-
         return new Observable((dest: Subscriber<boolean>) => {
             this.current$.next(state)
 

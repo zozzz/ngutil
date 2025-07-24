@@ -7,7 +7,7 @@ import { toSignal } from "@angular/core/rxjs-interop"
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms"
 import { provideAnimations } from "@angular/platform-browser/animations"
 
-import { filter, map, Observable, startWith, Subscriber, Subscription } from "rxjs"
+import { filter, finalize, map, Observable, startWith, Subscriber, Subscription } from "rxjs"
 
 import { Focusable, FocusState } from "@ngutil/aria"
 import { Alignment, FloatingPosition, floatingPositionDirection } from "@ngutil/style"
@@ -128,19 +128,23 @@ class FloatingTrigger {
     open(event: MouseEvent) {
         let placementRect: Subscription | undefined = undefined
         let positionSub: Subscription | undefined = undefined
-        this.#build(event).subscribe(event => {
-            if (event.type === "init") {
-                placementRect?.unsubscribe()
-                positionSub?.unsubscribe()
-                placementRect = this.#rect(event.floatingRef).subscribe()
-                positionSub = event.floatingRef.watchTrait<FloatingPosition>("position").subscribe(position => {
-                    console.log(position, floatingPositionDirection(position))
-                })
-            } else if (event.type === "disposing") {
-                placementRect?.unsubscribe()
-                positionSub?.unsubscribe()
-            }
-        })
+        this.#build(event)
+            .show()
+            .pipe(finalize(() => console.log("FINALIZE")))
+            .subscribe(event => {
+                console.log("EVENT", event.type)
+                if (event.type === "init") {
+                    placementRect?.unsubscribe()
+                    positionSub?.unsubscribe()
+                    placementRect = this.#rect(event.floatingRef).subscribe()
+                    positionSub = event.floatingRef.watchTrait<FloatingPosition>("position").subscribe(position => {
+                        console.log(position, floatingPositionDirection(position))
+                    })
+                } else if (event.type === "disposing") {
+                    placementRect?.unsubscribe()
+                    positionSub?.unsubscribe()
+                }
+            })
     }
 
     #build(event: MouseEvent) {
@@ -280,7 +284,7 @@ class FloatingPopover {
         <floating-trigger />
     `
 })
-class Floatings { }
+class Floatings {}
 
 export default {
     title: "Floatings",
