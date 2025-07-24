@@ -3,11 +3,14 @@ import {
     distinctUntilChanged,
     isObservable,
     map,
+    NEVER,
     Observable,
     of,
     Subscriber,
     switchMap,
-    takeUntil
+    take,
+    takeUntil,
+    tap
 } from "rxjs"
 
 import { isEqual } from "es-toolkit"
@@ -25,6 +28,7 @@ import {
     FloatingPositionDirection,
     FloatingPositionPlacementOptions,
     floatingPositionToStyle,
+    NodeRemovedWatcher,
     Rect,
     RectWatcher
 } from "@ngutil/style"
@@ -100,6 +104,7 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
             const injector = floatingRef.container.injector
             const dimWatcher = injector.get(DimensionWatcher)
             const rectWatcher = injector.get(RectWatcher)
+            const removeWatcher = injector.get(NodeRemovedWatcher)
 
             const constraints = this.options.content.constraints || {}
             const constraintsWatches: ConstraintWatches = {
@@ -116,8 +121,18 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
                 constraints: combineLatest(constraintsWatches)
             }
 
+            const anchorRemoved =
+                this.options.anchor.ref === "viewport" || this.options.anchor.ref instanceof Window
+                    ? NEVER
+                    : removeWatcher.watch(refToNode(this.options.anchor.ref, floatingRef) as unknown as ElementInput)
+
+            const onRemove = anchorRemoved.pipe(
+                tap(() => floatingRef.close().subscribe()),
+                take(1)
+            )
+
             return combineLatest(watches)
-                .pipe(distinctUntilChanged(isEqual))
+                .pipe(takeUntil(onRemove), distinctUntilChanged(isEqual))
                 .subscribe(dims => {
                     const pos = floatingPosition({ dims, options: this.options })
                     const floatingEl = floatingRef.container.nativeElement
@@ -130,12 +145,17 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
 }
 
 function refWatcher(rectWatcher: RectWatcher, ref: PositionTraitElementRef, floatingRef: FloatingRef<any>) {
+    const node = refToNode(ref, floatingRef)
+    return rectWatcher.watch(node, "border-box")
+}
+
+function refToNode(ref: PositionTraitElementRef, floatingRef: FloatingRef<any>) {
     if (ref === "layer") {
-        return rectWatcher.watch(floatingRef.layerSvc.root, "border-box")
+        return floatingRef.layerSvc.root
     } else if (ref === "viewport" || ref instanceof Window) {
-        return rectWatcher.watch(window, "border-box")
+        return window
     } else {
-        return rectWatcher.watch(ref, "border-box")
+        return ref
     }
 }
 

@@ -2,7 +2,7 @@
 import { applicationConfig, Meta, moduleMetadata, StoryObj } from "@storybook/angular"
 
 import { JsonPipe } from "@angular/common"
-import { Component, computed, ElementRef, inject, input } from "@angular/core"
+import { Component, computed, ElementRef, inject, input, viewChild } from "@angular/core"
 import { toSignal } from "@angular/core/rxjs-interop"
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms"
 import { provideAnimations } from "@angular/platform-browser/animations"
@@ -89,12 +89,15 @@ import { AlwaysOnTop } from "./layer"
             </select>
         </div>
         <button (click)="open($event)">OPEN</button>
+        <button #removeBtn (click)="doRemoveOpen($event)" style="z-index:121313432145435">REMOVE THIS</button>
     `
 })
 class FloatingTrigger {
     readonly floating = inject(FloatingService)
     readonly focus = inject(FocusState)
     readonly el = inject(ElementRef)
+
+    readonly removeBtn = viewChild.required("removeBtn", { read: ElementRef })
 
     readonly anchorLinkGroup = new FormGroup({
         horizontal: new FormControl("left"),
@@ -171,7 +174,7 @@ class FloatingTrigger {
             slideAwayAnimation(),
             rippleRevealAnimation({ origin: { x: event.clientX, y: event.clientY } }),
             focus({ connect: this.focus }),
-            closeTrigger()
+            closeTrigger({ clickOutside: { allowedElements: [event.currentTarget as HTMLElement, this.removeBtn()] } })
         )
 
         if (this.backdrop() === "crop") {
@@ -219,6 +222,12 @@ class FloatingTrigger {
 
             dst.add(() => div.parentElement?.removeChild(div))
         })
+    }
+
+    doRemoveOpen(event: Event) {
+        event.stopImmediatePropagation()
+        event.preventDefault()
+        this.el.nativeElement.parentElement.removeChild(this.el.nativeElement)
     }
 }
 
