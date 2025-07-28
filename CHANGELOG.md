@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.88](https://github.com/zozzz/ngutil/compare/0.0.87...0.0.88) (2025-07-28)
+
+
+### Bug Fixes
+
+* window scroll position watcher ([f6f0b08](https://github.com/zozzz/ngutil/commit/f6f0b083a96b7786f77486cff5f45050a37c4fa4))
+
 ## [0.0.87](https://github.com/zozzz/ngutil/compare/0.0.86...0.0.87) (2025-07-24)
 
 
