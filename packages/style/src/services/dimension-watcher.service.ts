@@ -28,7 +28,11 @@ export class DimensionWatcher {
         let watcher = watches.get(element)
         if (watcher == null) {
             if (element instanceof Window) {
-                watcher = this.#createWindowResizeWatcher()
+                if (box === "scroll-box") {
+                    watcher = this.#createScollWatcher(watches, this.#document.documentElement)
+                } else {
+                    watcher = this.#createWindowResizeWatcher()
+                }
             } else {
                 if (box === "scroll-box") {
                     watcher = this.#createScollWatcher(watches, element)
