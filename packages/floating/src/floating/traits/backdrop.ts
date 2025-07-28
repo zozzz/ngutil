@@ -13,6 +13,7 @@ interface CommonOptions {}
 
 export type BackdropTraitOptions = CoverOptions & CommonOptions
 
+// TODO: prevent scroll https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
 export class BackdropTrait implements FloatingTrait<BackdropRef> {
     readonly name = "backdrop"
 
