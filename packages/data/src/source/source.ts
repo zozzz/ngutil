@@ -5,6 +5,7 @@ import {
     catchError,
     combineLatest,
     distinctUntilChanged,
+    EMPTY,
     filter,
     map,
     merge,
@@ -72,9 +73,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
             this.store.hasSlice(query.slice).pipe(
                 take(1),
                 switchMap(hasSlice => {
-                    if (hasSlice) {
-                        return this.store.getSlice(query.slice).pipe(take(1))
-                    } else {
+                    if (!hasSlice) {
                         this.#setBusy(true)
                         return this.provider.queryList(query).pipe(
                             take(1),
@@ -87,12 +86,14 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                                 if (result.total != null) {
                                     this.total$.next(result.total)
                                 }
-                                return this.store.insertSlice(query.slice, result.items)
-                            }),
-                            take(1)
+                                return this.store.insertSlice(query.slice, result.items).pipe(take(1))
+                            })
                         )
+                    } else {
+                        return EMPTY
                     }
-                })
+                }),
+                switchMap(() => this.store.getSlice(query.slice).pipe(take(1)))
             )
         ),
         shareReplay({ bufferSize: 1, refCount: true })

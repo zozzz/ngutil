@@ -63,7 +63,8 @@ export type DataSourceProxyInput<T extends Model> = DataSourceProxy<T> | DataSou
 })
 export class DataSourceProxy<T extends Model>
     extends CdkDataSource<T | undefined>
-    implements OnDestroy, ConnectProtocol {
+    implements OnDestroy, ConnectProtocol
+{
     @Input({ required: true, alias: "nuDataSource" })
     set value(value: DataSourceProxyInput<T>) {
         this.#valueSub?.unsubscribe()
