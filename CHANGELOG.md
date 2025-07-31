@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.89](https://github.com/zozzz/ngutil/compare/0.0.88...0.0.89) (2025-07-31)
+
+
+### Bug Fixes
+
+* **data:** DataSource.items$ returns inconsistent result ([2347e44](https://github.com/zozzz/ngutil/commit/2347e445ef066d27b8cb378a7b5153e51eae8c82))
+
 ## [0.0.88](https://github.com/zozzz/ngutil/compare/0.0.87...0.0.88) (2025-07-28)
 
 
