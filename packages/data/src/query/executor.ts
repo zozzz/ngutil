@@ -8,7 +8,7 @@ import { Filter, filterBy } from "./filter"
 import { groupBy } from "./grouper"
 import { QueryResult, QueryWithSlice } from "./query"
 import { Slice } from "./slice"
-import { sortBy, Sorter } from "./sorter"
+import { sortBy, Sorter, type SorterNormalized } from "./sorter"
 
 const INPUT = Symbol("INPUT")
 
@@ -96,7 +96,7 @@ interface SorterExecutor<T extends Model> extends PartialExecutor {
 }
 
 function sorterExecutor<T extends Model>(
-    sorter?: DeepReadonly<Sorter<T>>,
+    sorter?: DeepReadonly<Sorter<T>> | DeepReadonly<SorterNormalized>,
     prev?: SorterExecutor<T>
 ): SorterExecutor<T> | undefined {
     return compileExec<T>(sorter, prev, sortBy)

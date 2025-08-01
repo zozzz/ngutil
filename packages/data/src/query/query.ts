@@ -4,21 +4,21 @@ import { type DeepReadonly } from "@ngutil/common"
 
 import { type Model } from "../model"
 import { readonlyProp } from "./common"
-import { type Filter, FilterProperty, FilterPropertySet } from "./filter"
-import { type Grouper, GrouperProperty, GrouperPropertySet } from "./grouper"
+import { type FilterNormalized, FilterProperty, FilterPropertySet } from "./filter"
+import { type GrouperNormalized, GrouperProperty, GrouperPropertySet } from "./grouper"
 import { type QueryPropertySetOf } from "./query-property"
 import { type Slice } from "./slice"
-import { type Slimer, SlimerProperty, SlimerPropertySet } from "./slimer"
-import { type Sorter, SorterProperty, SorterPropertySet } from "./sorter"
+import { type SlimerNormalized, SlimerProperty, SlimerPropertySet } from "./slimer"
+import { type SorterNormalized, SorterProperty, SorterPropertySet } from "./sorter"
 
-export interface Query<T extends Model> {
-    filter?: DeepReadonly<Filter<T>>
-    sorter?: DeepReadonly<Sorter<T>>
-    slimer?: DeepReadonly<Slimer<T>>
-    grouper?: DeepReadonly<Grouper<T>>
+export interface Query {
+    filter?: DeepReadonly<FilterNormalized>
+    sorter?: DeepReadonly<SorterNormalized>
+    slimer?: DeepReadonly<SlimerNormalized>
+    grouper?: DeepReadonly<GrouperNormalized>
 }
 
-export interface QueryWithSlice<T extends Model> extends Query<T> {
+export interface QueryWithSlice<T extends Model> extends Query {
     slice: DeepReadonly<Slice>
 }
 
@@ -28,7 +28,7 @@ export interface QueryResult<T extends Model> {
     groups?: any[]
 }
 
-export interface QuerySubject<T extends Model, N extends string[]> extends Observable<Query<T>> {
+export interface QuerySubject<T extends Model, N extends string[]> extends Observable<Query> {
     readonly filter: QueryPropertySetOf<FilterPropertySet<T>, FilterProperty<T>, N>
     readonly sorter: QueryPropertySetOf<SorterPropertySet, SorterProperty<T>, N>
     readonly slimer: QueryPropertySetOf<SlimerPropertySet<T>, SlimerProperty<T>, N>

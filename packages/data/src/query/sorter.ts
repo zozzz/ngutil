@@ -32,7 +32,7 @@ export type SorterNormalized = Array<NormalizedEntry>
  * items.toSorted(sortBy([{"author.name": "asc"}]))
  * ```
  */
-export function sortBy<T extends Model>(sorters: Sorter<T>): SorterFn<T> {
+export function sortBy<T extends Model>(sorters: Sorter<T> | SorterNormalized): SorterFn<T> {
     if (sorters.length === 0) {
         throw new Error("Empty sorter")
     }
@@ -48,8 +48,15 @@ export function sortBy<T extends Model>(sorters: Sorter<T>): SorterFn<T> {
  * normalizeSorter([{id: {dir: "desc", emptyFirst: false}}]) -> [{path: "id", isAsc: false, emptyFirst: false}]
  * ```
  */
-export function sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNormalized {
+export function sorterNormalize<T extends Model>(sorters: Sorter<T> | SorterNormalized): SorterNormalized {
+    if (sorterIsNormalized(sorters)) {
+        return sorters
+    }
     return _sorterNormalize(sorters)
+}
+
+export function sorterIsNormalized(sorter: any): sorter is SorterNormalized {
+    return Array.isArray(sorter) && sorter.every(value => "path" in value && "isAsc" in value && "emptyFirst" in value)
 }
 
 function _sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNormalized {
@@ -86,7 +93,7 @@ function _sorterNormalize<T extends Model>(sorters: Sorter<T>): SorterNormalized
     )
 }
 
-function _sorterCompile<T extends Model>(sorters: Sorter<T>): SorterFn<T> {
+function _sorterCompile<T extends Model>(sorters: Sorter<T> | SorterNormalized): SorterFn<T> {
     if (sorters.length === 0) {
         return (_a, _b) => 0
     }
