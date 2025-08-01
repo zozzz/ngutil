@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.91](https://github.com/zozzz/ngutil/compare/0.0.90...0.0.91) (2025-08-01)
+
+
+### Bug Fixes
+
+* **data:** DataSource setFilter, updateFilter types ([7209d3a](https://github.com/zozzz/ngutil/commit/7209d3af58352d90454cd547e6f9dba5d3a59dfb))
+* **data:** Query properties always normalized ([dd3dab9](https://github.com/zozzz/ngutil/commit/dd3dab91e9672349d319d6f44233cc688f1f665c))
+
 ## [0.0.90](https://github.com/zozzz/ngutil/compare/0.0.89...0.0.90) (2025-08-01)
 
 
