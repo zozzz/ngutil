@@ -226,10 +226,10 @@ export function sorterMerge(...sorters: (SorterNormalized | undefined | null)[])
 
 export class SorterProperty<T extends Model> extends QueryProperty<Sorter<T>, SorterNormalized> {
     protected override norm(a: Sorter<T>): SorterNormalized | undefined {
-        return sorterNormalize(a)
+        return this.provider.sorterNormalize(a)
     }
     protected override merge(a?: SorterNormalized, b?: SorterNormalized): SorterNormalized | undefined {
-        return sorterMerge(a, b)
+        return this.provider.sorterMerge(a, b)
     }
 }
 
@@ -247,9 +247,9 @@ export class SorterPropertySet extends QueryPropertySet<SorterNormalized> {
     }
 
     protected override newProperty() {
-        return new SorterProperty(undefined)
+        return new SorterProperty(this.provider)
     }
     protected override merge(...args: any[]) {
-        return sorterMerge(...args)
+        return this.provider.sorterMerge(...args)
     }
 }

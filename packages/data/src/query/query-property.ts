@@ -4,9 +4,14 @@ import { isEqual } from "es-toolkit"
 
 import { deepClone, deepFreeze } from "@ngutil/common"
 
+import type { DataProvider } from "../provider"
 import { readonlyProp } from "./common"
 
 export abstract class QueryProperty<I, O> extends BehaviorSubject<O | undefined> {
+    constructor(protected readonly provider: DataProvider<any>) {
+        super(undefined)
+    }
+
     set(value?: I | O) {
         this.#nextClone(value != null ? this.norm(value) : undefined)
     }
@@ -52,7 +57,10 @@ export abstract class QueryProperty<I, O> extends BehaviorSubject<O | undefined>
 export abstract class QueryPropertySet<O> extends Observable<O> {
     readonly #combined: Observable<O>
 
-    constructor(...names: string[]) {
+    constructor(
+        protected readonly provider: DataProvider<any>,
+        ...names: string[]
+    ) {
         super(dest => this.#combined.subscribe(dest))
 
         const observables: Array<Observable<any>> = []

@@ -119,7 +119,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     constructor(
         public readonly provider: DataProvider<T>,
         public readonly store: CollectionStore<T> = new MemoryStore(),
-        public readonly query$ = querySubject("normal", "forced")
+        public readonly query$ = querySubject(provider, "normal", "forced")
     ) {
         super()
     }

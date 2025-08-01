@@ -27,6 +27,7 @@ export const enum FilterOp {
     StartsWithInsesitive = "^*",
     EndsWith = "$",
     EndsWithInsesitive = "$*",
+    Similarity = "**",
     Regexp = "~",
     RegexpInsesitive = "~*",
     Or = "|",
@@ -54,6 +55,7 @@ export const OPERATORS: Array<string> = [
     FilterOp.StartsWithInsesitive,
     FilterOp.EndsWith,
     FilterOp.EndsWithInsesitive,
+    FilterOp.Similarity,
     FilterOp.Regexp,
     FilterOp.RegexpInsesitive,
     FilterOp.Or,
@@ -112,6 +114,7 @@ type SimpleOperators<T> =
     | Lte<T>
     | Contains<T>
     | StartsWith<T>
+    | Similarity<T>
     | EndsWith<T>
     | Regexp<T>
     | T
@@ -128,6 +131,7 @@ type Lt<T> = Operator<T, T | AsPrimitive<T>, FilterOp.Lt, FilterOp.LtInsesitive>
 type Lte<T> = Operator<T, T | AsPrimitive<T>, FilterOp.Lte, FilterOp.LteInsesitive>
 type Contains<T> = Operator<T, string, FilterOp.Contains, FilterOp.ContainsInsesitive>
 type StartsWith<T> = Operator<T, string, FilterOp.StartsWith, FilterOp.StartsWithInsesitive>
+type Similarity<T> = Operator<T, string, FilterOp.Similarity, never, null>
 type EndsWith<T> = Operator<T, string, FilterOp.EndsWith, FilterOp.EndsWithInsesitive>
 type Regexp<T> = Operator<T, string, FilterOp.Regexp, FilterOp.RegexpInsesitive, RegExp>
 
@@ -309,6 +313,8 @@ function _filterComplileNormPath(getter: PathGetter, op: FilterOp, value: any, g
             return matcher(getter, v => (Array.isArray(v) ? v.includes(value) : String(v).includes(lower)))
 
         case FilterOp.ContainsInsesitive:
+        case FilterOp.Similarity:
+            // TODO: proper similarity test
             lower = String(value).toLocaleLowerCase()
             return matcher(getter, v => String(v).toLocaleLowerCase().includes(lower))
 
@@ -395,20 +401,20 @@ export class FilterProperty<T extends Model> extends QueryProperty<Filter<T>, Fi
         a?: FilterNormalized | undefined,
         b?: FilterNormalized | undefined
     ): FilterNormalized | undefined {
-        return filterMerge(a, b)
+        return this.provider.filterMerge(a, b)
     }
     protected override norm(a: FilterNormalized | Filter<T>): FilterNormalized | undefined {
-        return filterNormalize(a)
+        return this.provider.filterNormalize(a)
     }
 }
 
 export class FilterPropertySet<T extends Model> extends QueryPropertySet<Filter<T>> {
     protected override newProperty() {
-        return new FilterProperty(undefined)
+        return new FilterProperty(this.provider)
     }
 
     protected override merge(...args: any[]) {
-        return filterMerge(...args)
+        return this.provider.filterMerge(...args)
     }
 }
 

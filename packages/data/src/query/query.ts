@@ -3,6 +3,7 @@ import { combineLatest, Observable, shareReplay } from "rxjs"
 import { type DeepReadonly } from "@ngutil/common"
 
 import { type Model } from "../model"
+import type { DataProvider } from "../provider"
 import { readonlyProp } from "./common"
 import { type FilterNormalized, FilterProperty, FilterPropertySet } from "./filter"
 import { type GrouperNormalized, GrouperProperty, GrouperPropertySet } from "./grouper"
@@ -35,11 +36,14 @@ export interface QuerySubject<T extends Model, N extends string[]> extends Obser
     readonly grouper: QueryPropertySetOf<GrouperPropertySet<T>, GrouperProperty<T>, N>
 }
 
-export function querySubject<T extends Model, N extends string[]>(...names: N): QuerySubject<T, N> {
-    const filter = new FilterPropertySet(...names)
-    const sorter = new SorterPropertySet(...names)
-    const slimer = new SlimerPropertySet(...names)
-    const grouper = new GrouperPropertySet(...names)
+export function querySubject<T extends Model, N extends string[]>(
+    provider: DataProvider<T>,
+    ...names: N
+): QuerySubject<T, N> {
+    const filter = new FilterPropertySet(provider, ...names)
+    const sorter = new SorterPropertySet(provider, ...names)
+    const slimer = new SlimerPropertySet(provider, ...names)
+    const grouper = new GrouperPropertySet(provider, ...names)
 
     const result = combineLatest({ filter, sorter, slimer, grouper }).pipe(shareReplay(1))
     readonlyProp(result, "filter", filter)

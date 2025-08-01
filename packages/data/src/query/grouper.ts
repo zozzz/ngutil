@@ -99,20 +99,20 @@ export function grouperNormalize<T extends Model>(grouper: Grouper<T>): GrouperN
 
 export class GrouperProperty<T extends Model> extends QueryProperty<Grouper<T>, GrouperNormalized> {
     protected override norm(a: any) {
-        return grouperNormalize
+        return this.provider.grouperNormalize(a)
     }
 
     protected override merge(a?: any, b?: any) {
-        return grouperMerge(a, b)
+        return this.provider.grouperMerge(a, b)
     }
 }
 
 export class GrouperPropertySet<T extends Model> extends QueryPropertySet<Grouper<T>> {
     protected override newProperty() {
-        return new GrouperProperty(undefined)
+        return new GrouperProperty(this.provider)
     }
 
     protected override merge(...args: any[]) {
-        return grouperMerge(...args)
+        return this.provider.grouperMerge(...args)
     }
 }

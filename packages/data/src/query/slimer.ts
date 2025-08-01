@@ -29,20 +29,20 @@ export function slimerMerge<T extends Model>(...slimers: Slimer<T>): any {}
 
 export class SlimerProperty<T extends Model> extends QueryProperty<Slimer<T>, SlimerNormalized> {
     protected override norm(a: any) {
-        return slimerNormalize(a)
+        return this.provider.slimerNormalize(a)
     }
 
     protected override merge(a?: any, b?: any) {
-        return slimerMerge(a, b)
+        return this.provider.slimerMerge(a, b)
     }
 }
 
 export class SlimerPropertySet<T extends Model> extends QueryPropertySet<Slimer<T>> {
     protected override newProperty() {
-        return new SlimerProperty(undefined)
+        return new SlimerProperty(this.provider)
     }
 
     protected override merge(...args: any[]) {
-        return slimerMerge(...args)
+        return this.provider.slimerMerge(...args)
     }
 }
