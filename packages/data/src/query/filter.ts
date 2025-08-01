@@ -6,7 +6,7 @@ import { Model } from "../model"
 import { PathGetter, pathGetterCompile } from "./path"
 import { QueryProperty, QueryPropertySet } from "./query-property"
 
-export const enum FilterOp {
+export enum FilterOp {
     Eq = "==",
     EqStrict = "===",
     EqInsesitive = "==*",
