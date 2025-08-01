@@ -129,14 +129,14 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         return this
     }
 
-    setFilter(filter: Record<"normal" | "forced", Filter<T>>) {
+    setFilter(filter: Partial<Record<"normal" | "forced", Filter<T>>>) {
         for (const [k, v] of Object.entries(filter)) {
             this.query$.filter[k as "normal" | "forced"].set(v)
         }
         return this
     }
 
-    updateFilter(filter: Record<"normal" | "forced", Filter<T>>) {
+    updateFilter(filter: Partial<Record<"normal" | "forced", Filter<T>>>) {
         for (const [k, v] of Object.entries(filter)) {
             this.query$.filter[k as "normal" | "forced"].update(v)
         }
