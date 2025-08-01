@@ -14,7 +14,6 @@ import {
     ReplaySubject,
     shareReplay,
     Subject,
-    Subscriber,
     switchMap,
     take,
     takeUntil,
@@ -28,7 +27,7 @@ import { ConnectProtocol, deepClone, deepFreeze, isFalsy } from "@ngutil/common"
 
 import type { Model, ModelRef } from "../model"
 import type { DataProvider } from "../provider/provider"
-import type { QueryResult, QueryWithSlice, Slice } from "../query"
+import type { Filter, QueryResult, QueryWithSlice, Slice } from "../query"
 import { querySubject } from "../query"
 import { type CollectionStore, MemoryStore, type PartialCollection } from "../store"
 
@@ -55,7 +54,15 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         // tap(() => this.#setBusy(true)),
         // TODO: maybe silent reset or prevent items$ chenges
         // TODO: alternative solution use cacheId, and query item from store with this cacheId
-        switchMap(({ query }) => this.store.clear().pipe(map(() => query))),
+        switchMap(({ query }) =>
+            this.store.clear().pipe(
+                map(() => {
+                    this.total$.next(undefined)
+                    ;(this.reset$ as Subject<void>).next(void 0)
+                    return query
+                })
+            )
+        ),
         switchMap(query =>
             this.slice$.pipe(
                 map(slice => {
@@ -66,6 +73,8 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         ),
         shareReplay({ bufferSize: 1, refCount: true })
     )
+
+    readonly reset$: Observable<void> = new Subject<void>()
 
     readonly items$: Observable<PartialCollection<T>> = this.#query.pipe(
         switchMap(v => (this.provider.isAsync ? timer(DEBOUNCE_TIME).pipe(map(() => v)) : of(v))),
@@ -85,6 +94,8 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                             switchMap(result => {
                                 if (result.total != null) {
                                     this.total$.next(result.total)
+                                } else if (result.items.length < query.slice.end - query.slice.start) {
+                                    this.total$.next(query.slice.start + result.items.length)
                                 }
                                 return this.store.insertSlice(query.slice, result.items).pipe(take(1))
                             })
@@ -115,6 +126,20 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     setSlice(slice: Slice) {
         this.#slice.next(slice)
+        return this
+    }
+
+    setFilter(filter: Record<"normal" | "forced", Filter<T>>) {
+        for (const [k, v] of Object.entries(filter)) {
+            this.query$.filter[k as "normal" | "forced"].set(v)
+        }
+        return this
+    }
+
+    updateFilter(filter: Record<"normal" | "forced", Filter<T>>) {
+        for (const [k, v] of Object.entries(filter)) {
+            this.query$.filter[k as "normal" | "forced"].update(v)
+        }
         return this
     }
 
@@ -192,13 +217,13 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     #cvSubs = new Map<CollectionViewer, Subject<void>>()
 
-    override connect(collectionViewer: CollectionViewer): Observable<readonly (T | undefined)[]> {
+    override connect(collectionViewer: CollectionViewer) {
         const until = new Subject<void>()
 
         this.#cvSubs.get(collectionViewer)?.next()
         this.#cvSubs.set(collectionViewer, until)
 
-        return new Observable((subscriber: Subscriber<readonly (T | undefined)[]>) => {
+        return new Observable<PartialCollection<T>>(subscriber => {
             const sub1 = collectionViewer.viewChange.subscribe(this.#slice)
             const sub2 = this.items$.subscribe(subscriber)
 
