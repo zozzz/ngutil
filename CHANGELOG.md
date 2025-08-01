@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.92](https://github.com/zozzz/ngutil/compare/0.0.91...0.0.92) (2025-08-01)
+
+
+### Features
+
+* **data:** DataProvider has merge and norm functions for filter, sorter, slimer, grouper ([2c3ae25](https://github.com/zozzz/ngutil/commit/2c3ae25542cd61778a11d1b17a1c60c0817b928b))
+
 ## [0.0.91](https://github.com/zozzz/ngutil/compare/0.0.90...0.0.91) (2025-08-01)
 
 
