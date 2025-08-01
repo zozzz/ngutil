@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.90](https://github.com/zozzz/ngutil/compare/0.0.89...0.0.90) (2025-08-01)
+
+
+### Features
+
+* **data:** DataSource gain new props: reset$, setFilter, updateFilter ([e6573ac](https://github.com/zozzz/ngutil/commit/e6573ac95c901666332fa9eeab4cfa803cccf9a9))
+
 ## [0.0.89](https://github.com/zozzz/ngutil/compare/0.0.88...0.0.89) (2025-07-31)
 
 
