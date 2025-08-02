@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.94](https://github.com/zozzz/ngutil/compare/0.0.93...0.0.94) (2025-08-02)
+
+
+### Features
+
+* **data:** filterIsNormnalized function ([1b4ee0b](https://github.com/zozzz/ngutil/commit/1b4ee0b6d03ea8b5bce3e360ed7fffc0d46f4e64))
+
 ## [0.0.93](https://github.com/zozzz/ngutil/compare/0.0.92...0.0.93) (2025-08-01)
 
 ## [0.0.92](https://github.com/zozzz/ngutil/compare/0.0.91...0.0.92) (2025-08-01)
