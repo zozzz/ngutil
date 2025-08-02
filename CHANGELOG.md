@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.95](https://github.com/zozzz/ngutil/compare/0.0.94...0.0.95) (2025-08-02)
+
+
+### Features
+
+* **data:** add not filter ([ab8eacc](https://github.com/zozzz/ngutil/commit/ab8eaccf0f6327f5a69ddca78f190e4dd871ee19))
+
 ## [0.0.94](https://github.com/zozzz/ngutil/compare/0.0.93...0.0.94) (2025-08-02)
 
 
