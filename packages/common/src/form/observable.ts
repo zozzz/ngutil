@@ -14,7 +14,7 @@ export interface ObservableOptions {
 
 export interface ObservableValueOptions extends ObservableOptions {
     debounce?: number
-    falsyToNull?: boolean
+    falsyToUndefined?: boolean
 }
 
 export type FormControlProperties =
@@ -30,7 +30,7 @@ export type FormControlProperties =
     | "errors"
 
 export const DEFAULT: ObservableOptions = { distinct: true, destruct: true }
-export const VALUE_DEFAULT: ObservableValueOptions = { ...DEFAULT, falsyToNull: true }
+export const VALUE_DEFAULT: ObservableValueOptions = { ...DEFAULT, falsyToUndefined: true }
 
 export function fcObservableValue<T, O extends ObservableValueOptions>(
     fc: FormControl<T>,
@@ -45,8 +45,8 @@ export function fcObservableValue<T, O extends ObservableValueOptions>(
         result = result.pipe(debounceTime(opts.debounce))
     }
 
-    if (opts.falsyToNull) {
-        result = result.pipe(map(v => (isFalsy(v) ? null : v)))
+    if (opts.falsyToUndefined) {
+        result = result.pipe(map(v => (isFalsy(v) ? undefined : v)))
     }
 
     return handleCommonOptions(result, opts) as any

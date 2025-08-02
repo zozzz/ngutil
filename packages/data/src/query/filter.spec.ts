@@ -1,33 +1,71 @@
 import { Product, product1, product2, product3, product4, product5, products } from "./_fixtures"
-import { Filter, filterBy, filterMerge } from "./filter"
+import { Filter, filterBy, filterMerge, filterNormalize, type FilterNormalized, FilterOp } from "./filter"
 
 describe("Filter", () => {
-    // describe("Normalize", () => {
-    //     const cases: { [key: string]: [Filters<Product>, any] } = {
-    //         "{id:1}": [{ id: 1 }, { "&": [{ path: "id", op: "==", value: 1 }] }],
-    //         "{id:1,kind:{===:VIRTUAL}}": [
-    //             { id: 1, kind: { "===": ProductKind.Virtual } },
-    //             {
-    //                 "&": [
-    //                     { path: "id", op: "==", value: 1 },
-    //                     { path: "kind", op: "===", value: "VIRTUAL" }
-    //                 ]
-    //             }
-    //         ],
-    //         "{'|': [{id: 10}, {name: 'Product 1'}]}": [
-    //             { "|": [{ id: 10 }, { name: "Product 1" }] },
-    //             { "&": [{ id: { "==": 1 } }, { kind: { "===": ProductKind.Virtual } }] }
-    //         ]
-    //     }
+    describe("Normalize", () => {
+        const cases: Array<[Filter<Product>, FilterNormalized]> = [
+            [{ id: 1 }, { path: "id", op: FilterOp.EqStrict, value: 1 }],
+            [
+                { id: 1, name: 2 },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "id", op: FilterOp.EqStrict, value: 1 },
+                        { path: "name", op: FilterOp.EqStrict, value: 2 }
+                    ]
+                }
+            ],
+            [
+                { id: { "|": [1, 2] } },
+                {
+                    op: FilterOp.Or,
+                    value: [
+                        { path: "id", op: FilterOp.EqStrict, value: 1 },
+                        { path: "id", op: FilterOp.EqStrict, value: 2 }
+                    ]
+                }
+            ],
+            [
+                { "&": [{ id: { ">": 0 } }, { id: { "<": 100 } }] },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "id", op: FilterOp.Gt, value: 0 },
+                        { path: "id", op: FilterOp.Lt, value: 100 }
+                    ]
+                }
+            ],
 
-    //     for (const [name, [filter, expected]] of Object.entries(cases)) {
-    //         it(name, () => {
-    //             const res = normalizeFilter(filter)
-    //             console.log(name, util.inspect(res, { depth: null }))
-    //             expect(res).toEqual(expected)
-    //         })
-    //     }
-    // })
+            [
+                { id: { "&": [{ ">": 0 }, { "<": 100 }] } },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "id", op: FilterOp.Gt, value: 0 },
+                        { path: "id", op: FilterOp.Lt, value: 100 }
+                    ]
+                }
+            ],
+            [
+                { id: { "!": [1, 2] } },
+                {
+                    op: FilterOp.Not,
+                    value: [
+                        { path: "id", op: FilterOp.EqStrict, value: 1 },
+                        { path: "id", op: FilterOp.EqStrict, value: 2 }
+                    ]
+                }
+            ]
+        ]
+
+        for (const [filter, expected] of cases) {
+            it(JSON.stringify(filter), () => {
+                const res = filterNormalize(filter)
+                // console.log(util.inspect(res, { depth: null }))
+                expect(res).toEqual(expected)
+            })
+        }
+    })
 
     describe("operators", () => {
         const cases: { [key: string]: [Filter<Product>, Product[]] } = {
@@ -54,9 +92,10 @@ describe("Filter", () => {
             "~ (string input)": [{ name: { "~": "^P[roduct]+\\s*\\d+$" } }, products],
             "~ (regex input)": [{ name: { "~": /^P[roduct]+\s*\d+$/ } }, products],
             "~* (string input)": [{ name: { "~*": "^P[RODUCT]+\\s*\\d+$" } }, products],
-            // TODO: recursive type
-            // "|": [{ id: { "|": [1, 5] } }, [product1, product5]],
-            // "&": [{ id: { "&": [{ ">": 0 }, { "<": 2 }] } }, [product1]],
+            "|": [{ id: { "|": [1, 5] } }, [product1, product5]],
+            "&": [{ id: { "&": [{ ">": 0 }, { "<": 2 }] } }, [product1]],
+            "!": [{ id: { "!": [{ ">": 0 }, { "<": 2 }] } }, [product2, product3, product4, product5]],
+            "!2": [{ id: { "!": [{ "===": 2 }] } }, [product1, product3, product4, product5]],
             "& (indirect)": [{ id: { ">": 0, "<=": 2 } }, [product1, product2]],
             "categories.*.author.name.title==null": [
                 { "categories.*.author.name.title": { "==": null } },
@@ -78,23 +117,49 @@ describe("Filter", () => {
 
     type FilterInput = Filter<Product> | undefined | null
     describe("merge", () => {
-        const cases: Array<[FilterInput, FilterInput, Filter<Product> | undefined]> = [
-            [{}, {}, {}],
-            [null, {}, {}],
-            [undefined, {}, {}],
-            [{}, null, {}],
-            [{}, undefined, {}],
+        const cases: Array<[...FilterInput[], Filter<Product> | undefined]> = [
+            [{}, {}, undefined],
+            [null, {}, undefined],
+            [undefined, {}, undefined],
+            [{}, null, undefined],
+            [{}, undefined, undefined],
+            // clear filter
+            [{ id: 1 }, undefined, undefined],
+            // clear filter
+            [{ id: 1 }, null, undefined],
+            // clear & set filter
+            [{ id: 1 }, null, { name: "test" }, { path: "name", op: "===", value: "test" }],
             [null, undefined, undefined],
-            [{ id: 1 }, {}, { id: 1 }],
-            [{}, { id: 1 }, { id: 1 }],
-            [{ id: 1 }, { id: null }, { id: null }],
-            [{ id: 1 }, { id: undefined }, {}]
+            // do nothing
+            [{ id: 1 }, {}, { path: "id", op: "===", value: 1 }],
+            // add id filter
+            [{}, { id: 1 }, { path: "id", op: "===", value: 1 }],
+            // replace id with null
+            [{ id: 1 }, { id: null }, { path: "id", op: "===", value: null }],
+            // remove id form filters
+            [{ id: 1 }, { id: undefined }, undefined],
+            // do nothing
+            [{ id: 1 }, { name: undefined }, { path: "id", op: "===", value: 1 }],
+            // add new filter name, with null value
+            [
+                { id: 1 },
+                { name: null },
+                {
+                    op: "&",
+                    value: [
+                        { path: "id", op: "===", value: 1 },
+                        { path: "name", op: "===", value: null }
+                    ]
+                }
+            ]
         ]
 
-        for (const [filter1, filter2, filterRes] of cases) {
-            const name = `${JSON.stringify(filter1)} & ${JSON.stringify(filter2)}`
+        for (const c of cases) {
+            const merge = c.slice(0, c.length - 1) as FilterInput[]
+            const filterRes = c[c.length - 1] as Filter<Product> | undefined
+            const name = `${JSON.stringify(merge)}`
             it(name, () => {
-                expect(filterMerge(filter1, filter2)).toEqual(filterRes)
+                expect(filterMerge(...merge)).toEqual(filterRes)
             })
         }
     })

@@ -31,7 +31,8 @@ export enum FilterOp {
     Regexp = "~",
     RegexpInsesitive = "~*",
     Or = "|",
-    And = "&"
+    And = "&",
+    Not = "!"
 }
 
 export const OPERATORS: Array<string> = [
@@ -59,7 +60,8 @@ export const OPERATORS: Array<string> = [
     FilterOp.Regexp,
     FilterOp.RegexpInsesitive,
     FilterOp.Or,
-    FilterOp.And
+    FilterOp.And,
+    FilterOp.Not
 ]
 
 export function asOperators(value: any): Array<{ op: FilterOp; value: any }> {
@@ -156,10 +158,11 @@ export function filterBy<T extends Model>(filters: Filter<T>): FilterFn<T> {
 // type _Or = { "|": Array<_Filter> }
 // type _And = { "&": Array<_Filter> }
 // export type NormalizedFilter = _Or | _And
-type NormPath = { path: string; op: Exclude<FilterOp, FilterOp.Or | FilterOp.And>; value: any }
+type NormPath = { path: string; op: Exclude<FilterOp, FilterOp.Or | FilterOp.And | FilterOp.Not>; value: any }
 type NormOr = { op: FilterOp.Or; value: Array<NormEntry> }
 type NormAnd = { op: FilterOp.And; value: Array<NormEntry> }
-type NormEntry = NormPath | NormOr | NormAnd
+type NormNot = { op: FilterOp.Not; value: Array<NormEntry> }
+type NormEntry = NormPath | NormOr | NormAnd | NormNot
 export type FilterNormalized = NormEntry
 
 /**
@@ -174,22 +177,26 @@ export function filterNormalize<T extends Model>(filters: Filter<T>): FilterNorm
 }
 
 export function filterIsNormnalized(filters: any): filters is FilterNormalized {
-    if ("op" in filters && OPERATORS.includes(filters["op"])) {
-        if (filters.op === FilterOp.Or || filters.op === FilterOp.And) {
+    if (isPlainObject(filters) && "op" in filters && OPERATORS.includes(filters["op"])) {
+        if (filters["op"] === FilterOp.Or || filters["op"] === FilterOp.And || filters["op"] === FilterOp.Not) {
             return Array.isArray(filters["value"])
         }
-        return typeof filters.path === "string" && "value" in filters
+        return typeof filters["path"] === "string" && "value" in filters
     }
     return false
 }
 
 function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string): FilterNormalized | undefined {
+    if (filters == null) {
+        return undefined
+    }
+
     if (filterIsNormnalized(filters)) {
         return filters
     }
 
     if ("op" in filters && "value" in filters) {
-        if (filters["op"] === FilterOp.Or || filters["op"] === FilterOp.And) {
+        if (filters["op"] === FilterOp.Or || filters["op"] === FilterOp.And || filters["op"] === FilterOp.Not) {
             return { op: filters["op"], value: filters["value"].map((v: any) => _normalizeFilter(v, parent)) }
         }
         if ("path" in filters) {
@@ -201,16 +208,23 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
         Object.entries(filters).map(([path, value]) => {
             switch (path) {
                 case FilterOp.And:
-                    if (!Array.isArray(value)) {
-                        throw new Error(`Operator AND (${FilterOp.And}) must have array type`)
-                    }
-                    return { op: FilterOp.And, value: value.map(v => _normalizeFilter(v, parent)) }
-
                 case FilterOp.Or:
+                case FilterOp.Not:
                     if (!Array.isArray(value)) {
-                        throw new Error(`Operator OR (${FilterOp.Or}) must have array type`)
+                        throw new Error(`Operator (${path}) must have array type`)
                     }
-                    return { op: FilterOp.Or, value: value.map(v => _normalizeFilter(v, parent)) }
+                    return {
+                        op: path,
+                        value: value
+                            .map(v => {
+                                if (isPlainObject(v)) {
+                                    return _normalizeFilter(v, parent)
+                                } else {
+                                    return parent ? { path: parent, op: FilterOp.EqStrict, value: v } : undefined
+                                }
+                            })
+                            .filter(v => v != null)
+                    }
 
                 // TODO: check all filter, and if not found filter key, taht object maybne not a filter
                 default:
@@ -264,6 +278,9 @@ function _filterCompileNorm(filter: FilterNormalized, getPath: GetPathFn): Filte
         case FilterOp.Or:
             return or_(filter.value.map(v => _filterCompileNorm(v, getPath)))
 
+        case FilterOp.Not:
+            return not_(filter.value.map(v => _filterCompileNorm(v, getPath)))
+
         default:
             return _filterComplileNormPath(getPath(filter.path), filter.op, filter.value, getPath)
     }
@@ -278,6 +295,9 @@ function _filterComplileNormPath(getter: PathGetter, op: FilterOp, value: any, g
 
         case FilterOp.Or:
             return or_((value as NormEntry[]).map(v => _filterCompileNorm(v, getPath)))
+
+        case FilterOp.Not:
+            return not_((value as NormEntry[]).map(v => _filterCompileNorm(v, getPath)))
 
         case FilterOp.Eq:
             // eslint-disable-next-line eqeqeq
@@ -373,7 +393,7 @@ function matcher(getter: PathGetter, predict: (value: any) => boolean): FilterFn
 
 function and_(fns: FilterFn[]): FilterFn {
     if (fns.length === 0) {
-        return _ => true
+        return alwaysTrue
     }
 
     if (fns.length === 1) {
@@ -392,7 +412,7 @@ function and_(fns: FilterFn[]): FilterFn {
 
 function or_(fns: FilterFn[]): FilterFn {
     if (fns.length === 0) {
-        return _ => true
+        return alwaysTrue
     }
 
     if (fns.length === 1) {
@@ -409,10 +429,32 @@ function or_(fns: FilterFn[]): FilterFn {
     }
 }
 
+function not_(fns: FilterFn[]): FilterFn {
+    if (fns.length === 0) {
+        return alwaysTrue
+    }
+
+    return item => !and_(fns)(item)
+}
+
 export function filterMerge(...filters: any[]): any | undefined {
+    filters.reverse()
+    const lastReset = filters.findIndex(v => v == null)
+    filters.reverse()
+
+    if (lastReset !== -1) {
+        filters = filters.slice(lastReset + 1)
+    }
+
     const value = filters
-        .filter(v => v && ((Array.isArray(v) && v.length > 0) || (isPlainObject(v) && Object.keys(v).length > 0)))
+        .map(filterNormalize)
+        .filter(v => v !== undefined)
+        .filter(v => (Array.isArray(v) && v.length > 0) || (isPlainObject(v) && Object.keys(v).length > 0))
         .map(filter => deepClone(filter))
+
+    if (value.length === 0) {
+        return undefined
+    }
 
     return compact({ op: FilterOp.And, value })
 }
@@ -467,19 +509,19 @@ export function filterSimplify(filters: any): object | null {
     }
 }
 
-function compact(filters: FilterNormalized): any {
-    if (filters.op === FilterOp.And || filters.op === FilterOp.Or) {
+function compact(filters: FilterNormalized): FilterNormalized | undefined {
+    if (filters.op === FilterOp.And || filters.op === FilterOp.Or || filters.op === FilterOp.Not) {
         if (isFalsy(filters.value)) {
-            return null
+            return undefined
         }
 
         let value = filters.value.map(compact).filter(isTruthy)
         if (value.length === 0) {
-            return null
+            return undefined
         }
 
         // remove subfilters with the same operator
-        value = value.reduce((acc, value) => {
+        value = value.reduce<NormEntry[]>((acc, value) => {
             if (value.op === filters.op) {
                 return acc.concat(value.value)
             } else {
@@ -488,19 +530,26 @@ function compact(filters: FilterNormalized): any {
             }
         }, [])
 
-        // deduplicate, and latest filter is the most priority
+        // deduplicate by path && op
         value = value
             .reverse()
-            .filter((v, i, a) => a.findIndex(v2 => v.path === v2.path && v.op === v2.op) === i)
+            .filter(
+                (v, i, a) =>
+                    a.findIndex(v2 => "path" in v && "path" in v2 && v.path === v2.path && v.op === v2.op) === i
+            )
+            // remove undefined values, keep null
+            .filter(v => "value" in v && v.value !== undefined)
             .reverse()
+
+        if (value.length === 0) {
+            return undefined
+        }
 
         if (value.length === 1) {
             return value[0]
         }
 
         return { op: filters.op, value }
-    } else if (filters.value == null) {
-        return null
     }
-    return filters
+    return filters ?? undefined
 }
