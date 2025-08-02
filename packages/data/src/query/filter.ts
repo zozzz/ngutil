@@ -169,17 +169,31 @@ export type FilterNormalized = NormEntry
  * {op: "&", value: [{path: "id", op: ">", value: 0}, {path: "id", op: "<", value: 10}]}
  * ```
  */
-export function filterNormalize<T extends Model>(filters: Filter<T>): FilterNormalized {
+export function filterNormalize<T extends Model>(filters: Filter<T>): FilterNormalized | undefined {
     return _normalizeFilter(filters)
 }
 
-function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string): any {
+export function filterIsNormnalized(filters: any): filters is FilterNormalized {
+    if ("op" in filters && OPERATORS.includes(filters["op"])) {
+        if (filters.op === FilterOp.Or || filters.op === FilterOp.And) {
+            return Array.isArray(filters["value"])
+        }
+        return typeof filters.path === "string" && "value" in filters
+    }
+    return false
+}
+
+function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string): FilterNormalized | undefined {
+    if (filterIsNormnalized(filters)) {
+        return filters
+    }
+
     if ("op" in filters && "value" in filters) {
         if (filters["op"] === FilterOp.Or || filters["op"] === FilterOp.And) {
             return { op: filters["op"], value: filters["value"].map((v: any) => _normalizeFilter(v, parent)) }
         }
         if ("path" in filters) {
-            return filters
+            return filters as FilterNormalized
         }
     }
 
@@ -213,11 +227,11 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
     )
 
     if (norm.length === 0) {
-        return norm
+        return undefined
     } else if (norm.length === 1) {
-        return norm[0]
+        return norm[0] as FilterNormalized
     } else {
-        return { op: FilterOp.And, value: norm }
+        return { op: FilterOp.And, value: norm } as FilterNormalized
     }
 }
 
@@ -232,7 +246,14 @@ function _filterCompile<T extends Model>(filters: Filter<T>): FilterFn<T> {
         return (pathCache[pth] = pathGetterCompile(pth))
     }
     const normalized = filterNormalize(filters)
+    if (normalized == null) {
+        return alwaysTrue
+    }
     return _filterCompileNorm(normalized, getPath)
+}
+
+function alwaysTrue() {
+    return true
 }
 
 function _filterCompileNorm(filter: FilterNormalized, getPath: GetPathFn): FilterFn<any> {
@@ -420,7 +441,7 @@ export class FilterPropertySet<T extends Model> extends QueryPropertySet<Filter<
 
 export function filterSimplify(filters: any): object | null {
     if (isTruthy(filters)) {
-        filters = compact(filterNormalize(filters))
+        filters = compact(filterNormalize(filters)!)
         const result: { [key: string]: any } = {}
         if (filters["op"] === FilterOp.And) {
             filters = filters["value"]

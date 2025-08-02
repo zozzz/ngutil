@@ -59,7 +59,7 @@ export abstract class DataProvider<T extends Model> {
         return of(slice)
     }
 
-    filterNormalize(filter: any): FilterNormalized {
+    filterNormalize(filter: any): FilterNormalized | undefined {
         return filterNormalize(filter)
     }
 
