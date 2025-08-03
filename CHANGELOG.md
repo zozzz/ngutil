@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.97](https://github.com/zozzz/ngutil/compare/0.0.96...0.0.97) (2025-08-03)
+
+
+### Bug Fixes
+
+* **data:** export new filter types ([d300fda](https://github.com/zozzz/ngutil/commit/d300fda4abc303f11753c1ab4f3ce77a00a18b4f))
+
 ## [0.0.96](https://github.com/zozzz/ngutil/compare/0.0.95...0.0.96) (2025-08-03)
 
 
