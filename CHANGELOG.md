@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.99](https://github.com/zozzz/ngutil/compare/0.0.98...0.0.99) (2025-08-03)
+
+
+### Bug Fixes
+
+* **data:** remove clone from QueryProperty ([8f74166](https://github.com/zozzz/ngutil/commit/8f741663f4111b66c5233045b1efd258118815c8))
+
 ## [0.0.98](https://github.com/zozzz/ngutil/compare/0.0.97...0.0.98) (2025-08-03)
 
 
