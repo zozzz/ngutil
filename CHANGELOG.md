@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.100](https://github.com/zozzz/ngutil/compare/0.0.99...0.0.100) (2025-08-03)
+
+
+### Bug Fixes
+
+* **data:** filter "not" is merged correctly ([a836cec](https://github.com/zozzz/ngutil/commit/a836cec47e90a6a56374178c7414df52b6d01956))
+
 ## [0.0.99](https://github.com/zozzz/ngutil/compare/0.0.98...0.0.99) (2025-08-03)
 
 
