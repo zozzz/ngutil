@@ -560,10 +560,7 @@ function compact(filters: DeepReadonly<FilterNormalized>): FilterNormalized | un
         // deduplicate by path && op
         value = value
             .reverse()
-            .filter(
-                (v, i, a) =>
-                    a.findIndex(v2 => "path" in v && "path" in v2 && v.path === v2.path && isEqual(v.op, v2.op)) === i
-            )
+            .filter((v, i, a) => a.findIndex(v2 => (v as any).path === (v2 as any).path && isEqual(v.op, v2.op)) === i)
             // remove undefined values, keep null
             .filter(v => "value" in v && v.value !== undefined)
             .reverse()
@@ -572,11 +569,12 @@ function compact(filters: DeepReadonly<FilterNormalized>): FilterNormalized | un
             return undefined
         }
 
-        if (value.length === 1) {
+        if (value.length === 1 && (filters.op === FilterOp.And || filters.op === FilterOp.Or)) {
             return value[0]
         }
 
         return { op: filters.op, value }
     }
+
     return filters ?? undefined
 }

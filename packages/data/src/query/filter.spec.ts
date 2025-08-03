@@ -11,6 +11,7 @@ import {
 
 const CUSTOM_OP_MAP = {
     eq: FilterOp.EqStrict,
+    not: FilterOp.Not,
     typeof: { custom: "typeof", matcher: (item, value) => typeof item === value } satisfies FilterCustom,
     is: { custom: "is" } satisfies FilterCustom,
     xxx: { custom: "xxx", matcher: (item, value) => item === value } satisfies FilterCustom
@@ -82,6 +83,26 @@ describe("Filter", () => {
                             value: [{ path: "parent", op: { custom: "is" }, value: "SOMETHING" }]
                         }
                     ]
+                }
+            ],
+            [
+                { title: "Alma", parent: { not: [{ is: "SOMETHING" }] } },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "title", op: FilterOp.EqStrict, value: "Alma" },
+                        {
+                            op: FilterOp.Not,
+                            value: [{ path: "parent", op: { custom: "is" }, value: "SOMETHING" }]
+                        }
+                    ]
+                }
+            ],
+            [
+                { parent: { not: [{ is: "SOMETHING" }] } },
+                {
+                    op: FilterOp.Not,
+                    value: [{ path: "parent", op: { custom: "is" }, value: "SOMETHING" }]
                 }
             ],
             [
@@ -245,6 +266,15 @@ describe("Filter", () => {
                 { name: { typeof: "string" } },
                 { name: { typeof: "number" } },
                 { path: "name", op: CUSTOM_OP_MAP["typeof"], value: "number" }
+            ],
+            [
+                { parent: { "!": [2] } },
+                { op: FilterOp.Not, value: [{ path: "parent", op: FilterOp.EqStrict, value: 2 }] }
+            ],
+            [
+                { parent: { "!": [{ "===": 1 }] } },
+                { parent: { "!": [2] } },
+                { op: FilterOp.Not, value: [{ path: "parent", op: FilterOp.EqStrict, value: 2 }] }
             ]
         ]
 
