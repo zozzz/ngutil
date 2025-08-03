@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.96](https://github.com/zozzz/ngutil/compare/0.0.95...0.0.96) (2025-08-03)
+
+
+### Features
+
+* **data:** add custom filter operator map ([4e3f7d2](https://github.com/zozzz/ngutil/commit/4e3f7d2723457f64c3a3a557725ab3a5ba217f57))
+
 ## [0.0.95](https://github.com/zozzz/ngutil/compare/0.0.94...0.0.95) (2025-08-02)
 
 
