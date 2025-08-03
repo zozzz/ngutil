@@ -1,6 +1,6 @@
 import { flattenDeep, intersection, isEqual } from "es-toolkit"
 
-import { AsPrimitive, deepClone, isFalsy, isPlainObject, isTruthy, MaxRecursion } from "@ngutil/common"
+import { AsPrimitive, type DeepReadonly, isFalsy, isPlainObject, isTruthy, MaxRecursion } from "@ngutil/common"
 
 import { Model } from "../model"
 import { PathGetter, pathGetterCompile } from "./path"
@@ -66,7 +66,7 @@ export const OPERATORS: Array<string> = [
 
 export type FilterCustom<T = any> = { custom: string; matcher?: FilterCustomMatcher<T> }
 
-export type FilterCustomMatcher<T = any> = (item: T, value: any) => boolean
+export type FilterCustomMatcher<T = any> = (item: T | null | undefined, value: any) => boolean
 
 export type FilterOpMap = Record<string, FilterOp | FilterCustom>
 
@@ -478,7 +478,6 @@ export function filterMerge(...filters: Array<FilterNormalized | null | undefine
     const value = filters
         .filter(v => v != null)
         .filter(v => (Array.isArray(v) && v.length > 0) || (isPlainObject(v) && Object.keys(v).length > 0))
-        .map(filter => deepClone(filter))
 
     if (value.length === 0) {
         return undefined
@@ -537,7 +536,7 @@ export function filterSimplify(filters: any): object | null {
     }
 }
 
-function compact(filters: FilterNormalized): FilterNormalized | undefined {
+function compact(filters: DeepReadonly<FilterNormalized>): FilterNormalized | undefined {
     if (filters.op === FilterOp.And || filters.op === FilterOp.Or || filters.op === FilterOp.Not) {
         if (isFalsy(filters.value)) {
             return undefined
