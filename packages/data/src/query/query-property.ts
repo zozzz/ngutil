@@ -2,7 +2,7 @@ import { BehaviorSubject, combineLatest, map, Observable, shareReplay } from "rx
 
 import { isEqual } from "es-toolkit"
 
-import { deepClone, deepFreeze } from "@ngutil/common"
+import { deepFreeze } from "@ngutil/common"
 
 import type { DataProvider } from "../provider"
 import { readonlyProp } from "./common"
@@ -13,7 +13,7 @@ export abstract class QueryProperty<I, O> extends BehaviorSubject<O | undefined>
     }
 
     set(value?: I | O) {
-        this.#nextClone(value != null ? this.norm(value) : undefined)
+        this.#next(value != null ? this.norm(value) : undefined)
     }
 
     update(value?: I | O): void {
@@ -39,16 +39,6 @@ export abstract class QueryProperty<I, O> extends BehaviorSubject<O | undefined>
                 this.next(undefined)
             } else {
                 this.next(value)
-            }
-        }
-    }
-
-    #nextClone(value?: O) {
-        if (!isEqual(this.value, value)) {
-            if (value == null) {
-                this.next(undefined)
-            } else {
-                this.next(deepClone<any>(value))
             }
         }
     }
