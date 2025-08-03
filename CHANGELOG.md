@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.98](https://github.com/zozzz/ngutil/compare/0.0.97...0.0.98) (2025-08-03)
+
+
+### Bug Fixes
+
+* **data:** remove deepClone from merge, needless + function is not cloneable ([c98eda4](https://github.com/zozzz/ngutil/commit/c98eda4c6daf8fd0dad4fe4d99790a542451c343))
+
 ## [0.0.97](https://github.com/zozzz/ngutil/compare/0.0.96...0.0.97) (2025-08-03)
 
 
