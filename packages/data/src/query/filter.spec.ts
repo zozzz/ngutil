@@ -1,5 +1,20 @@
 import { Product, product1, product2, product3, product4, product5, products } from "./_fixtures"
-import { Filter, filterBy, filterMerge, filterNormalize, type FilterNormalized, FilterOp } from "./filter"
+import {
+    Filter,
+    filterBy,
+    type FilterCustom,
+    filterMerge,
+    filterNormalize,
+    type FilterNormalized,
+    FilterOp
+} from "./filter"
+
+const CUSTOM_OP_MAP = {
+    eq: FilterOp.EqStrict,
+    typeof: { custom: "typeof", matcher: (item, value) => typeof item === value } satisfies FilterCustom,
+    is: { custom: "is" } satisfies FilterCustom,
+    xxx: { custom: "xxx", matcher: (item, value) => item === value } satisfies FilterCustom
+} as const
 
 describe("Filter", () => {
     describe("Normalize", () => {
@@ -55,12 +70,84 @@ describe("Filter", () => {
                         { path: "id", op: FilterOp.EqStrict, value: 2 }
                     ]
                 }
+            ],
+            [
+                { title: "Alma", parent: { "!": [{ is: "SOMETHING" }] } },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "title", op: FilterOp.EqStrict, value: "Alma" },
+                        {
+                            op: FilterOp.Not,
+                            value: [{ path: "parent", op: { custom: "is" }, value: "SOMETHING" }]
+                        }
+                    ]
+                }
+            ],
+            [
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "title", op: FilterOp.EqStrict, value: "Alma" },
+                        {
+                            op: FilterOp.Not,
+                            value: [{ path: "parent", op: { custom: "is" }, value: "SOMETHING" }]
+                        }
+                    ]
+                },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "title", op: FilterOp.EqStrict, value: "Alma" },
+                        {
+                            op: FilterOp.Not,
+                            value: [{ path: "parent", op: { custom: "is" }, value: "SOMETHING" }]
+                        }
+                    ]
+                }
+            ],
+            [
+                { title: "Alma", address: { typeof: "string" } },
+                {
+                    op: FilterOp.And,
+                    value: [
+                        { path: "title", op: FilterOp.EqStrict, value: "Alma" },
+                        { path: "address", op: CUSTOM_OP_MAP["typeof"], value: "string" }
+                    ]
+                }
+            ],
+            // nested object filter
+            [
+                { parent: { id: { eq: 1 } } },
+                {
+                    path: "parent.id",
+                    op: FilterOp.EqStrict,
+                    value: 1
+                }
+            ],
+            [
+                { parent: { id: 1 } },
+                {
+                    path: "parent.id",
+                    op: FilterOp.EqStrict,
+                    value: 1
+                }
+            ],
+            [
+                { parent: { id: { "|": [1, 2] } } },
+                {
+                    op: FilterOp.Or,
+                    value: [
+                        { path: "parent.id", op: FilterOp.EqStrict, value: 1 },
+                        { path: "parent.id", op: FilterOp.EqStrict, value: 2 }
+                    ]
+                }
             ]
         ]
 
         for (const [filter, expected] of cases) {
             it(JSON.stringify(filter), () => {
-                const res = filterNormalize(filter)
+                const res = filterNormalize(filter, CUSTOM_OP_MAP)
                 // console.log(util.inspect(res, { depth: null }))
                 expect(res).toEqual(expected)
             })
@@ -102,14 +189,16 @@ describe("Filter", () => {
                 [product1, product3, product4]
             ],
             "categories.*.author.name.title===null": [{ "categories.*.author.name.title": { "===": null } }, []],
-            "kind===null": [{ kind: { "===": null } }, [product5]]
+            "kind===null": [{ kind: { "===": null } }, [product5]],
+            // eslint-disable-next-line prettier/prettier
+            "xxx": [{ id: { xxx: 1 } }, [product1]]
         }
 
         // TODO: chekc if some operators is missing from cases
 
         for (const [name, [filter, expected]] of Object.entries(cases)) {
             it(name, () => {
-                const result = products.filter(filterBy(filter))
+                const result = products.filter(filterBy(filter, CUSTOM_OP_MAP))
                 expect(result).toEqual(expected)
             })
         }
@@ -151,13 +240,18 @@ describe("Filter", () => {
                         { path: "name", op: "===", value: null }
                     ]
                 }
+            ],
+            [
+                { name: { typeof: "string" } },
+                { name: { typeof: "number" } },
+                { path: "name", op: CUSTOM_OP_MAP["typeof"], value: "number" }
             ]
         ]
 
         for (const c of cases) {
-            const merge = c.slice(0, c.length - 1) as FilterInput[]
+            const merge = c.slice(0, c.length - 1).map(v => filterNormalize(v, CUSTOM_OP_MAP))
             const filterRes = c[c.length - 1] as Filter<Product> | undefined
-            const name = `${JSON.stringify(merge)}`
+            const name = `${JSON.stringify(c.slice(0, -1))}`
             it(name, () => {
                 expect(filterMerge(...merge)).toEqual(filterRes)
             })

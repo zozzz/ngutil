@@ -1,4 +1,4 @@
-import { flattenDeep, intersection } from "es-toolkit"
+import { flattenDeep, intersection, isEqual } from "es-toolkit"
 
 import { AsPrimitive, deepClone, isFalsy, isPlainObject, isTruthy, MaxRecursion } from "@ngutil/common"
 
@@ -63,6 +63,12 @@ export const OPERATORS: Array<string> = [
     FilterOp.And,
     FilterOp.Not
 ]
+
+export type FilterCustom<T = any> = { custom: string; matcher?: FilterCustomMatcher<T> }
+
+export type FilterCustomMatcher<T = any> = (item: T, value: any) => boolean
+
+export type FilterOpMap = Record<string, FilterOp | FilterCustom>
 
 export function asOperators(value: any): Array<{ op: FilterOp; value: any }> {
     const ops = intersection(Object.keys(value), OPERATORS) as FilterOp[]
@@ -149,20 +155,17 @@ export type FilterFn<T = any> = (item: T) => boolean
  * items.filter(filterBy({id: 42}))
  * ```
  */
-export function filterBy<T extends Model>(filters: Filter<T>): FilterFn<T> {
-    return _filterCompile<T>(filters)
+export function filterBy<T extends Model>(filters: Filter<T>, opmap?: FilterOpMap): FilterFn<T> {
+    return _filterCompile<T>(filters, opmap)
 }
 
-// TODO: Normalize filter
-// type _Filter = { path: string; op: FilterOp; value: any }
-// type _Or = { "|": Array<_Filter> }
-// type _And = { "&": Array<_Filter> }
-// export type NormalizedFilter = _Or | _And
 type NormPath = { path: string; op: Exclude<FilterOp, FilterOp.Or | FilterOp.And | FilterOp.Not>; value: any }
 type NormOr = { op: FilterOp.Or; value: Array<NormEntry> }
 type NormAnd = { op: FilterOp.And; value: Array<NormEntry> }
 type NormNot = { op: FilterOp.Not; value: Array<NormEntry> }
-type NormEntry = NormPath | NormOr | NormAnd | NormNot
+type NormCustom = { path: string; op: FilterCustom; value: any }
+type NormEmpty = Record<string, never>
+type NormEntry = NormPath | NormOr | NormAnd | NormNot | NormCustom | NormEmpty
 export type FilterNormalized = NormEntry
 
 /**
@@ -172,8 +175,11 @@ export type FilterNormalized = NormEntry
  * {op: "&", value: [{path: "id", op: ">", value: 0}, {path: "id", op: "<", value: 10}]}
  * ```
  */
-export function filterNormalize<T extends Model>(filters: Filter<T>): FilterNormalized | undefined {
-    return _normalizeFilter(filters)
+export function filterNormalize<T extends Model>(
+    filters: Filter<T> | null | undefined,
+    opmap?: FilterOpMap
+): FilterNormalized | undefined {
+    return _normalizeFilter(filters, undefined, opmap)
 }
 
 export function filterIsNormnalized(filters: any): filters is FilterNormalized {
@@ -186,7 +192,11 @@ export function filterIsNormnalized(filters: any): filters is FilterNormalized {
     return false
 }
 
-function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string): FilterNormalized | undefined {
+function _normalizeFilter<T extends Model>(
+    filters: Filter<T> | null | undefined,
+    parent?: string,
+    opmap?: FilterOpMap
+): FilterNormalized | undefined {
     if (filters == null) {
         return undefined
     }
@@ -197,7 +207,7 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
 
     if ("op" in filters && "value" in filters) {
         if (filters["op"] === FilterOp.Or || filters["op"] === FilterOp.And || filters["op"] === FilterOp.Not) {
-            return { op: filters["op"], value: filters["value"].map((v: any) => _normalizeFilter(v, parent)) }
+            return { op: filters["op"], value: filters["value"].map((v: any) => _normalizeFilter(v, parent, opmap)) }
         }
         if ("path" in filters) {
             return filters as FilterNormalized
@@ -206,19 +216,20 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
 
     const norm = flattenDeep(
         Object.entries(filters).map(([path, value]) => {
-            switch (path) {
+            const op = _remapOp(path, opmap)
+            switch (op) {
                 case FilterOp.And:
                 case FilterOp.Or:
                 case FilterOp.Not:
                     if (!Array.isArray(value)) {
-                        throw new Error(`Operator (${path}) must have array type`)
+                        throw new Error(`Operator (${op}) must have array type`)
                     }
                     return {
-                        op: path,
+                        op: op,
                         value: value
                             .map(v => {
                                 if (isPlainObject(v)) {
-                                    return _normalizeFilter(v, parent)
+                                    return _normalizeFilter(v, parent, opmap)
                                 } else {
                                     return parent ? { path: parent, op: FilterOp.EqStrict, value: v } : undefined
                                 }
@@ -226,13 +237,16 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
                             .filter(v => v != null)
                     }
 
-                // TODO: check all filter, and if not found filter key, taht object maybne not a filter
                 default:
                     if (isPlainObject(value)) {
-                        return _normalizeFilter(value, path)
+                        return _normalizeFilter(value, parent ? `${parent}.${path}` : path, opmap)
                     }
                     if (parent != null) {
-                        return { path: parent, op: path, value }
+                        if (op == null) {
+                            return { path: `${parent}.${path}`, op: FilterOp.EqStrict, value }
+                        } else {
+                            return { path: parent, op: op, value }
+                        }
                     } else {
                         return { path, op: FilterOp.EqStrict, value }
                     }
@@ -241,7 +255,7 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
     )
 
     if (norm.length === 0) {
-        return undefined
+        return {}
     } else if (norm.length === 1) {
         return norm[0] as FilterNormalized
     } else {
@@ -249,21 +263,24 @@ function _normalizeFilter<T extends Model>(filters: Filter<T>, parent?: string):
     }
 }
 
+function _remapOp(op: string, opmap?: FilterOpMap) {
+    const mapped = opmap == null ? op : opmap[op] ?? op
+    if (typeof mapped === "string" && OPERATORS.includes(mapped)) {
+        return mapped
+    } else if (isPlainObject(mapped) && "custom" in mapped) {
+        return mapped
+    }
+    return null
+}
+
 type GetPathFn = (pth: string) => ReturnType<typeof pathGetterCompile>
 
-function _filterCompile<T extends Model>(filters: Filter<T>): FilterFn<T> {
-    const pathCache: { [key: string]: PathGetter } = {}
-    const getPath = (pth: string) => {
-        if (pathCache[pth] != null) {
-            return pathCache[pth]
-        }
-        return (pathCache[pth] = pathGetterCompile(pth))
-    }
-    const normalized = filterNormalize(filters)
+function _filterCompile<T extends Model>(filters: Filter<T>, opmap?: FilterOpMap): FilterFn<T> {
+    const normalized = filterNormalize(filters, opmap)
     if (normalized == null) {
         return alwaysTrue
     }
-    return _filterCompileNorm(normalized, getPath)
+    return _filterCompileNorm(normalized, pathGetterCompile)
 }
 
 function alwaysTrue() {
@@ -286,9 +303,15 @@ function _filterCompileNorm(filter: FilterNormalized, getPath: GetPathFn): Filte
     }
 }
 
-function _filterComplileNormPath(getter: PathGetter, op: FilterOp, value: any, getPath: GetPathFn): FilterFn<any> {
+function _filterComplileNormPath(
+    getter: PathGetter,
+    op: FilterOp | FilterCustom,
+    value: any,
+    getPath: GetPathFn
+): FilterFn<any> {
     let lower: string
     let regex: RegExp
+
     switch (op) {
         case FilterOp.And:
             return and_((value as NormEntry[]).map(v => _filterCompileNorm(v, getPath)))
@@ -382,6 +405,11 @@ function _filterComplileNormPath(getter: PathGetter, op: FilterOp, value: any, g
         case FilterOp.RegexpInsesitive:
             regex = value instanceof RegExp ? value : new RegExp(value, "msvi")
             return matcher(getter, v => regex.test(v))
+
+        default:
+            if (isPlainObject(op) && op.matcher) {
+                return matcher(getter, v => op.matcher!(v, value))
+            }
     }
 
     throw new Error(`Unexpected operator: ${op}`)
@@ -437,18 +465,18 @@ function not_(fns: FilterFn[]): FilterFn {
     return item => !and_(fns)(item)
 }
 
-export function filterMerge(...filters: any[]): any | undefined {
+export function filterMerge(...filters: Array<FilterNormalized | null | undefined>): any | undefined {
     filters.reverse()
     const lastReset = filters.findIndex(v => v == null)
     filters.reverse()
 
     if (lastReset !== -1) {
-        filters = filters.slice(lastReset + 1)
+        const index = filters.length - lastReset
+        filters = filters.slice(index)
     }
 
     const value = filters
-        .map(filterNormalize)
-        .filter(v => v !== undefined)
+        .filter(v => v != null)
         .filter(v => (Array.isArray(v) && v.length > 0) || (isPlainObject(v) && Object.keys(v).length > 0))
         .map(filter => deepClone(filter))
 
@@ -535,7 +563,7 @@ function compact(filters: FilterNormalized): FilterNormalized | undefined {
             .reverse()
             .filter(
                 (v, i, a) =>
-                    a.findIndex(v2 => "path" in v && "path" in v2 && v.path === v2.path && v.op === v2.op) === i
+                    a.findIndex(v2 => "path" in v && "path" in v2 && v.path === v2.path && isEqual(v.op, v2.op)) === i
             )
             // remove undefined values, keep null
             .filter(v => "value" in v && v.value !== undefined)

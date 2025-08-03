@@ -3,7 +3,13 @@ import { flatten } from "es-toolkit"
 type GetterFn = (srcs: any[]) => any[]
 export type PathGetter<T = any, R = any> = (obj: T) => R[]
 
+const CACHE: Record<string, PathGetter> = {}
+
 export function pathGetterCompile(path: string): PathGetter {
+    return CACHE[path] || (CACHE[path] = _pathGetterCompile(path))
+}
+
+function _pathGetterCompile(path: string): PathGetter {
     if (!path || path.length === 0) {
         throw new Error("Empty path")
     }
