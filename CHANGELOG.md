@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.101](https://github.com/zozzz/ngutil/compare/0.0.100...0.0.101) (2025-08-12)
+
+
+### Bug Fixes
+
+* **aria:** remove const from gesture enums ([cafcaee](https://github.com/zozzz/ngutil/commit/cafcaeef0912225d27ef41d82109028fdc4636fb))
+
 ## [0.0.100](https://github.com/zozzz/ngutil/compare/0.0.99...0.0.100) (2025-08-03)
 
 
