@@ -23,12 +23,12 @@ export interface GesturePointer {
 
 export type GestureOrigin = MouseEvent | TouchEvent
 
-export const enum GesturePointerType {
+export enum GesturePointerType {
     Mouse = "mouse",
     Touch = "touch"
 }
 
-export const enum GesturePhase {
+export enum GesturePhase {
     Start = "start",
     Moving = "moving",
     End = "end"

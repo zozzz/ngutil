@@ -4,7 +4,7 @@ import { FunctionKeys, Mutable } from "utility-types"
 
 import { GestureDetail, GesturePointerType, Listeners } from "./gesture-event"
 
-export const enum GestureCaptureState {
+export enum GestureCaptureState {
     // Unchecked
     Unchecked = 0,
     // Pending state
