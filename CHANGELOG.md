@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.102](https://github.com/zozzz/ngutil/compare/0.0.101...0.0.102) (2025-08-15)
+
+
+### Bug Fixes
+
+* **aria:** gasture capture, handle function recive shared rxjs ([c53939d](https://github.com/zozzz/ngutil/commit/c53939d2feaf8d31d6b147afc6a4cb84c30c2611))
+
 ## [0.0.101](https://github.com/zozzz/ngutil/compare/0.0.100...0.0.101) (2025-08-12)
 
 
