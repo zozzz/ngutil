@@ -201,7 +201,7 @@ export class GestureService {
                         ...Array.from(gestures.keys())
                             .sort(sortByPripority)
                             .map(gesture =>
-                                gesture.capture(src.pipe(filter(gesture.shouldCapture.bind(gesture)))).pipe(
+                                gesture.capture(src.pipe(filter(gesture.shouldCapture.bind(gesture)), share())).pipe(
                                     takeWhile(result => result !== GestureCaptureState.Skip, true),
                                     tap(result => gestures.set(gesture, result))
                                 )
@@ -263,7 +263,8 @@ export class GestureService {
                             eventStream.pipe(
                                 startWith(...events),
                                 tap(({ origin }) => preventDefault(origin)),
-                                filter(gesture.isRelevantEvent.bind(gesture))
+                                filter(gesture.isRelevantEvent.bind(gesture)),
+                                share()
                             )
                         )
                         .pipe(
@@ -450,4 +451,8 @@ function preventDefault(event: Event) {
         // console.log(`PREVENT ${event.type}`)
         event.preventDefault()
     }
+}
+
+export function reduceCaptureStates(states: GestureCaptureState[]): GestureCaptureState {
+    return Math.min(...states)
 }
