@@ -35,6 +35,7 @@ exports[`position-compute dialog 1`] = `
       "y": 150,
     },
   },
+  "direction": "center",
   "placement": {
     "area": {
       "height": 500,
@@ -111,6 +112,7 @@ exports[`position-compute flip-bottom-overflow 1`] = `
       "y": 350,
     },
   },
+  "direction": "up",
   "placement": {
     "area": {
       "height": 450,
@@ -187,6 +189,7 @@ exports[`position-compute flip-left-overflow 1`] = `
       "y": 30,
     },
   },
+  "direction": "right",
   "placement": {
     "area": {
       "height": 470,
@@ -263,6 +266,7 @@ exports[`position-compute flip-right-overflow 1`] = `
       "y": 0,
     },
   },
+  "direction": "left",
   "placement": {
     "area": {
       "height": 500,
@@ -339,6 +343,7 @@ exports[`position-compute flip-top-overflow 1`] = `
       "y": 130,
     },
   },
+  "direction": "down",
   "placement": {
     "area": {
       "height": 370,

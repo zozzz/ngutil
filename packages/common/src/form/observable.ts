@@ -35,7 +35,7 @@ export const VALUE_DEFAULT: ObservableValueOptions = { ...DEFAULT, falsyToUndefi
 export function fcObservableValue<T, O extends ObservableValueOptions>(
     fc: FormControl<T>,
     opts: O = VALUE_DEFAULT as any
-): Observable<O extends { falsyToNull: true } ? T | null : T> {
+): Observable<O extends { falsyToUndefined: true } ? T | null : T> {
     let result: Observable<any> = fc.valueChanges.pipe(
         startWith(null),
         map(() => fc.value)
