@@ -24,7 +24,7 @@ const timing = `${Duration.FastMs}ms ${Ease.Deceleration}`
 
 export type AnimationTraitParams = (position: FloatingPosition) => object
 
-export class AnimationTrait implements FloatingTrait<unknown> {
+export class AnimationTrait implements FloatingTrait<void> {
     readonly name = "animation"
 
     constructor(
@@ -32,8 +32,8 @@ export class AnimationTrait implements FloatingTrait<unknown> {
         readonly params?: AnimationTraitParams
     ) {}
 
-    connect(floatingRef: FloatingRef): Observable<unknown> {
-        return new Observable((dst: Subscriber<unknown>) => {
+    connect(floatingRef: FloatingRef): Observable<void> {
+        return new Observable((dst: Subscriber<void>) => {
             const builder = floatingRef.container.injector.get(AnimationBuilder)
             const element = floatingRef.container.nativeElement
 

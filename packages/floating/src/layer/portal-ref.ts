@@ -12,7 +12,7 @@ export abstract class PortalRef extends ContainerRef {
     constructor(options: PortalOptions) {
         super(options)
 
-        this.outlet = new DomPortalOutlet(this.nativeElement, undefined, undefined, this.injector)
+        this.outlet = new DomPortalOutlet(this.nativeElement, undefined, this.injector)
         this.state.on("disposed", () => {
             this.outlet.dispose()
             delete (this as any).outlet
@@ -38,10 +38,9 @@ export class ComponentPortalRef<T = any> extends PortalRef {
     ) {
         super(options)
 
-        const resolver = this.injector.get(ComponentFactoryResolver)
         const vcr = this.injector.get(ViewContainerRef)
 
-        this.portal = new ComponentPortal(component, options.viewContainerRef || vcr, this.injector, resolver)
+        this.portal = new ComponentPortal(component, options.viewContainerRef || vcr, this.injector)
         this.outlet.attach(this.portal)
 
         this.state.on("disposed", () => {

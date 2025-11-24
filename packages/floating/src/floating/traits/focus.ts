@@ -13,12 +13,12 @@ export interface FocusOptions {
     focusOnClose?: ElementInput
 }
 
-export class FocusTrait implements FloatingTrait<unknown> {
+export class FocusTrait implements FloatingTrait<void> {
     readonly name = "focus"
 
     constructor(readonly options: FocusOptions) {}
 
-    connect(floatingRef: FloatingRef): Observable<unknown> {
+    connect(floatingRef: FloatingRef): Observable<void> {
         return new Observable(dest => {
             const originallyFocused = document.activeElement as HTMLElement
             const svc = floatingRef.container.injector.get(FocusService)
