@@ -1,6 +1,6 @@
 import { FocusTrapFactory } from "@angular/cdk/a11y"
-import { DOCUMENT } from "@angular/common"
-import { inject, Injectable, NgZone } from "@angular/core"
+
+import { inject, Injectable, NgZone, DOCUMENT } from "@angular/core"
 
 import {
     BehaviorSubject,

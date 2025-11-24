@@ -2,9 +2,9 @@
   "name": "@ngutil/layout",
   "version": "0.0.102",
   "peerDependencies": {
-    "@angular/animations": "19.2.8",
-    "@angular/common": "19.2.8",
-    "@angular/core": "19.2.8",
+    "@angular/animations": "20.3.13",
+    "@angular/common": "20.3.13",
+    "@angular/core": "20.3.13",
     "@ngutil/common": "workspace:*",
     "@ngutil/style": "workspace:*",
     "es-toolkit": "^1.35.0",

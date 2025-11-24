@@ -1,5 +1,5 @@
-import { DOCUMENT } from "@angular/common"
-import { Directive, ElementRef, inject, Injectable, InjectionToken } from "@angular/core"
+
+import { Directive, ElementRef, inject, Injectable, InjectionToken, DOCUMENT } from "@angular/core"
 
 import { toSorted } from "@ngutil/common"
 

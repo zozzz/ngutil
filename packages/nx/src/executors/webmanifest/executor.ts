@@ -64,7 +64,7 @@ async function generate(options: GenerateExecutorSchema, context: ExecutorContex
     const dest = options.outputPath
     await fs.mkdir(dest, { recursive: true })
 
-    await Promise.all(generated.images.map(image => fs.writeFile(path.join(dest, image.name), image.contents)))
+    await Promise.all(generated.images.map(image => fs.writeFile(path.join(dest, image.name), new Uint8Array(image.contents))))
     await Promise.all(generated.files.map(files => fs.writeFile(path.join(dest, files.name), files.contents)))
 
     if (options.indexHtml && options.indexHtmlReplaceTag) {

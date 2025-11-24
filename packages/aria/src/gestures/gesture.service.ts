@@ -1,5 +1,5 @@
-import { DOCUMENT } from "@angular/common"
-import { inject, Injectable, NgZone } from "@angular/core"
+
+import { inject, Injectable, NgZone, DOCUMENT } from "@angular/core"
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop"
 
 import {
