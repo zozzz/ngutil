@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.103](https://github.com/zozzz/ngutil/compare/0.0.102...0.0.103) (2025-11-24)
+
+
+### Bug Fixes
+
+* **data:** skip null/undefined normal or forced property from merging in Query ([b218c2e](https://github.com/zozzz/ngutil/commit/b218c2e2343f6bbc3f32a4e18cdba26cbeaff36e))
+
+
+### Other changes
+
+* fix tests ([fd2a89f](https://github.com/zozzz/ngutil/commit/fd2a89f3283589bc8a2877bc6fdcaa7e08334a61))
+
 ## [0.0.102](https://github.com/zozzz/ngutil/compare/0.0.101...0.0.102) (2025-08-15)
 
 
