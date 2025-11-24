@@ -38,7 +38,7 @@ export class FocusState implements ConnectProtocol {
         shareReplay(1)
     )
 
-    readonly event = toSignal(this.event$, { rejectErrors: true, manualCleanup: true, equal: isEqual })
+    readonly event = toSignal(this.event$, { manualCleanup: true, equal: isEqual })
 
     readonly self = computed<FocusOrigin>(() => {
         const event = this.event()
