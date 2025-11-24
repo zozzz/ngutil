@@ -63,7 +63,7 @@ export abstract class QueryPropertySet<O> extends Observable<O> {
         }
 
         this.#combined = combineLatest(observables).pipe(
-            map(values => deepFreeze(this.merge(...values))),
+            map(values => deepFreeze(this.merge(...values.filter(v => v != null)))),
             shareReplay(1)
         )
 
