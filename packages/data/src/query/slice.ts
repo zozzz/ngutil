@@ -45,9 +45,17 @@ export function sliceMerge(...slices: Slice[]) {
  * so fill array with undefined if not enought elements
  */
 export function sliceApply(slice: Slice, array: readonly any[]): any[] {
-    const result = array.slice(slice.start, slice.end)
-    result.length = slice.end - slice.start
-    return result
+    if (isFinite(slice.start) && isFinite(slice.end)) {
+        const result = array.slice(slice.start, slice.end)
+        result.length = slice.end - slice.start
+        return result
+    } else if (isFinite(slice.start)) {
+        return array.slice(slice.start)
+    } else if (isFinite(slice.end)) {
+        return array.slice(0, slice.end)
+    } else {
+        return array.slice()
+    }
 }
 
 /**
