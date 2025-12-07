@@ -32,6 +32,7 @@ import { querySubject } from "../query"
 import { type CollectionStore, MemoryStore, type PartialCollection } from "../store"
 
 const DEBOUNCE_TIME = 50
+const EMPTY_RESULT: QueryResult<Model> = { items: [], total: undefined }
 
 export class DataSource<T extends Model> extends CdkDataSource<T | undefined> implements ConnectProtocol {
     readonly isBusy$ = new BehaviorSubject<boolean>(false)
@@ -88,7 +89,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                             take(1),
                             catchError(() => {
                                 this.#setBusy(false)
-                                return of({ items: [], total: undefined } satisfies QueryResult<T>)
+                                return of(EMPTY_RESULT as QueryResult<T>)
                             }),
                             tap(() => this.#setBusy(false)),
                             switchMap(result => {
@@ -101,7 +102,8 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                             })
                         )
                     } else {
-                        return EMPTY
+                        // XXX: the return value is irrelevant
+                        return of(EMPTY_RESULT as QueryResult<T>)
                     }
                 }),
                 switchMap(() => this.store.getSlice(query.slice).pipe(take(1)))
