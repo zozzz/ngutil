@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.106](https://github.com/zozzz/ngutil/compare/0.0.105...0.0.106) (2025-12-07)
+
+
+### Bug Fixes
+
+* **data:** sliceApply allow infinity value ([0ea9342](https://github.com/zozzz/ngutil/commit/0ea93425750e736045a2671ea65c03833fd2b121))
+
 ## [0.0.105](https://github.com/zozzz/ngutil/compare/0.0.104...0.0.105) (2025-12-07)
 
 ## [0.0.104](https://github.com/zozzz/ngutil/compare/0.0.103...0.0.104) (2025-11-24)
