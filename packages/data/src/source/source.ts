@@ -18,7 +18,8 @@ import {
     take,
     takeUntil,
     tap,
-    timer
+    timer,
+    throwError
 } from "rxjs"
 
 import { isEqual } from "es-toolkit"
@@ -87,9 +88,9 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
                         this.#setBusy(true)
                         return this.provider.queryList(query).pipe(
                             take(1),
-                            catchError(() => {
+                            catchError((err) => {
                                 this.#setBusy(false)
-                                return of(EMPTY_RESULT as QueryResult<T>)
+                                return throwError(() => err)
                             }),
                             tap(() => this.#setBusy(false)),
                             switchMap(result => {
