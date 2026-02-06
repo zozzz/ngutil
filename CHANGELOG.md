@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.109](https://github.com/zozzz/ngutil/compare/0.0.108...0.0.109) (2026-02-06)
+
+
+### Other changes
+
+* fix publish ([12b29c6](https://github.com/zozzz/ngutil/commit/12b29c68f4d019204c7b454405a2cda61dc41e02))
+
 ## [0.0.108](https://github.com/zozzz/ngutil/compare/0.0.107...0.0.108) (2026-02-06)
 
 
