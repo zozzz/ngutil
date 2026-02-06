@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/nx",
-  "version": "0.0.113",
+  "version": "0.0.114",
   "scripts": {
     "j2t": "pnpm j2t:svg-to-ts",
     "j2t:svg-to-ts": "pnpm schema-to-ts -i ./src/executors/svg-to-ts/schema.json -o ./src/executors/svg-to-ts/schema.d.ts",
