@@ -102,7 +102,7 @@
     "hooks": {
       "before:init": "pnpm before:release",
       "after:bump": "pnpm build:libs",
-      "after:git:release": "Write-Host \"Enter your OTP code and press Enter: \"; $otp = Read-Host; pnpm publish -r --no-git-checks --access public --otp=$otp"
+      "after:git:release": "pwsh -Command \"$otp = Read-Host 'Enter your OTP code'; pnpm publish -r --no-git-checks --access public --otp=$otp\""
     },
     "npm": {
       "publish": false
