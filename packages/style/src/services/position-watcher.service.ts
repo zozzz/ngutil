@@ -36,15 +36,11 @@ export class PositionWatcher {
             new Observable((dest: Subscriber<Position>) => {
                 let rafId: number | undefined = undefined
                 const emit = () => {
-                    if (!this.#document.contains(element)) {
-                        return
+                    if (this.#document.contains(element)) {
+                        const {x, y} = element.getBoundingClientRect()
+                        dest.next({x, y})
                     }
 
-                    const rect = element.getBoundingClientRect()
-                    dest.next({
-                        x: rect.x,
-                        y: rect.y
-                    })
                     if (!dest.closed) {
                         rafId = requestAnimationFrame(emit)
                     }
