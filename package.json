@@ -8,7 +8,8 @@
     "before:release:test": "pnpm nx run-many -t test",
     "before:release:update-lockfile": "pnpm i --lockfile-only && git add . && (git diff-index --quiet HEAD || git commit -m \"chore(tools): Update pnpm-lock.yaml\")",
     "build:libs": "pnpm nx run-many -t build --projects=packages/*",
-    "release": "pnpm release-it --ci -V --increment=patch"
+    "release": "pnpm release-it --ci -V --increment=patch && pnpm release:publish",
+    "release:publish": "pwsh -Command \"$otp = Read-Host 'Enter your OTP code'; pnpm publish -r --no-git-checks --access public --otp=$otp\""
   },
   "dependencies": {
     "@angular/animations": "20.3.13",
@@ -101,8 +102,7 @@
   "release-it": {
     "hooks": {
       "before:init": "pnpm before:release",
-      "after:bump": "pnpm build:libs",
-      "after:git:release": "pwsh -Command \"$otp = Read-Host 'Enter your OTP code'; pnpm publish -r --no-git-checks --access public --otp=$otp\""
+      "after:bump": "pnpm build:libs"
     },
     "npm": {
       "publish": false
