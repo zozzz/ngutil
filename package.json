@@ -102,7 +102,7 @@
     "hooks": {
       "before:init": "pnpm before:release",
       "after:bump": "pnpm build:libs",
-      "after:git:release": "pnpm publish -r --no-git-checks"
+      "after:git:release": "pnpm publish -r --no-git-checks --access public"
     },
     "npm": {
       "publish": false
