@@ -100,7 +100,9 @@
   "private": true,
   "release-it": {
     "hooks": {
-      "before:init": "pnpm before:release"
+      "before:init": "pnpm before:release",
+      "after:bump": "pnpm build:libs",
+      "after:git:release": "pnpm publish -r --no-git-checks"
     },
     "npm": {
       "publish": false
