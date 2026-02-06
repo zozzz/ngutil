@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.108](https://github.com/zozzz/ngutil/compare/0.0.107...0.0.108) (2026-02-06)
+
+
+### Bug Fixes
+
+* PositionWatcher ([980e800](https://github.com/zozzz/ngutil/commit/980e800f7cb9fc8109c8e712d5c5ae70f8b9fe78))
+
 ## [0.0.107](https://github.com/zozzz/ngutil/compare/0.0.106...0.0.107) (2025-12-08)
 
 ## [0.0.106](https://github.com/zozzz/ngutil/compare/0.0.105...0.0.106) (2025-12-07)
