@@ -33,53 +33,14 @@
       "executor": "@nx/eslint:lint"
     },
     "storybook": {
-      "executor": "@storybook/angular:start-storybook",
+      "executor": "@nx/storybook:storybook",
       "options": {
-        "host": "0.0.0.0",
         "port": 4400,
-        "configDir": "packages/floating/.storybook",
-        "browserTarget": "floating:build-storybook",
-        "compodoc": false,
-        "experimentalZoneless": true
+        "configDir": ".storybook"
       },
       "configurations": {
         "ci": {
           "quiet": true
-        }
-      }
-    },
-    "build-storybook": {
-      "executor": "@storybook/angular:build-storybook",
-      "outputs": ["{options.outputDir}"],
-      "options": {
-        "outputDir": "dist/storybook/floating",
-        "configDir": "packages/floating/.storybook",
-        "browserTarget": "floating:build-storybook",
-        "compodoc": false,
-        "experimentalZoneless": true
-      },
-      "configurations": {
-        "ci": {
-          "quiet": true
-        }
-      }
-    },
-    "test-storybook": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "test-storybook -c packages/floating/.storybook --url=http://localhost:4400"
-      }
-    },
-    "static-storybook": {
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "floating:build-storybook",
-        "staticFilePath": "dist/storybook/floating",
-        "spa": true
-      },
-      "configurations": {
-        "ci": {
-          "buildTarget": "floating:build-storybook:ci"
         }
       }
     }
