@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.116](https://github.com/zozzz/ngutil/compare/0.0.115...0.0.116) (2026-02-09)
+
+
+### Bug Fixes
+
+* **data:** DataSource.getItem works like watchItem ([2e3717d](https://github.com/zozzz/ngutil/commit/2e3717d867c14d878075ba49f1d71cff11ee98d0))
+* **style:** PositionWatcher watch correctly inside fixed or sticky element ([0e7f2bf](https://github.com/zozzz/ngutil/commit/0e7f2bfbc9b7dc52b94a170464c582bb21fe60d5))
+
 ## [0.0.115](https://github.com/zozzz/ngutil/compare/0.0.114...0.0.115) (2026-02-06)
 
 ## [0.0.114](https://github.com/zozzz/ngutil/compare/0.0.113...0.0.114) (2026-02-06)
