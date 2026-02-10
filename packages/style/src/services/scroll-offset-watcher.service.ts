@@ -41,7 +41,6 @@ export class ScrollOffsetWatcher {
         }
 
         return combineLatest(watchers).pipe(
-            tap(p => console.log("SCROLL", p)),
             map(positions => positions.reduce((acc, pos) => ({x: acc.x + pos.x, y: acc.y + pos.y}), {x: 0, y: 0})),
             distinctUntilChanged(isEqual)
         )
