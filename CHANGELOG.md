@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.0.117](https://github.com/zozzz/ngutil/compare/0.0.116...0.0.117) (2026-02-10)
+
+
+### Features
+
+* **style:** new ScrollOffsetWatcher ([f6c186e](https://github.com/zozzz/ngutil/commit/f6c186ed1e18b0860c536293aaaa342f64b2a5ff))
+
+
+### Bug Fixes
+
+* **floating:** correctly handle scrolling, position: fixed / sticky ([defeddc](https://github.com/zozzz/ngutil/commit/defeddc56514aa95cbd800cb1a993d322f133024))
+* **style:** watchers correct finalizaton ([76619e9](https://github.com/zozzz/ngutil/commit/76619e988bf0fa9eb4991168f8a68f09724cdc10))
+
+
+### Other changes
+
+* cleanup ([37fb34d](https://github.com/zozzz/ngutil/commit/37fb34dedbd7af1c2e60d33b5544c7df3a992d45))
+* fox floating stories ([40947bd](https://github.com/zozzz/ngutil/commit/40947bde64ba122e1cb0d1bd24a79280204754d6))
+* **tools:** Update pnpm-lock.yaml ([c637b0f](https://github.com/zozzz/ngutil/commit/c637b0fb1001572dd66986061373aceb3d403837))
+
 ## [0.0.116](https://github.com/zozzz/ngutil/compare/0.0.115...0.0.116) (2026-02-09)
 
 
