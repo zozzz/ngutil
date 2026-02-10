@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from "@angular/core"
 
-import { Observable } from "rxjs"
+import { finalize, Observable } from "rxjs"
 
 import { coerceElement, type ElementInput } from "@ngutil/common"
 
@@ -13,7 +13,9 @@ export class NodeRemovedWatcher {
         element = coerceElement(element)
         let watcher = this.#watches.get(element)
         if (watcher == null) {
-            watcher = this.#createWatcher(element)
+            watcher = this.#createWatcher(element).pipe(
+                finalize(() => this.#watches.delete(element))
+            )
             this.#watches.set(element, watcher)
         }
         return watcher

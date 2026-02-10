@@ -1,7 +1,7 @@
 
 import { inject, Injectable, NgZone, DOCUMENT } from "@angular/core"
 
-import { distinctUntilChanged, Observable, shareReplay, Subscriber } from "rxjs"
+import { distinctUntilChanged, finalize, Observable, shareReplay, Subscriber } from "rxjs"
 
 import { coerceElement, ElementInput } from "@ngutil/common"
 
@@ -41,7 +41,10 @@ export class DimensionWatcher {
                 }
             }
 
-            watches.set(element, watcher)
+            watches.set(element, watcher.pipe(
+                finalize(() => watches.delete(element)),
+                shareReplay({ refCount: true, bufferSize: 1 })
+            ))
         }
 
         return watcher
@@ -79,7 +82,7 @@ export class DimensionWatcher {
                     observer.disconnect()
                     watches.delete(el)
                 }
-            }).pipe(distinctUntilChanged(dimensionIsEq), shareReplay(1))
+            }).pipe(distinctUntilChanged(dimensionIsEq))
         )
     }
 
@@ -115,7 +118,7 @@ export class DimensionWatcher {
                     mutation.disconnect()
                     watches.delete(el)
                 }
-            }).pipe(distinctUntilChanged(dimensionIsEq), shareReplay(1))
+            }).pipe(distinctUntilChanged(dimensionIsEq))
         )
     }
 
@@ -133,7 +136,7 @@ export class DimensionWatcher {
                 return () => {
                     window.removeEventListener("resize", onResize)
                 }
-            }).pipe(distinctUntilChanged(dimensionIsEq), shareReplay(1))
+            }).pipe(distinctUntilChanged(dimensionIsEq))
         )
     }
 }

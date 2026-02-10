@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from "@angular/core"
 
-import { distinctUntilChanged, Observable, shareReplay, Subscriber } from "rxjs"
+import { distinctUntilChanged, finalize, Observable, shareReplay, Subscriber } from "rxjs"
 
 @Injectable({ providedIn: "root" })
 export class MediaWatcher {
@@ -13,7 +13,10 @@ export class MediaWatcher {
     watch(query: string): Observable<boolean> {
         let watcher = this.#watches[query]
         if (!watcher) {
-            watcher = this.#newWatcher(query)
+            watcher = this.#newWatcher(query).pipe(
+                finalize(() => delete this.#watches[query]),
+                shareReplay({ refCount: true, bufferSize: 1 })
+            )
             this.#watches[query] = watcher
         }
         return watcher
@@ -32,7 +35,7 @@ export class MediaWatcher {
                     queryWatcher.removeEventListener("change", listener)
                     delete this.#watches[query]
                 }
-            }).pipe(distinctUntilChanged(), shareReplay(1))
+            }).pipe(distinctUntilChanged())
         )
     }
 }
