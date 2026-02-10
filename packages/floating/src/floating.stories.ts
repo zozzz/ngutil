@@ -141,7 +141,11 @@ class FloatingTrigger {
                     positionSub?.unsubscribe()
                     placementRect = this.#rect(event.floatingRef).subscribe()
                     positionSub = event.floatingRef.watchTrait<FloatingPosition>("position").subscribe(position => {
-                        console.log(position, floatingPositionDirection(position))
+                        // console.log(
+                        //     "anchor", position.anchor.rect,
+                        //     "placement.rect", position.placement.rect,
+                        //     "area", position.placement.area)
+
                     })
                 } else if (event.type === "disposing") {
                     placementRect?.unsubscribe()
@@ -177,6 +181,7 @@ class FloatingTrigger {
             closeTrigger({ clickOutside: { allowedElements: [event.currentTarget as HTMLElement, this.removeBtn()] } })
         )
 
+        if (0) {
         if (this.backdrop() === "crop") {
             factory.trait(
                 backdrop({
@@ -192,35 +197,58 @@ class FloatingTrigger {
         } else if (this.backdrop() === "solid") {
             factory.trait(backdrop({ type: "solid", color: "rgba(0, 0, 0, .5)" }))
         }
+    }
 
         return factory
     }
 
     #rect(floatingRef: FloatingRef<any>) {
         return new Observable((dst: Subscriber<void>) => {
-            const div = document.createElement("div")
-            div.style.position = "absolute"
-            div.style.border = "1px solid red"
-            div.style.backgroundColor = "rgba(0, 0, 0, .6)"
-            div.style.fontSize = "10px"
-            div.style.fontFamily = "monospace"
+            const placementArea = document.createElement("div")
+            placementArea.style.position = "absolute"
+            placementArea.style.border = "1px solid red"
+            placementArea.style.backgroundColor = "rgba(0, 0, 0, .6)"
+            placementArea.style.fontSize = "10px"
+            placementArea.style.fontFamily = "monospace"
             // div.style.zIndex = "22222222222"
-            div.style.color = "white"
-            div.style.pointerEvents = "none"
-            div.style.boxSizing = "border-box"
-            document.body.appendChild(div)
+            placementArea.style.color = "white"
+            placementArea.style.pointerEvents = "none"
+            placementArea.style.boxSizing = "border-box"
+            document.body.appendChild(placementArea)
+
+            const placementRect = document.createElement("div")
+            placementRect.style.position = "absolute"
+            placementRect.style.border = "1px solid blue"
+            placementRect.style.backgroundColor = "rgba(0, 0, 255, .3)"
+            placementRect.style.fontSize = "10px"
+            placementRect.style.fontFamily = "monospace"
+            placementRect.style.color = "white"
+            placementRect.style.pointerEvents = "none"
+            placementRect.style.boxSizing = "border-box"
+            document.body.appendChild(placementRect)
 
             dst.add(
                 floatingRef.watchTrait<FloatingPosition>("position").subscribe(pos => {
-                    div.style.width = `${pos.placement.area.width}px`
-                    div.style.height = `${pos.placement.area.height}px`
-                    div.style.top = `${pos.placement.area.y}px`
-                    div.style.left = `${pos.placement.area.x}px`
+                    Object.assign(placementArea.style, {
+                        width: `${pos.placement.area.width}px`,
+                        height: `${pos.placement.area.height}px`,
+                        top: `${pos.placement.area.y}px`,
+                        left: `${pos.placement.area.x}px`
+                    })
+
+                    Object.assign(placementRect.style, {
+                        width: `${pos.placement.rectWithPadding.width}px`,
+                        height: `${pos.placement.rectWithPadding.height}px`,
+                        top: `${pos.placement.rectWithPadding.y}px`,
+                        left: `${pos.placement.rectWithPadding.x}px`
+                    })
+
                     // div.innerHTML = JSON.stringify(pos.placement.area)
                 })
             )
 
-            dst.add(() => div.parentElement?.removeChild(div))
+            dst.add(() => placementRect.parentElement?.removeChild(placementRect))
+            dst.add(() => placementArea.parentElement?.removeChild(placementArea))
         })
     }
 
@@ -295,6 +323,50 @@ class FloatingPopover {
 })
 class Floatings {}
 
+
+
+
+@Component({
+    selector: "floatings-scrolling",
+    imports: [FloatingTrigger],
+    styles: `
+        :host {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    `,
+    template: `
+        @for (item of rows; track item) {
+            <div>{{item}}</div>
+            @if (item % 20 === 0) {
+                <floating-trigger />
+            }
+        }
+    `
+})
+class FloatingsScrolling {
+    readonly rows = Array(100).fill(0).map((v, i) => i)
+}
+
+
+@Component({
+    selector: "floatings-fixed",
+    imports: [FloatingTrigger, FloatingsScrolling],
+    template: `
+        @for (item of rows; track item) {
+            <div>{{item}}</div>
+        }
+
+        <div style="position: fixed; top: 0; right: 0; bottom: 0; width: 400px; background: #ccc; overflow: auto;">
+            <floatings-scrolling />
+        </div>
+    `
+})
+class FloatingsFixed {
+    readonly rows = Array(100).fill(0).map((v, i) => i)
+}
+
 export default {
     title: "Floatings",
     component: Floatings,
@@ -302,12 +374,18 @@ export default {
         applicationConfig({
             providers: [provideAnimations(), provideFloating()]
         }),
-        moduleMetadata({ imports: [] })
+        moduleMetadata({ imports: [FloatingsScrolling, FloatingsFixed] })
     ],
     parameters: {
         layout: "fullscreen",
         controls: { include: [] }
     },
+
+} as Meta
+
+type Story = StoryObj<Floatings>
+
+export const Simple: Story = {
     render: args => {
         return {
             props: {
@@ -316,8 +394,27 @@ export default {
             template: `<floatings></floatings>`
         }
     }
-} as Meta
+}
 
-type Story = StoryObj<Floatings>
+export const Fixed: Story = {
+    render: args => {
+        return {
+            props: {
+                ...args
+            },
+            template: `<floatings-fixed></floatings-fixed>`
+        }
+    }
+}
 
-export const Simple: Story = {}
+
+export const Scrolling: Story = {
+    render: args => {
+        return {
+            props: {
+                ...args
+            },
+            template: `<floatings-scrolling></floatings-scrolling>`
+        }
+    }
+}

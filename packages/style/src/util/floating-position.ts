@@ -8,7 +8,7 @@ import {
     AlignVerticalOpposite
 } from "./alignment"
 // import type { FloatingPositionOptionsNormalized } from "./position"
-import { Dimension, Position, Rect, rectContract, rectExpand, rectMoveOrigin, rectOrigin } from "./rect"
+import { Dimension, Position, Rect, rectConstraint, rectContract, rectExpand, rectIntersect, rectMoveOrigin, rectOrigin } from "./rect"
 import { Sides, SidesInput, sidesNormalize } from "./sides"
 
 export interface FloatingPositionInput {
@@ -20,7 +20,7 @@ export interface FloatingPositionDims {
     content: Dimension
     anchor: Rect
     placement: Rect
-    constraints?: FloatingPositionConstraintsInput
+    sizeConstraints?: FloatingSizeConstraintsInput
 }
 
 export interface FloatingPositionOptions {
@@ -35,7 +35,7 @@ export interface FloatingPositionContentOptions {
     link: AlignmentInput
 }
 
-export interface FloatingPositionConstraintsInput {
+export interface FloatingSizeConstraintsInput {
     minWidth?: number
     maxWidth?: number
     minHeight?: number
@@ -60,6 +60,7 @@ export interface FloatingPosition {
     anchor: {
         readonly rect: Readonly<Rect>
         link: Alignment
+        visible: boolean
     }
     placement: {
         readonly rect: Readonly<Rect>
@@ -69,7 +70,7 @@ export interface FloatingPosition {
     }
     connection: Position
     direction: FloatingPositionDirection
-    constraints?: FloatingPositionConstraintsInput
+    sizeConstraints?: FloatingSizeConstraintsInput
 }
 
 interface PlacementArea {
@@ -111,15 +112,16 @@ export function floatingPosition({ dims, options }: FloatingPositionInput): Floa
 
     const anchor: FloatingPosition["anchor"] = {
         rect: options.anchor.margin ? rectExpand(dims.anchor, options.anchor.margin) : dims.anchor,
-        link: alignmentNormalize(options.anchor.link)
+        link: alignmentNormalize(options.anchor.link),
+        visible: false
     }
 
-    const minWidth = dims.constraints?.minWidth || 0
-    const minHeight = dims.constraints?.minHeight || 0
-    const maxWidth = dims.constraints?.maxWidth || Infinity
-    const maxHeight = dims.constraints?.maxHeight || Infinity
+    const minWidth = dims.sizeConstraints?.minWidth || 0
+    const minHeight = dims.sizeConstraints?.minHeight || 0
+    const maxWidth = dims.sizeConstraints?.maxWidth || Infinity
+    const maxHeight = dims.sizeConstraints?.maxHeight || Infinity
     const content: FloatingPosition["content"] = {
-        rect: { x: 0, y: 0, ...dims.content },
+        rect: { ...dims.content, x: 0, y: 0 },
         link: alignmentNormalize(options.content.link),
         constrained: {
             width: clamp(dims.content.width, minWidth, maxWidth),
@@ -132,7 +134,7 @@ export function floatingPosition({ dims, options }: FloatingPositionInput): Floa
         anchor,
         content,
         connection: ZERO_CONNECTION,
-        constrains: dims.constraints,
+        sizeConstraints: dims.sizeConstraints,
         direction: FloatingPositionDirection.Down
     }
     const area = placementArea(position, anchor.link, content.link)
@@ -147,6 +149,7 @@ export function floatingPosition({ dims, options }: FloatingPositionInput): Floa
     }
 
     position.direction = floatingPositionDirection(position)
+    position.anchor.visible = rectIntersect(position.placement.rectWithPadding, position.anchor.rect)
     return position
 }
 
@@ -154,70 +157,49 @@ function placementArea(pos: FloatingPosition, anchorLink: Alignment, contentLink
     const connection = rectOrigin(pos.anchor.rect, anchorLink)
     let { x, y } = connection
     const placement = pos.placement.rect
+    const constraint = pos.placement.rectWithPadding
     const placementPad = pos.placement.padding
-    let width = 0
-    let height = 0
+    let { width, height } = placement
 
     switch (contentLink.horizontal) {
         case "left":
         case "start":
-            width = placement.width - x
             break
         case "center":
             if (anchorLink.horizontal === "center") {
-                width = placement.width
                 x = placement.x
             } else {
-                const leftSize = x - placementPad.left.value
-                const rightSize = placement.width - x - placementPad.right.value
-                const mw = Math.max(0, Math.min(leftSize, rightSize))
-                width = mw * 2
-                x -= mw
+                x -= pos.content.constrained.width / 2
             }
             break
         case "end":
         case "right":
-            width = x - placement.x
-            x = placement.x
+            width = x - placementPad.left.value
+            if (anchorLink.horizontal === "center") {
+                x = placement.x
+            } else {
+                x -= pos.content.constrained.width
+            }
             break
     }
 
     switch (contentLink.vertical) {
         case "top":
-            height = placement.height - y
             break
         case "middle":
             if (anchorLink.vertical === "middle") {
-                height = placement.height
                 y = placement.y
             } else {
-                const topSize = y - placementPad.top.value
-                const bottomSize = placement.height - y - placementPad.bottom.value
-                const mh = Math.max(0, Math.min(topSize, bottomSize))
-                height = mh * 2
-                y -= mh
+                y -= pos.content.constrained.height / 2
             }
-
             break
         case "bottom":
-            height = y - placement.y
+            height = y - placementPad.top.value
             y = placement.y
             break
     }
 
-    const constraint = pos.placement.rectWithPadding
-    const newX = Math.max(x, constraint.x)
-    const newY = Math.max(y, constraint.y)
-    const diffX = newX - x
-    const diffY = newY - y
-
-    const area = {
-        x: newX,
-        y: newY,
-        width: Math.min(newX + width - diffX, constraint.x + constraint.width) - newX,
-        height: Math.min(newY + height - diffY, constraint.y + constraint.height) - newY
-    }
-
+    const area = rectConstraint({ x, y, width, height }, constraint)
     return { area, contentLink, anchorLink, connection }
 }
 
@@ -342,12 +324,17 @@ function oppositeLink(axis: FloatingPositionAltAxis, link: Alignment): Alignment
     }
 }
 
-export function floatingPositionToStyle(pos: Readonly<FloatingPosition>): Partial<CSSStyleDeclaration> {
+export function floatingPositionToStyle(pos: Readonly<FloatingPosition>, display: CSSStyleDeclaration["display"] = "inline-flex"): Partial<CSSStyleDeclaration> {
+    if (pos.anchor.visible === false) {
+        return {"display": "none", "pointerEvents": "none"}
+    }
+
     const contentRect = pos.content.rect
     const placementRect = pos.placement.rect
     // const { width: maxWidth, height: maxHeight } = pos.placement.area
-    const style: Partial<CSSStyleDeclaration> = {}
+    const style: Partial<CSSStyleDeclaration> = { display: display, pointerEvents: "" }
 
+    // TODO: translate3d
     if (pos.content.link.horizontal === "right") {
         style["right"] = `${placementRect.width - (contentRect.x + contentRect.width)}px`
         style["left"] = "auto"

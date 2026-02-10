@@ -116,3 +116,8 @@ export function rectContract(rect: Rect, padding: SidesInput): Rect {
 export function rectContainsPoint(rect: Rect, point: Position): boolean {
     return point.x >= rect.x && point.x < rect.x + rect.width && point.y >= rect.y && point.y < rect.y + rect.height
 }
+
+export function rectIntersect(a: Rect, b: Rect): boolean {
+    return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y
+}
+

@@ -15,7 +15,7 @@ import {
 
 import { isEqual } from "es-toolkit"
 
-import { ElementInput, isElementInput } from "@ngutil/common"
+import { coerceElement, ElementInput, isElementInput } from "@ngutil/common"
 import {
     Dimension,
     DimensionWatcher,
@@ -30,7 +30,9 @@ import {
     floatingPositionToStyle,
     NodeRemovedWatcher,
     Rect,
-    RectWatcher
+    RectWatcher,
+    ScrollOffsetWatcher,
+    type Position
 } from "@ngutil/style"
 
 import { FloatingRef } from "../floating-ref"
@@ -39,7 +41,7 @@ import { FloatingTrait } from "./_base"
 export type PositionTraitElementRef = ElementInput | Window | "layer" | "viewport"
 
 export type PositionTraitOptions = {
-    content?: Omit<FloatingPositionContentOptions, "constraints"> & { constraints?: SizeConstraintsInput }
+    content?: FloatingPositionContentOptions & { constraints?: SizeConstraintsInput }
     anchor?: FloatingPositionAnchorOptions & { ref: PositionTraitElementRef }
     placement?: FloatingPositionPlacementOptions & { ref: PositionTraitElementRef }
     horizontalAlt?: FloatingPositionAltInput
@@ -64,13 +66,13 @@ interface SizeConstraintsInput {
     maxHeight?: SizeInput
 }
 
-type SizeConstraints = NonNullable<FloatingPositionDims["constraints"]>
+type SizeConstraints = NonNullable<FloatingPositionDims["sizeConstraints"]>
 
 type Watches = {
     content: Observable<Dimension>
     anchor: Observable<Rect>
     placement: Observable<Rect>
-    constraints: Observable<ConstraintsResult>
+    sizeConstraints: Observable<ConstraintsResult>
 }
 
 type ConstraintWatches = { [K in keyof SizeConstraints]-?: Observable<NonNullable<SizeConstraints[K]>> }
@@ -105,20 +107,40 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
             const dimWatcher = injector.get(DimensionWatcher)
             const rectWatcher = injector.get(RectWatcher)
             const removeWatcher = injector.get(NodeRemovedWatcher)
+            const scrollOffsetWatcher = injector.get(ScrollOffsetWatcher)
 
-            const constraints = this.options.content.constraints || {}
+
+            const sizeConstraints = this.options.content.constraints || {}
             const constraintsWatches: ConstraintWatches = {
-                minWidth: sizeWatcher(dimWatcher, "width", constraints.minWidth),
-                maxWidth: sizeWatcher(dimWatcher, "width", constraints.maxWidth),
-                minHeight: sizeWatcher(dimWatcher, "height", constraints.minHeight),
-                maxHeight: sizeWatcher(dimWatcher, "height", constraints.maxHeight)
+                minWidth: sizeWatcher(dimWatcher, "width", sizeConstraints.minWidth),
+                maxWidth: sizeWatcher(dimWatcher, "width", sizeConstraints.maxWidth),
+                minHeight: sizeWatcher(dimWatcher, "height", sizeConstraints.minHeight),
+                maxHeight: sizeWatcher(dimWatcher, "height", sizeConstraints.maxHeight)
             }
 
+            const placementScroll$ = scrollOffsetWatcher.watch(refToNode(this.options.placement.ref, floatingRef))
+            const placement$ = combineLatest([placementScroll$, refWatcher(rectWatcher, this.options.placement.ref, floatingRef)]).pipe(
+                map(([scroll, placement]) => {
+                    return {
+                        ...placement,
+                        x: placement.x + scroll.x,
+                        y: placement.y + scroll.y
+                    }
+                })
+            )
             const watches: Watches = {
                 content: dimWatcher.watch(floatingRef.container, "border-box"),
-                anchor: refWatcher(rectWatcher, this.options.anchor.ref, floatingRef),
-                placement: refWatcher(rectWatcher, this.options.placement.ref, floatingRef),
-                constraints: combineLatest(constraintsWatches)
+                anchor: combineLatest([placement$, refWatcher(rectWatcher, this.options.anchor.ref, floatingRef)]).pipe(
+                    map(([placement, anchor]) => {
+                        return {
+                            ...anchor,
+                            x: anchor.x + placement.x,
+                            y: anchor.y + placement.y
+                        }
+                    })
+                ),
+                placement: placement$,
+                sizeConstraints: combineLatest(constraintsWatches)
             }
 
             const anchorRemoved =
@@ -137,12 +159,13 @@ export class PositionTrait implements FloatingTrait<FloatingPosition> {
                     const pos = floatingPosition({ dims, options: this.options })
                     const floatingEl = floatingRef.container.nativeElement
                     Object.assign(floatingEl.style, floatingPositionToStyle(pos))
-                    Object.assign(floatingEl.style, constraintsToStyle(pos, dims.constraints, constraints))
+                    Object.assign(floatingEl.style, constraintsToStyle(pos, dims.sizeConstraints, sizeConstraints))
                     dest.next(pos)
                 })
         }).pipe(takeUntil(floatingRef.state.onExecute("disposing")))
     }
 }
+
 
 function refWatcher(rectWatcher: RectWatcher, ref: PositionTraitElementRef, floatingRef: FloatingRef<any>) {
     const node = refToNode(ref, floatingRef)
