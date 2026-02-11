@@ -28,7 +28,7 @@ import { ConnectProtocol, deepClone, deepFreeze, isFalsy } from "@ngutil/common"
 
 import type { Model, ModelRef } from "../model"
 import type { DataProvider } from "../provider/provider"
-import type { Filter, QueryResult, QueryWithSlice, Slice } from "../query"
+import type { Filter, Query, QueryResult, QueryWithSlice, Slice } from "../query"
 import { querySubject } from "../query"
 import { type CollectionStore, MemoryStore, type PartialCollection } from "../store"
 
@@ -168,11 +168,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     // }
 
     getItem(ref: ModelRef): Observable<T | undefined> {
-        const refn = this.provider.meta.normalizeRef(ref)
-        return this.#storeFirst(
-            query => this.store.get(refn),
-            query => this.provider.queryItem(refn, query).pipe(take(1))
-        )
+        return this.watchItem(ref).pipe(take(1))
     }
 
     watchItem(ref: ModelRef): Observable<T | undefined> {
@@ -197,7 +193,7 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
 
     realodItem(ref: ModelRef, insertPosition?: number): Observable<T | undefined> {
         const refn = this.provider.meta.normalizeRef(ref)
-        return this.#query.pipe(
+        return this.query$.pipe(
             take(1),
             switchMap(query => this.provider.queryItem(refn, query).pipe(take(1))),
             switchMap(item =>
@@ -207,10 +203,10 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
     }
 
     #storeFirst<X>(
-        storeFn: (query: QueryWithSlice<T>) => Observable<X>,
-        selfFn: (query: QueryWithSlice<T>) => Observable<X>
+        storeFn: (query: Query) => Observable<X>,
+        selfFn: (query: Query) => Observable<X>
     ): Observable<X> {
-        return this.#query.pipe(
+        return this.query$.pipe(
             take(1),
             switchMap(query => storeFn(query).pipe(switchMap(result => (result == null ? selfFn(query) : of(result)))))
         )

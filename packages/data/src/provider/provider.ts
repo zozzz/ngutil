@@ -6,6 +6,7 @@ import {
     filterMerge,
     filterNormalize,
     type FilterNormalized,
+    type Query,
     type QueryResult,
     type QueryWithSlice,
     type Slice,
@@ -45,12 +46,12 @@ export abstract class DataProvider<T extends Model> {
     /**
      * Query exactly one item by the given request
      */
-    abstract queryItem(ref: ModelRefNorm, request?: QueryWithSlice<T>): Observable<T | undefined>
+    abstract queryItem(ref: ModelRefNorm, request: Query): Observable<T | undefined>
 
     /**
      * Query item position in the list that matching by the given request
      */
-    abstract queryPosition(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<number | undefined>
+    abstract queryPosition(ref: ModelRefNorm, request: Query): Observable<number | undefined>
 
     /**
      * Froce Slice boundaries, useful in array, or obeservable providers
