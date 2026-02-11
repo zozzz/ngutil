@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.119](https://github.com/zozzz/ngutil/compare/0.0.118...0.0.119) (2026-02-11)
+
+
+### Bug Fixes
+
+* DataSource.getItem ([d9e973c](https://github.com/zozzz/ngutil/commit/d9e973c4919ce5724b4621b33d05977c1cea5456))
+* update LocalProvider ([12a1d53](https://github.com/zozzz/ngutil/commit/12a1d535331ff3fe434f63a79ce691c85a443356))
+
+
+### Other changes
+
+* update publish command ([c821bea](https://github.com/zozzz/ngutil/commit/c821bea682e1e796a960496fe52dfafd053c124a))
+
 ## [0.0.118](https://github.com/zozzz/ngutil/compare/0.0.117...0.0.118) (2026-02-10)
 
 ## [0.0.117](https://github.com/zozzz/ngutil/compare/0.0.116...0.0.117) (2026-02-10)
