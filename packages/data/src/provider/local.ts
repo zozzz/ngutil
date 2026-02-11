@@ -1,7 +1,7 @@
 import { map, Observable, take } from "rxjs"
 
 import { Model, ModelMeta, ModelMetaInput, ModelRefNorm } from "../model"
-import { queryExecutor, QueryExecutor, QueryResult, QueryWithSlice, Slice, sliceClamp } from "../query"
+import { queryExecutor, QueryExecutor, QueryResult, QueryWithSlice, Slice, sliceClamp, type Query } from "../query"
 import { DataProvider } from "./provider"
 
 export abstract class LocalProvider<T extends Model> extends DataProvider<T> {
@@ -25,13 +25,13 @@ export abstract class LocalProvider<T extends Model> extends DataProvider<T> {
         return this.items$.pipe(map(items => exec(items)))
     }
 
-    override queryItem(ref: ModelRefNorm, request?: QueryWithSlice<T>): Observable<T | undefined> {
-        const items = request ? this.queryList(request).pipe(map(list => list.items)) : this.items$
+    override queryItem(ref: ModelRefNorm, request: Query): Observable<T | undefined> {
+        const items = request ? this.queryList({...request, slice: {start:0, end: Infinity}}).pipe(map(list => list.items)) : this.items$
         return items.pipe(map(items => items.find(ref.toFilter())))
     }
 
-    override queryPosition(ref: ModelRefNorm, request: QueryWithSlice<T>): Observable<number | undefined> {
-        return this.queryList(request).pipe(map(list => list.items.findIndex(ref.toFilter())))
+    override queryPosition(ref: ModelRefNorm, request: Query): Observable<number | undefined> {
+        return this.queryList({...request, slice: {start:0, end: Infinity}}).pipe(map(list => list.items.findIndex(ref.toFilter())))
     }
 
     override clampSlice(slice: Slice): Observable<Slice> {
