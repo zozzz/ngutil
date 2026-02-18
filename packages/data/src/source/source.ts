@@ -113,9 +113,9 @@ export class DataSource<T extends Model> extends CdkDataSource<T | undefined> im
         shareReplay({ bufferSize: 1, refCount: true })
     )
 
-    readonly isEmpty$ = combineLatest({ busy: this.isBusy$, items: this.items$ }).pipe(
-        filter(({ busy }) => !busy),
-        map(({ items }) => items.every(isFalsy)),
+    readonly isEmpty$ = combineLatest([this.isBusy$, this.store.isEmpty()]).pipe(
+        filter(([busy]) => !busy),
+        map(([, isEmpty]) => isEmpty),
         shareReplay({ bufferSize: 1, refCount: true })
     )
 

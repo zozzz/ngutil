@@ -58,4 +58,9 @@ export abstract class CollectionStore<T extends Model> {
      * Removes all items from collection
      */
     abstract clear(): Observable<void>
+
+    /**
+     * @returns `true` when collection is empty
+     */
+    abstract isEmpty(): Observable<boolean>
 }

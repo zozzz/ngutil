@@ -3,6 +3,7 @@ import { BehaviorSubject, combineLatest, map, Observable, of, take } from "rxjs"
 import { Model, ModelRefNorm } from "../model"
 import { Slice, sliceApply, sliceClamp, sliceEq, sliceInsert } from "../query"
 import { CollectionStore, PartialCollection } from "./collection-store"
+import { isTruthy } from "@ngutil/common"
 
 export class MemoryStore<T extends Model> extends CollectionStore<T> {
     readonly #data = new BehaviorSubject<PartialCollection<T>>([])
@@ -96,5 +97,9 @@ export class MemoryStore<T extends Model> extends CollectionStore<T> {
             this.#data.next([])
         }
         return of(undefined)
+    }
+
+    override isEmpty(): Observable<boolean> {
+        return this.#data.pipe(map(data => data.length === 0 || !data.some(isTruthy)))
     }
 }
