@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.120](https://github.com/zozzz/ngutil/compare/0.0.119...0.0.120) (2026-02-18)
+
+
+### Bug Fixes
+
+* DataSource.isEmpty$ ([8bb34d9](https://github.com/zozzz/ngutil/commit/8bb34d9193056370b24bd37414b950f6a4668a23))
+
 ## [0.0.119](https://github.com/zozzz/ngutil/compare/0.0.118...0.0.119) (2026-02-11)
 
 

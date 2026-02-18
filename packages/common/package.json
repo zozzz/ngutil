@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/common",
-  "version": "0.0.119",
+  "version": "0.0.120",
   "peerDependencies": {
     "@angular/cdk": "20.2.14",
     "@angular/core": "20.3.13",

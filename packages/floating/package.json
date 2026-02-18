@@ -1,6 +1,6 @@
 {
   "name": "@ngutil/floating",
-  "version": "0.0.119",
+  "version": "0.0.120",
   "dependencies": {
     "tslib": "^2.6.2"
   },
