@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.121](https://github.com/zozzz/ngutil/compare/0.0.120...0.0.121) (2026-09-03)
+
+
+### Bug Fixes
+
+* DataSourceProxy ([f1f020c](https://github.com/zozzz/ngutil/commit/f1f020c4b4d9282ea9e76f82b685398542268ca9))
+
 ## [0.0.120](https://github.com/zozzz/ngutil/compare/0.0.119...0.0.120) (2026-02-18)
 
 
