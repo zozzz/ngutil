@@ -68,7 +68,7 @@ export class DataSourceProxy<T extends Model>
     @Input({ required: true, alias: "nuDataSource" })
     set value(value: DataSourceProxyInput<T>) {
         this.#valueSub?.unsubscribe()
-        this.#valueSub = coerceDataSource<T>(value).subscribe(this.#value)
+        this.#valueSub = coerceDataSource<T>(value).subscribe(v => this.#value.next(v))
     }
 
     #valueSub?: Subscription
