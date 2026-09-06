@@ -23,10 +23,31 @@ function _pathGetterCompile(path: string): PathGetter {
 const IsNumber = /^\d+$/
 
 function makeGetter(part: string, parent: GetterFn): GetterFn {
+    // For backward compatibility with wildcard paths, but this is deprecated
     if (part === "*") {
         return obj => flatten(parent(obj), 1)
-    } else {
-        const key = IsNumber.test(part) ? Number(part) : part
-        return obj => parent(obj).map(v => (v != null ? v[key] : undefined))
+    }
+
+    const isNum = IsNumber.test(part)
+    const key = isNum ? Number(part) : part
+
+    return (obj) => {
+        const parentValues = parent(obj)
+
+        const result = parentValues.map(v => {
+            if (v == null) return undefined
+
+            // Automatically traverse arrays and flatten one depth level
+            if (Array.isArray(v)) {
+                // handle array of tuples, like: [ ["Tuple", 1], ["Tuple", 2] ]
+                if (isNum && !v.some(Array.isArray)) {
+                  return [v[key as unknown as number]]
+                }
+                return v.map(item => (item != null ? item[key] : undefined))
+            }
+
+            return [v[key]]
+        })
+        return result.flat(1).filter(v => v !== undefined)
     }
 }
