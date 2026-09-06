@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.122](https://github.com/zozzz/ngutil/compare/0.0.121...0.0.122) (2026-09-06)
+
 ## [0.0.121](https://github.com/zozzz/ngutil/compare/0.0.120...0.0.121) (2026-09-03)
 
 
